@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/dwm_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/daily_option"
+            android:title="@string/daily" />
+        <item
+            android:id="@+id/weekly_option"
+            android:title="@string/weekly" />
+        <item
+            android:id="@+id/monthly_option"
+            android:title="@string/monthly" />
+    </group>
+</menu>
