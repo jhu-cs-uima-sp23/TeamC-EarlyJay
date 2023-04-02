@@ -5,13 +5,13 @@
     <item
         android:id="@+id/daily_option"
         android:checkable="true"
-        android:title="Daily" />
+        android:title="@string/daily" />
     <item
         android:id="@+id/weekly_option"
         android:checkable="true"
-        android:title="Weekly" />
+        android:title="@string/weekly" />
     <item
         android:id="@+id/monthly_option"
         android:checkable="true"
-        android:title="Monthly" />
+        android:title="@string/monthly" />
 </menu>

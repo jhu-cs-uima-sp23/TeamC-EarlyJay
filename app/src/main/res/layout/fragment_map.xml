@@ -2,49 +2,49 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="@color/pale_grass"
-    tools:context=".ui.map.MapFragment">
+    tools:context=".Map_frag">
 
     <EditText
         android:id="@+id/loc_input"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
         android:background="#FFFFFF"
         android:hint="@string/search_location"
         android:padding="15dp"
-        android:textColorHint="#9A9A9A"
+        android:textColorHint="#78909C"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/search_button"
-        app:layout_constraintStart_toEndOf="@+id/setting_button"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:importantForAutofill="no" />
 
     <ImageButton
         android:id="@+id/search_button"
-        android:layout_width="@dimen/box_size"
-        android:layout_height="@dimen/box_size"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/theme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/lavender"
+        android:contentDescription="@string/search"
         android:onClick="showPopUpSettingMapPage"
         android:padding="15dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/search_3_xxl"
+        android:src="@drawable/search"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/loc_input"
+        tools:ignore="MissingConstraints" />
 
     <ImageButton
         android:id="@+id/setting_button"
-        android:layout_width="@dimen/box_size"
-        android:layout_height="@dimen/box_size"
-        android:layout_marginStart="16dp"
-        android:backgroundTint="@color/theme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/lavender"
+        android:contentDescription="@string/setting"
         android:padding="15dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/gear_2_xxl"
+        android:src="@drawable/setting"
+        app:layout_constraintEnd_toStartOf="@+id/loc_input"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
