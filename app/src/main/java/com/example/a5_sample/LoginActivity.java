@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
 
+
     private EditText usernameEditText;
     private SharedPreferences sharedPreferences;
 
