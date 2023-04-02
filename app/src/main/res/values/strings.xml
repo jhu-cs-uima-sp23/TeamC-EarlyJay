@@ -22,5 +22,6 @@
     <string name="enter_name">Park Name</string>
     <string name="save">SAVE</string>
     <string name="quit">QUIT</string>
+    <string name="search_location">Search Location</string>
 
 </resources>

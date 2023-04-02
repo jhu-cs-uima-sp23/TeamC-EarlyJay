@@ -24,6 +24,9 @@ public class MapFragment extends Fragment {
         // ADDED THIS LINE TO AVOID USING THE ChatViewModel class
         binding.textChat.setText("This is the map tab.");
 
+
+
+
         return root;
     }
 
