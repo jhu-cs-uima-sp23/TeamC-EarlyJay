@@ -2,7 +2,6 @@ package com.example.empty;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +9,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.empty.R;
 import com.example.empty.databinding.FragmentMapBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -25,8 +22,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.security.PrivateKey;
 
 public class Map_frag extends Fragment implements OnMapReadyCallback {
 
@@ -34,6 +32,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
     private MapView mMapView;
     private GoogleMap mMap;
     private FusedLocationProviderClient mLocationProviderClient;
+    private MainActivity main;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final LatLngBounds JHU_BOUNDS = new LatLngBounds(
@@ -43,7 +42,9 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentMapBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        main = (MainActivity) getActivity();
+        main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+
 
         // ADDED THIS LINE TO AVOID USING THE ChatViewModel class
         binding.mapView.onCreate(savedInstanceState);
@@ -58,7 +59,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
         // Initialize the location provider client
         mLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
-        return root;
+        return binding.getRoot();
     }
 
     @Override

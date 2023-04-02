@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<com.google.android.gms.maps.MapView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mapView"
+    android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    map:cameraTargetLat="37.7749"
-    map:cameraTargetLng="-122.4194"
-    map:cameraZoom="12" />
+    tools:context=".Map_frag">
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/map_speakable"
+        android:elevation="0dp"
+        app:cameraTargetLat="37.7749"
+        app:cameraTargetLng="-122.4194"
+        app:cameraZoom="12" />
+
+    <FrameLayout
+        android:id="@+id/stuff_on_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
 

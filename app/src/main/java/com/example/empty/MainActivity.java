@@ -18,28 +18,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        replaceFragment(new Map_frag());
+        int frame = R.id.frame_layout;
+        replaceFragment(frame, new Map_frag());
         binding.bottomNavigationView.setSelectedItemId(R.id.map);
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             switch(item.getItemId()){
                 case R.id.map:
-                    replaceFragment(new Map_frag());
+                    replaceFragment(frame, new Map_frag());
                     break;
                 case R.id.stat:
-                    replaceFragment(new Stat_frag());
+                    replaceFragment(frame, new Stat_frag());
                     break;
                 case R.id.planner:
-                    replaceFragment(new Planner_frag());
+                    replaceFragment(frame, new Planner_frag());
                     break;
             }
             return true;
         });
     }
 
-    private void replaceFragment(Fragment fragment){
+    public void replaceFragment(int frame, Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout, fragment);
+        fragmentTransaction.replace(frame, fragment);
         fragmentTransaction.commit();
     }
 }
