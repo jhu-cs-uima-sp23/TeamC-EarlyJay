@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,33 +47,43 @@ public class Map_frag extends Fragment {
 
         binding.settingButton.setOnClickListener(view1 -> {
             mainActivity = (MainActivity) getActivity();
-            PopupMenu popup = new PopupMenu(mainActivity, view1);
+            PopupMenu popup = new PopupMenu(mainActivity, binding.settingButton);
+            popup.getMenuInflater().inflate(R.menu.setting_map_frag_menu, popup.getMenu());
+            int last_selected = sharedPreferences.getInt("last_selected", -1);
+            if(last_selected != -1){
+                popup.getMenu().getItem(last_selected).setChecked(true);
+            }
             popup.setOnMenuItemClickListener(menuItem -> {
+                int selected = 0;
                 switch (menuItem.getItemId()) {
                     case R.id.daily_option:
                         menuItem.setChecked(true);
+                        selected = 0;
                         Toast toast01 = Toast.makeText(context, "daily", Toast.LENGTH_SHORT);
                         toast01.show();
                         // archive(item);
-                        return true;
+                        break;
                     case R.id.weekly_option:
                         menuItem.setChecked(true);
+                        selected = 1;
                         Toast toast02 = Toast.makeText(context, "weekly", Toast.LENGTH_SHORT);
                         toast02.show();
                         // delete(item);
-                        return true;
+                        break;
                     case R.id.monthly_option:
                         menuItem.setChecked(true);
+                        selected = 2;
                         Toast toast03 = Toast.makeText(context, "monthly", Toast.LENGTH_SHORT);
                         toast03.show();
-                        return true;
+                        break;
                     default:
-                        return false;
+                        break;
                 }
+                edit.putInt("last_selected", selected);
+                edit.commit();
+                return true;
             });
 
-            MenuInflater inflater = popup.getMenuInflater();
-            inflater.inflate(R.menu.setting_map_frag_menu, popup.getMenu());
             popup.show();
         });
     }
