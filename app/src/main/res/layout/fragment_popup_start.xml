@@ -6,6 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:layout_width="240dp"
+        android:layout_height="450dp"
+        android:background="@drawable/popup_shape"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <me.tankery.lib.circularseekbar.CircularSeekBar
         android:id="@+id/circular_seek_bar"
         android:layout_width="232dp"
