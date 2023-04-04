@@ -21,48 +21,4 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
-    <me.tankery.lib.circularseekbar.CircularSeekBar
-        android:id="@+id/circular_seek_bar"
-        android:layout_width="240dp"
-        android:layout_height="240dp"
-        android:layout_centerInParent="true"
-        app:cs_circle_color="@color/light_gray"
-        app:cs_circle_fill="@color/white"
-        app:cs_circle_progress_color="@color/lavender"
-        app:cs_circle_stroke_width="6dp"
-        app:cs_circle_style="round"
-        app:cs_circle_x_radius="0dp"
-        app:cs_circle_y_radius="0dp"
-        app:cs_disable_pointer="false"
-        app:cs_disable_progress_glow="true"
-        app:cs_hide_progress_when_empty="true"
-        app:cs_lock_enabled="true"
-        app:cs_maintain_equal_circle="true"
-        app:cs_max="120"
-        app:cs_move_outside_circle="true"
-        app:cs_negative_enabled="false"
-        app:cs_pointer_alpha_ontouch="5"
-        app:cs_pointer_angle="0"
-        app:cs_pointer_color="@color/lavender"
-        app:cs_pointer_stroke_width="20dp"
-        app:cs_progress="60"
-        app:cs_use_custom_radii="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/count_num"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="60 min"
-        android:textColor="@color/lavender"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/circular_seek_bar"
-        app:layout_constraintEnd_toEndOf="@+id/circular_seek_bar"
-        app:layout_constraintStart_toStartOf="@+id/circular_seek_bar"
-        app:layout_constraintTop_toTopOf="@+id/circular_seek_bar" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

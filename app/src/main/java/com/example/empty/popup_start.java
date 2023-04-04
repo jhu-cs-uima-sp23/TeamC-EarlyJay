@@ -17,9 +17,18 @@ import android.widget.Toast;
 import com.example.empty.databinding.FragmentDwmSearchFabBinding;
 import com.example.empty.databinding.FragmentPopupStartBinding;
 
+import me.tankery.lib.circularseekbar.CircularSeekBar;
+
 public class popup_start extends Fragment {
 
     private FragmentPopupStartBinding binding;
+
+    private CircularSeekBar progressCircular;
+
+    private final int MAX = 120;
+
+    private int factorProgress;
+
 
     private Context context;
     private MainActivity main;
@@ -38,5 +47,40 @@ public class popup_start extends Fragment {
         binding.saveButton.setOnClickListener(v -> {
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
+
+        progressCircular = binding.circularSeekBar;
+
+
+        progressCircular.setMax(MAX);
+        factorProgress = 12;
+
+        progressCircular.setOnSeekBarChangeListener(
+                new CircularSeekBar.OnCircularSeekBarChangeListener() {
+
+                    @Override
+                    public void onProgressChanged(CircularSeekBar circularSeekBar,
+                                                  float progress, boolean fromUser) {
+                        if (progress <= 0) {
+                            factorProgress = 0;
+                        } else if (progress >= 120){
+                            factorProgress = 24;
+                        } else {
+                            factorProgress = (int) (progress / 5);
+                        }
+                        binding.countNum.setText(factorProgress * 5 + " min");
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(CircularSeekBar seekBar) {
+
+
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(CircularSeekBar seekBar) {
+
+                    }
+                });
+
     }
 }
