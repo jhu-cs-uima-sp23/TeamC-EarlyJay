@@ -1,19 +1,15 @@
 package com.example.empty;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.PopupWindow;
 
 import com.example.empty.databinding.FragmentDwmSearchFabBinding;
-import com.example.empty.databinding.FragmentMapBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
@@ -76,7 +72,8 @@ public class dwm_search_fab extends Fragment {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPopupWindow(v);
+                Intent launch = new Intent(getActivity(), Popup_frag.class);
+                startActivity(launch);
             }
         });
 
@@ -86,22 +83,5 @@ public class dwm_search_fab extends Fragment {
     }
 
 
-    private void showPopupWindow(View view){
-        PopupWindow popupWindow = new PopupWindow(getActivity());
-        View popupView = getLayoutInflater().inflate(R.layout.popup_start, null);
-        popupWindow.setContentView(popupView);
-        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
-        Button saveButton = popupView.findViewById(R.id.saveButton);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupWindow.dismiss();
-            }
-        });
-
-
-    }
 }

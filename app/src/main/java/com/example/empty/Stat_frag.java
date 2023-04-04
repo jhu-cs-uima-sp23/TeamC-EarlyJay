@@ -34,7 +34,6 @@ public class Stat_frag extends Fragment {
 
         progressCircular = binding.circularSeekBar;
 
-
         progressCircular.setMax(MAX);
         factorProgress = 12;
 
