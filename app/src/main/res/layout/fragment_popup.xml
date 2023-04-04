@@ -113,19 +113,25 @@
         android:layout_width="159dp"
         android:layout_height="56dp"
         android:contentDescription="@string/worktype"
+        android:dropDownWidth="match_parent"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/circular_seek_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.856" />
+        app:layout_constraintVertical_bias="0.856"
+        android:padding="8dp"
+        android:entries="@array/type_array"/>
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="230dp"
         android:layout_height="480dp"
-        app:layout_constraintBottom_toBottomOf="@+id/saveButton"
+        app:layout_constraintBottom_toBottomOf="@+id/button"
         app:layout_constraintEnd_toEndOf="@+id/circular_seek_bar"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/circular_seek_bar"
-        app:layout_constraintTop_toTopOf="@+id/spinner" />
+        app:layout_constraintTop_toTopOf="@+id/spinner"
+        app:layout_constraintVertical_bias="0.452" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

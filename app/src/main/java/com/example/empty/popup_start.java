@@ -11,7 +11,9 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.PopupMenu;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.empty.databinding.FragmentDwmSearchFabBinding;
@@ -32,6 +34,7 @@ public class popup_start extends Fragment {
 
     private Context context;
     private MainActivity main;
+    private Spinner mSpinner;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,6 +50,15 @@ public class popup_start extends Fragment {
         binding.saveButton.setOnClickListener(v -> {
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
+
+
+        mSpinner = binding.spinner;
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
+                R.array.type_array, android.R.layout.simple_spinner_item);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinner.setAdapter(adapter);
+
 
         progressCircular = binding.circularSeekBar;
 

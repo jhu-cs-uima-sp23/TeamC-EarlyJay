@@ -19,4 +19,10 @@
     <string name="feather">feather</string>
     <string name="start">Start</string>
     <string name="worktype">workType</string>
+    <string-array name="type_array">
+        <item>Work</item>
+        <item>Class</item>
+        <item>Team</item>
+        <item>Sports</item>
+    </string-array>
 </resources>
