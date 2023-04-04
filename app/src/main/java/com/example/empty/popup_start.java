@@ -30,8 +30,6 @@ public class popup_start extends Fragment {
     private final int MAX = 120;
 
     private int factorProgress;
-
-
     private Context context;
     private MainActivity main;
     private Spinner mSpinner;

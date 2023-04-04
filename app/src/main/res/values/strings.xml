@@ -19,6 +19,12 @@
     <string name="feather">feather</string>
     <string name="start">Start</string>
     <string name="worktype">workType</string>
+    <string name="confirm">Confirm</string>
+    <string name="yes">Yes!</string>
+    <string name="cancel_anyway">Cancel Anyway</string>
+    <string name="wait">Wait!</string>
+    <string name="warning_txt">You will not earn your     %d if you give up now. In addition, you will lose     %d as punishment. Take a deep breadth, hold on for a little while!</string>
+    <string name="keep_going">Want to keep going?</string>
     <string-array name="type_array">
         <item>Work</item>
         <item>Class</item>
