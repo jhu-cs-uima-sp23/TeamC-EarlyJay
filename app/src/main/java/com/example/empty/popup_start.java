@@ -1,6 +1,7 @@
 package com.example.empty;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,9 @@ public class popup_start extends Fragment {
 
     private CircularSeekBar progressCircular;
 
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor edit;
+
     private final int MAX = 120;
 
     private int factorProgress;
@@ -42,18 +46,24 @@ public class popup_start extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         main = (MainActivity) getActivity();
-        binding.saveButton.setOnClickListener(v -> {
-            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
-        });
-        binding.button.setOnClickListener(v -> {
-            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
-        });
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        edit = sharedPreferences.edit();
 
         progressCircular = binding.circularSeekBar;
 
 
         progressCircular.setMax(MAX);
         factorProgress = 12;
+
+        binding.saveButton.setOnClickListener(v -> {
+            edit.putInt("numSeconds", factorProgress * 5 * 60);
+            edit.apply();
+            main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
+        });
+
+        binding.button.setOnClickListener(v -> {
+            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+        });
 
         progressCircular.setOnSeekBarChangeListener(
                 new CircularSeekBar.OnCircularSeekBarChangeListener() {

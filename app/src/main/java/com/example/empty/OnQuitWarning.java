@@ -30,5 +30,13 @@ public class OnQuitWarning extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         main = (MainActivity) getActivity();
 
+        binding.yes.setOnClickListener(v -> {
+            main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
+        });
+
+        binding.no.setOnClickListener(v -> {
+            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+        });
+
     }
 }
