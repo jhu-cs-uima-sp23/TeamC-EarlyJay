@@ -45,6 +45,9 @@ public class popup_start extends Fragment {
         binding.saveButton.setOnClickListener(v -> {
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
+        binding.button.setOnClickListener(v -> {
+            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+        });
 
         progressCircular = binding.circularSeekBar;
 
