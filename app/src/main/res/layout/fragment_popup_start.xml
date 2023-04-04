@@ -2,11 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout"
+    android:id="@+id/fragment_popup_start"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Popup_frag">
-
+    android:layout_height="match_parent">
 
     <me.tankery.lib.circularseekbar.CircularSeekBar
         android:id="@+id/circular_seek_bar"
@@ -97,7 +95,7 @@
         android:contentDescription="@string/feather" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/saveButton"
         android:layout_width="154dp"
         android:layout_height="48dp"
         android:text="@string/start"
@@ -118,14 +116,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.856" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="230dp"
-        android:layout_height="480dp"
-        app:layout_constraintBottom_toBottomOf="@+id/saveButton"
-        app:layout_constraintEnd_toEndOf="@+id/circular_seek_bar"
-        app:layout_constraintStart_toStartOf="@+id/circular_seek_bar"
-        app:layout_constraintTop_toTopOf="@+id/spinner" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
