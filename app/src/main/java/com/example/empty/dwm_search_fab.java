@@ -1,107 +1,92 @@
 package com.example.empty;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.example.empty.databinding.FragmentDwmSearchFabBinding;
 import com.example.empty.databinding.FragmentMapBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link dwm_search_fab#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class dwm_search_fab extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-    private FloatingActionButton startButton;
-
     private FragmentDwmSearchFabBinding binding;
 
-    public dwm_search_fab() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment dwm_search_fab.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static dwm_search_fab newInstance(String param1, String param2) {
-        dwm_search_fab fragment = new dwm_search_fab();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
+    Context context;
+    private MainActivity mainActivity;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor edit;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
+        context = getActivity().getApplicationContext();
         binding = FragmentDwmSearchFabBinding.inflate(inflater, container, false);
-        startButton = binding.floatingActionButton;
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopupWindow(v);
-            }
-        });
-
         return binding.getRoot();
-
-//        return inflater.inflate(R.layout.fragment_dwm_search_fab, container, false);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mainActivity = (MainActivity) getActivity();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        edit = sharedPreferences.edit();
 
-    private void showPopupWindow(View view){
-        PopupWindow popupWindow = new PopupWindow(getActivity());
-        View popupView = getLayoutInflater().inflate(R.layout.popup_start, null);
-        popupWindow.setContentView(popupView);
-        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-        Button saveButton = popupView.findViewById(R.id.saveButton);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupWindow.dismiss();
+        binding.settingButton.setOnClickListener(view1 -> {
+            PopupMenu popup = new PopupMenu(mainActivity, binding.settingButton);
+            popup.getMenuInflater().inflate(R.menu.setting_map_frag_menu, popup.getMenu());
+            int last_selected = sharedPreferences.getInt("last_selected", -1);
+            if(last_selected != -1){
+                popup.getMenu().getItem(last_selected).setChecked(true);
             }
+            popup.setOnMenuItemClickListener(menuItem -> {
+                int selected = -1;
+                switch (menuItem.getItemId()) {
+                    case R.id.daily_option:
+                        menuItem.setChecked(true);
+                        selected = 0;
+                        Toast toast01 = Toast.makeText(context, "daily", Toast.LENGTH_SHORT);
+                        toast01.show();
+                        // archive(item);
+                        break;
+                    case R.id.weekly_option:
+                        menuItem.setChecked(true);
+                        selected = 1;
+                        Toast toast02 = Toast.makeText(context, "weekly", Toast.LENGTH_SHORT);
+                        toast02.show();
+                        // delete(item);
+                        break;
+                    case R.id.monthly_option:
+                        menuItem.setChecked(true);
+                        selected = 2;
+                        Toast toast03 = Toast.makeText(context, "monthly", Toast.LENGTH_SHORT);
+                        toast03.show();
+                        break;
+                    default:
+                        break;
+                }
+                edit.putInt("last_selected", selected);
+                edit.commit();
+                return true;
+            });
+
+            popup.show();
         });
-
-
+        binding.floatingActionButton.setOnClickListener(e-> {
+            mainActivity.replaceFragment(R.id.stuff_on_map, new popup_start());
+        });
     }
 }
