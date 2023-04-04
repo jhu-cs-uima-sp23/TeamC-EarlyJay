@@ -12,6 +12,7 @@ import com.example.empty.databinding.FragmentStatBinding;
 
 import me.tankery.lib.circularseekbar.CircularSeekBar;
 
+
 public class Stat_frag extends Fragment {
 
     private FragmentStatBinding binding;
