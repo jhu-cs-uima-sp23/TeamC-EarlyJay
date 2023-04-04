@@ -4,9 +4,17 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.PopupWindow;
+
+import com.example.empty.databinding.FragmentDwmSearchFabBinding;
+import com.example.empty.databinding.FragmentMapBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +31,9 @@ public class dwm_search_fab extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private FloatingActionButton startButton;
+
+    private FragmentDwmSearchFabBinding binding;
 
     public dwm_search_fab() {
         // Required empty public constructor
@@ -59,6 +70,38 @@ public class dwm_search_fab extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_dwm_search_fab, container, false);
+
+        binding = FragmentDwmSearchFabBinding.inflate(inflater, container, false);
+        startButton = binding.floatingActionButton;
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopupWindow(v);
+            }
+        });
+
+        return binding.getRoot();
+
+//        return inflater.inflate(R.layout.fragment_dwm_search_fab, container, false);
+    }
+
+
+    private void showPopupWindow(View view){
+        PopupWindow popupWindow = new PopupWindow(getActivity());
+        View popupView = getLayoutInflater().inflate(R.layout.popup_start, null);
+        popupWindow.setContentView(popupView);
+        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        Button saveButton = popupView.findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
+
+
     }
 }
