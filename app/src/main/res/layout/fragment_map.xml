@@ -9,23 +9,30 @@
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="405dp"
+        android:layout_height="741dp"
         android:contentDescription="@string/map_speakable"
         android:elevation="0dp"
         app:cameraTargetLat="37.7749"
         app:cameraTargetLng="-122.4194"
-        app:cameraZoom="12" />
+        app:cameraZoom="12"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <FrameLayout
+        <FrameLayout
         android:id="@+id/stuff_on_map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
