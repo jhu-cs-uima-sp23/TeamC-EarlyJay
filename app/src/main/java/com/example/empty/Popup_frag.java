@@ -48,22 +48,5 @@ public class Popup_frag extends Fragment {
 
     }
 
-//    private void showPopupWindow( ){
-//        View popupView = getLayoutInflater().inflate(R.layout.fragment_popup, null);
-//        PopupWindow popupWindow = new PopupWindow(this);
-//        popupWindow.setContentView(popupView);
-//
-//        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-//        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-//
-//        Button startButton = popupView.findViewById(R.id.button);
-//        startButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                popupWindow.dismiss();
-//            }
-//        });
-//    }
-
 
     }
