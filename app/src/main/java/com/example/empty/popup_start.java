@@ -68,7 +68,7 @@ public class popup_start extends Fragment {
             edit.putInt("numSeconds", factorProgress * 5 * 60);
             edit.putFloat("featherCount", featherCount);
             edit.apply();
-            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+            main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
         });
 
         binding.button.setOnClickListener(v -> {

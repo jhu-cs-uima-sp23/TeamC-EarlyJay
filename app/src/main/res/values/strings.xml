@@ -15,7 +15,7 @@
     <string name="map_speakable">map_speakable</string>
     <string name="time_span">60 min</string>
     <string name="max_work_time">Max work time: 120min</string>
-    <string name="reward_amount">Reward: %d</string>
+    <string name="reward_amount">Reward: 6</string>
     <string name="feather">feather</string>
     <string name="start">Start</string>
     <string name="worktype">workType</string>
