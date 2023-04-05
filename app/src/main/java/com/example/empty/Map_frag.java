@@ -53,6 +53,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
         main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
 
 
+
+
         // ADDED THIS LINE TO AVOID USING THE ChatViewModel class
         binding.mapView.onCreate(savedInstanceState);
 
