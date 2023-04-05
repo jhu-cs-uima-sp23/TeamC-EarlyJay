@@ -54,9 +54,11 @@ public class popup_start extends Fragment {
 
         progressCircular.setMax(MAX);
         factorProgress = 12;
+        binding.textView4.setText(String.format(binding.textView4.getText().toString(), (int)(factorProgress/2)));
 
         binding.saveButton.setOnClickListener(v -> {
             edit.putInt("numSeconds", factorProgress * 5 * 60);
+            edit.putInt("reward_amount", (int)(factorProgress/2));
             edit.apply();
             main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
         });
@@ -79,6 +81,8 @@ public class popup_start extends Fragment {
                             factorProgress = (int) (progress / 5);
                         }
                         binding.countNum.setText(factorProgress * 5 + " min");
+                        binding.textView4.setText(R.string.reward_amount);
+                        binding.textView4.setText(String.format(binding.textView4.getText().toString(), (int)(factorProgress/2)));
                     }
 
                     @Override
