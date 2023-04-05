@@ -26,6 +26,8 @@ public class CustomSpinnerAdapter extends ArrayAdapter<SpinnerItem> {
         return getCustomView(position, convertView, parent);
     }
 
+
+
     private View getCustomView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.spinner_item_layout, parent, false);
