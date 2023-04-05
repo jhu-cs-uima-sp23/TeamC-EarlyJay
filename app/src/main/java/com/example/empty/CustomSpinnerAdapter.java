@@ -8,6 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import java.util.List;
 
 public class CustomSpinnerAdapter extends ArrayAdapter<SpinnerItem> {
@@ -25,8 +27,6 @@ public class CustomSpinnerAdapter extends ArrayAdapter<SpinnerItem> {
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         return getCustomView(position, convertView, parent);
     }
-
-
 
     private View getCustomView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {

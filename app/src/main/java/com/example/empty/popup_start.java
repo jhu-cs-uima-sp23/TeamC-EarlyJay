@@ -75,7 +75,9 @@ public class popup_start extends Fragment {
                         "Time inverval needs to be a positive number!", Toast.LENGTH_LONG).show();
                 return;
             }
-            edit.putString("category", convertCat(binding.spinner.getSelectedItem().toString()));
+            SpinnerItem selectedItem = (SpinnerItem) binding.spinner.getSelectedItem();
+            String category = selectedItem.getText();
+            edit.putString("category", category);
             edit.putInt("numSeconds", factorProgress * 5 * 60);
             edit.putFloat("featherCount", featherCount);
             edit.apply();
@@ -103,13 +105,6 @@ public class popup_start extends Fragment {
 
         CustomSpinnerAdapter adapter = new CustomSpinnerAdapter(getContext(), spinnerItems);
         mSpinner.setAdapter(adapter);
-
-
-
-
-
-
-
 
         progressCircular.setOnSeekBarChangeListener(
                 new CircularSeekBar.OnCircularSeekBarChangeListener() {
@@ -143,18 +138,5 @@ public class popup_start extends Fragment {
                     }
                 });
 
-    }
-
-    private String convertCat(String strID) {
-        switch (strID) {
-            case "com.example.empty.SpinnerItem@44813d8":
-                return "work";
-            case "com.example.empty.SpinnerItem@dfdd84d":
-                return "class";
-            case "com.example.empty.SpinnerItem@55ce1f3":
-                return "team";
-            default:
-                return "sports";
-        }
     }
 }
