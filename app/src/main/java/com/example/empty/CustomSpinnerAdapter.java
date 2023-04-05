@@ -8,6 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import java.util.List;
 
 public class CustomSpinnerAdapter extends ArrayAdapter<SpinnerItem> {
