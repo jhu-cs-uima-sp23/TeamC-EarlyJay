@@ -13,11 +13,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.empty.databinding.FragmentPopupStartBinding;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import me.tankery.lib.circularseekbar.CircularSeekBar;
 
@@ -37,7 +42,7 @@ public class popup_start extends Fragment {
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
 
-    private int featherCount;
+    private float featherCount;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,6 +70,12 @@ public class popup_start extends Fragment {
 
 
         binding.saveButton.setOnClickListener(v -> {
+            if (factorProgress == 0) {
+                Toast.makeText(context,
+                        "Time inverval needs to be a positive number!", Toast.LENGTH_LONG).show();
+                return;
+            }
+            edit.putString("category", convertCat(binding.spinner.getSelectedItem().toString()));
             edit.putInt("numSeconds", factorProgress * 5 * 60);
             edit.putFloat("featherCount", featherCount);
             edit.apply();
@@ -114,9 +125,9 @@ public class popup_start extends Fragment {
                             factorProgress = (int) (progress / 5);
                         }
                         binding.countNum.setText(factorProgress * 5 + " min");
-                        featherCount = factorProgress / 2;
+                        featherCount = (float) factorProgress / 2;
 
-                        binding.textView4.setText("Reward: " + featherCount);
+                        binding.rewardLine.setText("Reward: " + featherCount);
 
                     }
 
@@ -132,5 +143,18 @@ public class popup_start extends Fragment {
                     }
                 });
 
+    }
+
+    private String convertCat(String strID) {
+        switch (strID) {
+            case "com.example.empty.SpinnerItem@44813d8":
+                return "work";
+            case "com.example.empty.SpinnerItem@dfdd84d":
+                return "class";
+            case "com.example.empty.SpinnerItem@55ce1f3":
+                return "team";
+            default:
+                return "sports";
+        }
     }
 }
