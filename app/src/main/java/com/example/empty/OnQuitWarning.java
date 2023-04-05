@@ -1,12 +1,14 @@
 package com.example.empty;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ public class OnQuitWarning extends Fragment {
     private MainActivity main;
     private Context context;
 
+    private SharedPreferences sharedPreferences;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -29,6 +32,17 @@ public class OnQuitWarning extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         main = (MainActivity) getActivity();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        int reward_amount = sharedPreferences.getInt("reward_amount", 0);
+        String formatted = getString(R.string.warning_txt, reward_amount, reward_amount);
+        binding.warningTxt.setText(formatted);
+        binding.yes.setOnClickListener(v -> {
+            main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
+        });
+
+        binding.no.setOnClickListener(v -> {
+            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+        });
 
     }
 }
