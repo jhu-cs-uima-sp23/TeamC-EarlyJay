@@ -15,7 +15,7 @@
     <string name="map_speakable">map_speakable</string>
     <string name="time_span">60 min</string>
     <string name="max_work_time">Max work time: 120min</string>
-    <string name="reward_amount">Reward: %d</string>
+    <string name="reward_amount">Reward: 6</string>
     <string name="feather">feather</string>
     <string name="start">Start</string>
     <string name="worktype">workType</string>
@@ -25,4 +25,10 @@
     <string name="wait">Wait!</string>
     <string name="warning_txt">You will not earn your %1$d feathers if you give up now. In addition, you will lose %2$d feathers as punishment. Take a deep breadth, hold on for a little while!</string>
     <string name="keep_going">Want to keep going?</string>
+    <string-array name="type_array">
+        <item>Work</item>
+        <item>Class</item>
+        <item>Team</item>
+        <item>Sports</item>
+    </string-array>
 </resources>
