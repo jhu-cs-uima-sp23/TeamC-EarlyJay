@@ -57,6 +57,8 @@ public class CountDownFragment extends Fragment {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
 
+        String category = sharedPreferences.getString("category", "");
+        binding.taskCat.setText(category);
         numSeconds = sharedPreferences.getInt("numSeconds", 0);
         hour = numSeconds / 3600;
         System.out.println("hour = " + hour);
@@ -88,7 +90,7 @@ public class CountDownFragment extends Fragment {
             }
 
             public void onFinish() {
-                setRemainTime(0, 0,0);
+                mainActivity.replaceFragment(R.id.stuff_on_map, new CompleteFragment());
             }
 
         };
@@ -110,7 +112,7 @@ public class CountDownFragment extends Fragment {
         String hourStr = "0" + hour;
         String minStr = (min < 10) ? "0" + min : String.valueOf(min);
         String secStr = (sec < 10) ? "0" + sec : String.valueOf(sec);
-        binding.remainTime.setText(hourStr + ":" + minStr + ":" + secStr + "    Remains");
+        binding.remaining.setText(hourStr + ":" + minStr + ":" + secStr + "    Remains");
     }
 
 
