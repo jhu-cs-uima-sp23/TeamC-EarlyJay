@@ -45,6 +45,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
     private FusedLocationProviderClient fusedLocationClient;
 
+
     private double latitude;
     private double longitude;
     private Spinner mSpinner;
@@ -132,7 +133,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
-                            Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
+                           // Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
 
                         }
                     });

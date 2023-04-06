@@ -1,8 +1,11 @@
 package com.example.empty;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +20,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.content.SharedPreferences;
 import com.example.empty.databinding.FragmentMapBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -37,9 +41,13 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
     private FragmentMapBinding binding;
     private MapView mMapView;
     private GoogleMap mMap;
+
+    private double latitude;
+    private double longitude;
     private FusedLocationProviderClient mLocationProviderClient;
     private MainActivity main;
     private FloatingActionButton start;
+    private SharedPreferences sharedPreferences;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final LatLngBounds JHU_BOUNDS = new LatLngBounds(
@@ -47,12 +55,9 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         binding = FragmentMapBinding.inflate(inflater, container, false);
         main = (MainActivity) getActivity();
         main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
-
-
 
 
         // ADDED THIS LINE TO AVOID USING THE ChatViewModel class
@@ -67,6 +72,26 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
 
         // Initialize the location provider client
         mLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        String latitudeString = sharedPreferences.getString("latitude", "0");
+        String longitudeString = sharedPreferences.getString("longitude", "0");
+
+        if (!latitudeString.equals("0") && !longitudeString.equals("0")) {
+            latitude = Double.parseDouble(latitudeString);
+            longitude = Double.parseDouble(longitudeString);
+           // LatLng location = new LatLng(latitude, longitude);
+
+            // add marker to the map
+           // MarkerOptions markerOptions = new MarkerOptions().position(location).title("My Location");
+           // mMap.addMarker(markerOptions);
+
+            // move the camera to the location
+           // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+           Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
+        }
+
 
         return binding.getRoot();
     }
@@ -135,8 +160,11 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
 
                         }
                     });
+
+
             // Apply the custom map style
             mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.style_json));
+
         } else {
             // Show an empty map if location permission is not granted
             Toast.makeText(getContext(), "Location permission not granted, showing empty map",
