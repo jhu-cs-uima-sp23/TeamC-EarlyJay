@@ -2,6 +2,7 @@ package com.example.empty;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -44,6 +45,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final LatLngBounds JHU_BOUNDS = new LatLngBounds(
             new LatLng(39.3256, -76.6228), new LatLng(39.3297, -76.6189));
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
