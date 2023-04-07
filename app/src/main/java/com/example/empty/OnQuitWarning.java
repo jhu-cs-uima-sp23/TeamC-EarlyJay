@@ -15,14 +15,23 @@ import android.view.ViewGroup;
 
 import com.example.empty.databinding.FragmentOnQuitWarningBinding;
 import com.example.empty.databinding.FragmentPopupStartBinding;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class OnQuitWarning extends Fragment {
     private FragmentOnQuitWarningBinding binding;
     private MainActivity main;
     private Context context;
 
+    private FirebaseDatabase rootNode;
+    private DatabaseReference reference;
+
     private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -34,18 +43,33 @@ public class OnQuitWarning extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         main = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        editor = sharedPreferences.edit();
-        float reward_amount = sharedPreferences.getFloat("featherCount", 0);
-        String formatted = getString(R.string.warning_txt, reward_amount);
+        int reward_amount = sharedPreferences.getInt("reward_amount", 0);
+        String formatted = getString(R.string.warning_txt, reward_amount, reward_amount);
         binding.warningTxt.setText(formatted);
         binding.yes.setOnClickListener(v -> {
             main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
         });
 
         binding.no.setOnClickListener(v -> {
-            editor.putInt("complete_success", 2);
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+            float longitude = sharedPreferences.getFloat("longitude", 0);
+            float latitude = sharedPreferences.getFloat("latitude", 0);
+            String uid = sharedPreferences.getString("uid", "");
+            String category = sharedPreferences.getString("category", "");
+            String datestr = getDatestr();
+            rootNode = FirebaseDatabase.getInstance();
+            reference = rootNode.getReference().child("users").child(uid).child(datestr);
+            reference.push().setValue(new LocationStruct(longitude, latitude, false, category));
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
 
+    }
+    public String getDatestr() {
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String datestr = dt.format(date);
+        return datestr;
     }
 }

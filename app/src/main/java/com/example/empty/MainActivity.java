@@ -9,15 +9,18 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.example.empty.databinding.ActivityMainBinding;
-import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
+    FirebaseDatabase rootNode;
+    DatabaseReference reference;
+
+    ActivityMainBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseApp.initializeApp(this);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         int frame = R.id.frame_layout;
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
     }
+
     public void replaceFragment(int frame, Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
