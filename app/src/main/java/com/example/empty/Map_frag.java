@@ -103,17 +103,17 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                 String viewName = getResources().getResourceName(contentId);
                 String dwm_view_name = getResources().getResourceName(R.id.dwm_view);
                 if (task_completed == 1 && viewName.equals(dwm_view_name)){
+                    Log.d("TAG", "onLayoutChange: BINGO");
                     markMap();
+                    editor.putInt("complete_success", 0);
+                    editor.apply();
                 }else if(task_completed == 2 && viewName.equals(dwm_view_name)){
                     Log.d("TAG", "onLayoutChange: pork guy you failed");
                 }else{
                     Log.d("TAG", "onLayoutChange: bruh nothing changed" + getResources().getResourceName(contentId));
-                    Log.d("TAG", "onLayoutChange: bruh nothing changed" + (viewName == dwm_view_name));
-                    Log.d("TAG", "onLayoutChange: bruh nothing changed" + (task_completed == 1));
                 }
-                Log.d("TAG", ""+contentId);
-                editor.putInt("complete_success", 0);
-                editor.apply();
+                Log.d("TAG", "onLayoutChange: bruh nothing changed" + viewName.equals(dwm_view_name));
+                Log.d("TAG", "onLayoutChange: bruh nothing changed" + (task_completed));
             }
         });
         return binding.getRoot();
@@ -177,8 +177,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                             // Add a marker at the user's current location
                             LatLng currentLocation = new LatLng(location.getLatitude(),
                                     location.getLongitude());
-                            mMap.addMarker(new MarkerOptions().position(currentLocation)
-                                    .title("You are here"));
+//                            mMap.addMarker(new MarkerOptions().position(currentLocation)
+//                                    .title("You are here"));
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
 
                         }
@@ -200,7 +200,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                         location.getLongitude());
                 GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions()
                         .image(BitmapDescriptorFactory.fromResource(R.drawable.star_2_xxl))
-                        .position(currentLocation, 5f, 5f);
+                        .position(currentLocation, 20f, 20f);
                 mMap.addGroundOverlay(groundOverlayOptions);
             });
         }
