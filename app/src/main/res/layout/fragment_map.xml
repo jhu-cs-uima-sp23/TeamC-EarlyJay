@@ -9,8 +9,8 @@
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
-        android:layout_width="405dp"
-        android:layout_height="741dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:contentDescription="@string/map_speakable"
         android:elevation="0dp"
         app:cameraTargetLat="37.7749"
