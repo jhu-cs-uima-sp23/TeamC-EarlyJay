@@ -16,6 +16,13 @@ import android.view.ViewGroup;
 
 import com.example.empty.databinding.FragmentCompleteBinding;
 import com.example.empty.databinding.FragmentCountDownBinding;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class CompleteFragment extends Fragment {
 
@@ -24,6 +31,9 @@ public class CompleteFragment extends Fragment {
     private MainActivity mainActivity;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
+
+    private FirebaseDatabase rootNode;
+    private DatabaseReference reference;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,6 +49,19 @@ public class CompleteFragment extends Fragment {
         mainActivity = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
+
+
+        float longitude = sharedPreferences.getFloat("longitude", 0);
+        float latitude = sharedPreferences.getFloat("latitude", 0);
+        String uid = sharedPreferences.getString("uid", "");
+        String category = sharedPreferences.getString("category", "");
+        String datestr = getDatestr();
+
+        rootNode = FirebaseDatabase.getInstance();
+        reference = rootNode.getReference().child("users").child(uid).child(datestr);
+        reference.push().setValue(new LocationStruct(longitude, latitude, true, category));
+
+
         Float featherCount = sharedPreferences.getFloat("featherCount", 0);
         binding.rewardCount.setText("You have received " + featherCount);
 
@@ -50,6 +73,14 @@ public class CompleteFragment extends Fragment {
         });
 
 
+    }
+
+    public String getDatestr() {
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String datestr = dt.format(date);
+        return datestr;
     }
 
 

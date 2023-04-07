@@ -9,8 +9,13 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.example.empty.databinding.ActivityMainBinding;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
+
+    FirebaseDatabase rootNode;
+    DatabaseReference reference;
 
     ActivityMainBinding binding;
     @Override
