@@ -28,6 +28,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildFeatures {
+        buildConfig = false
         viewBinding true
     }
 }

@@ -22,6 +22,7 @@ public class OnQuitWarning extends Fragment {
     private Context context;
 
     private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -33,14 +34,16 @@ public class OnQuitWarning extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         main = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        int reward_amount = sharedPreferences.getInt("reward_amount", 0);
-        String formatted = getString(R.string.warning_txt, reward_amount, reward_amount);
+        editor = sharedPreferences.edit();
+        float reward_amount = sharedPreferences.getFloat("featherCount", 0);
+        String formatted = getString(R.string.warning_txt, reward_amount);
         binding.warningTxt.setText(formatted);
         binding.yes.setOnClickListener(v -> {
             main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
         });
 
         binding.no.setOnClickListener(v -> {
+            editor.putInt("complete_success", 2);
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
 

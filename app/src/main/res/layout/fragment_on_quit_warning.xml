@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".OnQuitWarning">
+    tools:context=".OnQuitWarning"
+    android:id="@+id/on_quit_warning">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
