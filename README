@@ -1,0 +1,13 @@
+*We have applied the Google Maps API in our app, which is a restricted service. To enable this feature on any new emulator before testing, we need to add your SHA1 fingerprint on our Google Cloud Platform. To obtain your SHA1 fingerprint, please follow these steps:
+
+1.	Click on AndroidStudio->Preference/Settings->Experimental.
+2.	Uncheck the box of “Only include test tasks in the Gradle task list generated during Gradle Sync”.
+3.	Click on Gradle->Project name (Should be Empty)->Tasks->android->signingReport.
+4.	The output will include a bunch of codes, including the SHA1 fingerprint, which will look something like this: SHA1: 1D:21:39:9D:B0:57:35:A3:CC:BF:BC:E0:14:DA:37:49:14:D6:A2:DF.
+
+* Please note that all emulators have a default location in California, where Google headquarters is located. However, our app restricts the map range to JHU Homewood Campus since it is only available to BlueJay users. Therefore, to see your current location on the map, you need to reset your location. Follow these steps:
+
+1.	Click on the three dots under the emulator bar.
+2.	Go to Location->input the name of any building in our Homewood campus->select the “Set Location” button at the lower right corner.
+
+* Additionally, our app requires users to authorize the Location function inside the emulator settings before using its map function. If you open the app without authorizing the Location function, you won’t see your current location on the map, although the app won't crash."
