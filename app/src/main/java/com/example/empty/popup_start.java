@@ -20,6 +20,9 @@ import android.widget.Toast;
 import com.example.empty.databinding.FragmentPopupStartBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +61,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
                              Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
         binding = FragmentPopupStartBinding.inflate(inflater, container, false);
+        FirebaseApp.initializeApp(getContext());
         return binding.getRoot();
     }
 
@@ -66,6 +70,9 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         main = (MainActivity) getActivity();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
@@ -126,6 +133,8 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
     @Override
     public void onStart() {
         super.onStart();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
         if (context.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(location -> {
@@ -133,6 +142,8 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
                             Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
+                            databaseReference.setValue("Hello, world!");
+
 
                         }
                     });
