@@ -8,6 +8,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -20,9 +22,6 @@ import android.widget.Toast;
 import com.example.empty.databinding.FragmentPopupStartBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,12 +47,13 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
     private FusedLocationProviderClient fusedLocationClient;
 
+
     private double latitude;
     private double longitude;
     private Spinner mSpinner;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
-
+    private Map_child_viewModel shared_data;
     private float featherCount;
 
     @Override
@@ -61,7 +61,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
                              Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
         binding = FragmentPopupStartBinding.inflate(inflater, container, false);
-        FirebaseApp.initializeApp(getContext());
+        shared_data = new ViewModelProvider(requireActivity()).get(Map_child_viewModel.class);
         return binding.getRoot();
     }
 
@@ -70,10 +70,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         main = (MainActivity) getActivity();
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
 
@@ -88,15 +84,17 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
 
         binding.saveButton.setOnClickListener(v -> {
+            int numSeconds = factorProgress * 5 * 60;
             if (factorProgress == 0) {
                 Toast.makeText(context,
-                        "Time inverval needs to be a positive number!", Toast.LENGTH_LONG).show();
-                return;
+                        "Time interval needs to be greater than 0!", Toast.LENGTH_LONG).show();
+                numSeconds = 1;
+//                return;
             }
             SpinnerItem selectedItem = (SpinnerItem) binding.spinner.getSelectedItem();
             String category = selectedItem.getText();
             edit.putString("category", category);
-            edit.putInt("numSeconds", factorProgress * 5 * 60);
+            edit.putInt("numSeconds", numSeconds);
             edit.putFloat("featherCount", featherCount);
             edit.putString("latitude", String.valueOf(latitude));
             edit.putString("longitude", String.valueOf(longitude));
@@ -106,6 +104,9 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
         binding.button.setOnClickListener(v -> {
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+            shared_data.getData().observe(getViewLifecycleOwner(), data -> {
+                //TODO: you can add stuff here to get data
+            });
         });
 
         progressCircular.setOnSeekBarChangeListener(this);
@@ -133,17 +134,13 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
     @Override
     public void onStart() {
         super.onStart();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-
         if (context.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(location -> {
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
-                            Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
-                            databaseReference.setValue("Hello, world!");
-
+                           // Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
 
                         }
                     });
