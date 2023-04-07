@@ -25,6 +25,7 @@
     <string name="wait">Wait!</string>
     <string name="warning_txt">You will not earn your %1$d feathers if you give up now. In addition, you will lose %2$d feathers as punishment. Take a deep breadth, hold on for a little while!</string>
     <string name="keep_going">Want to keep going?</string>
+    <string name="welcome">Welcome to\nEarlyJay</string>
     <string-array name="type_array">
         <item>Work</item>
         <item>Class</item>

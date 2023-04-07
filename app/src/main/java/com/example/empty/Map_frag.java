@@ -1,8 +1,15 @@
 package com.example.empty;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +31,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.security.PrivateKey;
 
@@ -37,9 +49,14 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
     private FragmentMapBinding binding;
     private MapView mMapView;
     private GoogleMap mMap;
+
+    private SharedPreferences sharedPreferences;
+
+    private Context context;
     private FusedLocationProviderClient mLocationProviderClient;
     private MainActivity main;
     private FloatingActionButton start;
+
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final LatLngBounds JHU_BOUNDS = new LatLngBounds(
@@ -51,6 +68,9 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
         binding = FragmentMapBinding.inflate(inflater, container, false);
         main = (MainActivity) getActivity();
         main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+        context = main.getApplicationContext();
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
 
         // ADDED THIS LINE TO AVOID USING THE ChatViewModel class
@@ -102,7 +122,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
         // Important: call onLowMemory() on the MapView
         mMapView.onLowMemory();
     }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -132,6 +151,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
 
                         }
+
                     });
             // Apply the custom map style
             mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.style_json));
