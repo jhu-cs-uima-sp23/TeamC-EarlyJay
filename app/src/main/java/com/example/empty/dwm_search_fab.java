@@ -45,7 +45,7 @@ public class dwm_search_fab extends Fragment {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
 
-        binding.settingButton.setOnClickListener(view1 -> {
+        binding.settingButton.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(mainActivity, binding.settingButton);
             popup.getMenuInflater().inflate(R.menu.setting_map_frag_menu, popup.getMenu());
             int last_selected = sharedPreferences.getInt("last_selected", -1);
@@ -85,8 +85,11 @@ public class dwm_search_fab extends Fragment {
 
             popup.show();
         });
-        binding.floatingActionButton.setOnClickListener(e-> {
+        binding.floatingActionButton.setOnClickListener(view1 -> {
             mainActivity.replaceFragment(R.id.stuff_on_map, new popup_start());
+        });
+        binding.searchButton.setOnClickListener(v -> {
+            Toast.makeText(context, "YOOOO STOP CLICKING ME", Toast.LENGTH_LONG).show();
         });
     }
 }

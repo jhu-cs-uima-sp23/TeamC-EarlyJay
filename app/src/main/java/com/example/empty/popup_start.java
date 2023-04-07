@@ -8,6 +8,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -46,7 +48,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
     private Spinner mSpinner;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
-
+    private Map_child_viewModel shared_data;
     private float featherCount;
 
     @Override
@@ -54,6 +56,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
                              Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
         binding = FragmentPopupStartBinding.inflate(inflater, container, false);
+        shared_data = new ViewModelProvider(requireActivity()).get(Map_child_viewModel.class);
         return binding.getRoot();
     }
 
@@ -62,7 +65,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         main = (MainActivity) getActivity();
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
 
@@ -77,15 +79,17 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
 
         binding.saveButton.setOnClickListener(v -> {
+            int numSeconds = factorProgress * 5 * 60;
             if (factorProgress == 0) {
                 Toast.makeText(context,
-                        "Time inverval needs to be a positive number!", Toast.LENGTH_LONG).show();
-                return;
+                        "Time interval needs to be greater than 0!", Toast.LENGTH_LONG).show();
+                numSeconds = 1;
+//                return;
             }
             SpinnerItem selectedItem = (SpinnerItem) binding.spinner.getSelectedItem();
             String category = selectedItem.getText();
             edit.putString("category", category);
-            edit.putInt("numSeconds", factorProgress * 5 * 60);
+            edit.putInt("numSeconds", numSeconds);
             edit.putFloat("featherCount", featherCount);
             edit.putString("latitude", String.valueOf(latitude));
             edit.putString("longitude", String.valueOf(longitude));
@@ -95,6 +99,9 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
         binding.button.setOnClickListener(v -> {
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+            shared_data.getData().observe(getViewLifecycleOwner(), data -> {
+                //TODO: you can add stuff here to get data
+            });
         });
 
         progressCircular.setOnSeekBarChangeListener(this);
