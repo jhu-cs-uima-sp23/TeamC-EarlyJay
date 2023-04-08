@@ -20,6 +20,7 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -39,10 +40,15 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.security.PrivateKey;
+import java.util.Date;
 
 public class Map_frag extends Fragment implements OnMapReadyCallback {
 
@@ -53,9 +59,12 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
     private SharedPreferences sharedPreferences;
 
     private Context context;
+    private String uid;
     private FusedLocationProviderClient mLocationProviderClient;
     private MainActivity main;
     private FloatingActionButton start;
+
+    private DatabaseReference reference;
 
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -71,7 +80,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
         context = main.getApplicationContext();
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-
+        uid = sharedPreferences.getString("uid", "");
+        reference = FirebaseDatabase.getInstance().getReference();
 
         // ADDED THIS LINE TO AVOID USING THE ChatViewModel class
         binding.mapView.onCreate(savedInstanceState);
@@ -88,6 +98,42 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
 
         return binding.getRoot();
     }
+
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        DateStr now = new DateStr();
+        int dayOfTheWeek = now.getDayOfTheWeek();
+        String startOfWeek = now.getStartOfWeek();
+        String nowString = now.getDateStr();
+
+        Query query = reference.child("users").child(uid).orderByChild("dateStr");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Handle snapshot data
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
+            }
+        });
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void onDestroyView() {

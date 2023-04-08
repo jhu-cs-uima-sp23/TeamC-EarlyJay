@@ -18,6 +18,7 @@ import com.example.empty.databinding.FragmentCompleteBinding;
 import com.example.empty.databinding.FragmentCountDownBinding;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -59,8 +60,8 @@ public class CompleteFragment extends Fragment {
         String datestr = dateStrObj.getDateStr();
 
         rootNode = FirebaseDatabase.getInstance();
-        reference = rootNode.getReference().child("users").child(uid).child(datestr);
-        reference.push().setValue(new LocationStruct(longitude, latitude, true, category));
+        reference = rootNode.getReference().child("users").child(uid);
+        reference.push().setValue(new LocationStruct(longitude, latitude, true, category, new DateStr().getDateStr()));
 
 
         Float featherCount = sharedPreferences.getFloat("featherCount", 0);
@@ -75,6 +76,5 @@ public class CompleteFragment extends Fragment {
 
 
     }
-
 
 }

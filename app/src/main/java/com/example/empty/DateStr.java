@@ -79,6 +79,29 @@ public class DateStr {
         return daysInAMonth[1] + 1;
     }
 
+    public String getStartOfWeek() {
+        int startYear = 0;
+        int startMonth = 0;
+        int startDay = 0;
+        int startDayOfTheWeek = 1;
+        if (day >= dayOfTheWeek) {
+            startDay = day - dayOfTheWeek + 1;
+            startMonth = month;
+            startYear = year;
+        } else if (month != 1) {
+            startDay = getMonthDays(year, month - 1) + day - dayOfTheWeek + 1;
+            startMonth = month - 1;
+            startYear = year;
+        } else {
+            startDay = getMonthDays(year - 1, 12) + day - dayOfTheWeek + 1;
+            startMonth = 12;
+            startYear = year - 1;
+        }
+        String startMonthStr = (startMonth < 10) ? "0" + startMonth : Integer.toString(startMonth);
+        String startDayStr = (startDay < 10) ? "0" + startDay : Integer.toString(startDay);
+        return startYear + "-" + startMonthStr + "-" + startDayStr + "-" + startDayOfTheWeek;
+    }
+
     public int comp(DateStr other) {
         int largerMonth = (month > other.getMonth()) ? 1 : -1;
         int largerYear = (year > other.getYear()) ? 1 : -1;
