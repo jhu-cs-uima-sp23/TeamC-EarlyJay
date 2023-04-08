@@ -27,7 +27,7 @@ public class DateStr {
         year = Integer.parseInt(dateInfo[0]);
         month = Integer.parseInt(dateInfo[1]);
         day = Integer.parseInt(dateInfo[2]);
-        dayOfTheWeek = Calendar.DAY_OF_WEEK;
+        dayOfTheWeek = calendar.get(Calendar.DAY_OF_WEEK);
         dateStr += "-" + dayOfTheWeek;
 
     }
