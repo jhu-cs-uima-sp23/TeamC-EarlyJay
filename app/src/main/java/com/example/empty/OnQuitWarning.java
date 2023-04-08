@@ -44,7 +44,7 @@ public class OnQuitWarning extends Fragment {
         main = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         int reward_amount = sharedPreferences.getInt("reward_amount", 0);
-        String formatted = getString(R.string.warning_txt, reward_amount, reward_amount);
+        String formatted = getString(R.string.warning_txt);
         binding.warningTxt.setText(formatted);
         binding.yes.setOnClickListener(v -> {
             main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
