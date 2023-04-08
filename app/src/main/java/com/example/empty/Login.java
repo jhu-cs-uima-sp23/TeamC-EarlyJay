@@ -10,8 +10,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.widget.Button;
 
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -43,12 +45,16 @@ public class Login extends AppCompatActivity {
         String uid = sharedPreferences.getString("uid", "");
         if (uid.equals("")) {
             uid = createTransactionID();
-
             edit.putString("uid", uid);
             edit.apply();
             LogInHelper loginHelper = new LogInHelper(uid);
             reference.child(uid).setValue(loginHelper);
         }
+
+        reference = reference.child(uid);
+
+
+
 
 
 
