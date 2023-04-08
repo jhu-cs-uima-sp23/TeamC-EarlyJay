@@ -17,18 +17,22 @@ public class LocationStruct {
 
     private String type;
 
+    private String dateStr;
+
     public LocationStruct() {
         latitude = 0;
         longitude = 0;
         complete = false;
         type = "work";
+        dateStr = new DateStr().getDateStr();
     }
 
-    public LocationStruct(float latitude, float longitude, boolean complete, String type) {
+    public LocationStruct(float latitude, float longitude, boolean complete, String type, String dateStr) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.complete = complete;
         this.type = type;
+        this.dateStr = dateStr;
     }
 
     public double getLatitude() {
@@ -54,6 +58,10 @@ public class LocationStruct {
     public String getType() { return type; }
 
     public void setType(String type) { this.type = type; }
+
+    public String getDateStr() { return dateStr; }
+
+    public void setDateStr(String dateStr) { this.dateStr = dateStr; }
 
 
 }
