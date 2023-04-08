@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +49,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.security.PrivateKey;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class Map_frag extends Fragment implements OnMapReadyCallback {
@@ -65,6 +68,10 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
     private FloatingActionButton start;
 
     private DatabaseReference reference;
+
+    private ArrayList<LocationStruct> locStructListByDay;
+    private ArrayList<LocationStruct> locStructListByWeek;
+    private ArrayList<LocationStruct> locStructListByMonth;
 
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -109,11 +116,38 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
         String startOfWeek = now.getStartOfWeek();
         String nowString = now.getDateStr();
 
-        Query query = reference.child("users").child(uid).orderByChild("dateStr");
+        Query query = reference.child("users").child(uid).
+                orderByChild("dateStr");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // Handle snapshot data
+                locStructListByDay = new ArrayList<>();
+                locStructListByWeek = new ArrayList<>();
+                locStructListByMonth = new ArrayList<>();
+                // Get user value
+                LocationStruct locStruct = snapshot.getValue(LocationStruct.class);
+                if (locStruct == null) {
+                    // client is null, error out
+                    Log.e("DBREF:", "Data is unexpectedly null");
+                } else {
+                    DateStr now = new DateStr();
+                    String dataDateStr = locStruct.getDateStr();
+                    if (now.isDaily(dataDateStr)) {
+                        locStructListByDay.add(locStruct);
+                    }
+                    if (now.isWeekly(dataDateStr)) {
+                        locStructListByWeek.add(locStruct);
+                    }
+                    if (now.isMonthly(dataDateStr)) {
+                        locStructListByMonth.add(locStruct);
+                    }
+                }
+            System.out.println("daily array: ");
+            System.out.println(Arrays.toString(locStructListByDay.toArray()));
+            System.out.println("weekly array: ");
+            System.out.println(Arrays.toString(locStructListByWeek.toArray()));
+            System.out.println("monthly array: ");
+            System.out.println(Arrays.toString(locStructListByMonth.toArray()));
             }
 
             @Override
