@@ -60,8 +60,8 @@ public class OnQuitWarning extends Fragment {
             DateStr dateStrObj = new DateStr();
             String datestr = dateStrObj.getDateStr();
             rootNode = FirebaseDatabase.getInstance();
-            reference = rootNode.getReference().child("users").child(uid).child(datestr);
-            reference.push().setValue(new LocationStruct(longitude, latitude, false, category));
+            reference = rootNode.getReference().child("users").child(uid);
+            reference.push().setValue(new LocationStruct(longitude, latitude, false, category, new DateStr().getDateStr()));
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
 
