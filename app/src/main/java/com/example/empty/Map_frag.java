@@ -161,4 +161,11 @@ public class Map_frag extends Fragment implements OnMapReadyCallback {
                     Toast.LENGTH_SHORT).show();
         }
     }
+
+    /*
+    private LocationStruct[] getCurrentLocInfo() {
+        DateStr dateNow = new DateStr();
+
+    }
+*/
 }

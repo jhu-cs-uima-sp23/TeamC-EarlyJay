@@ -57,19 +57,13 @@ public class OnQuitWarning extends Fragment {
             float latitude = sharedPreferences.getFloat("latitude", 0);
             String uid = sharedPreferences.getString("uid", "");
             String category = sharedPreferences.getString("category", "");
-            String datestr = getDatestr();
+            DateStr dateStrObj = new DateStr();
+            String datestr = dateStrObj.getDateStr();
             rootNode = FirebaseDatabase.getInstance();
             reference = rootNode.getReference().child("users").child(uid).child(datestr);
             reference.push().setValue(new LocationStruct(longitude, latitude, false, category));
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
 
-    }
-    public String getDatestr() {
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        String datestr = dt.format(date);
-        return datestr;
     }
 }
