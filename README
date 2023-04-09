@@ -26,3 +26,15 @@ Instructions:
 * Additionally, our app requires users to authorize the Location function inside the emulator settings before using its map function. If you open the app without authorizing the Location function, you won’t see your current location on the map, although the app won't crash."
 
 
+* When the user first clicked into the app, they will be assigned a random user id at the welcome page and the id will be where their task information will be stored on the database. Before then, the user would not have any default data, so their map will remain blank until they actually complete / fail a task.
+
+* To work on a task, user can click on the "+" button at the buttom of the map page. After choosing the time using the progress bar, the user can then start a task and see the countdown timer.
+
+* By clicking on the cancel button at the bottom, the user can attempt to cancel the current task. This will bring the user to the Quit Warning page, where the user can either choose to go back and resume the countdown or quit and have a failed record.
+
+* After the timer is completed, the user will see a pop up window celebrating their completion and will then be brought back to the map page.
+
+* A completion or a failure would be recorded on firebase and reflected on the map. Note that since the emulator location is manually set, one potential problem may be all the markers are stacked together. To see dots at different positions, user can manually add records on our firebase realtime database using the link below:
+
+
+
