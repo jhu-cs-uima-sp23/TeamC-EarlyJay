@@ -304,6 +304,12 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                     Toast.LENGTH_SHORT).show();
         }
     }
+    public void draw(int workType, LatLng latLng){
+        GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions()
+                .image(BitmapDescriptorFactory.fromResource(workType))
+                .position(latLng, 20f, 20f);
+        mMap.addGroundOverlay(groundOverlayOptions);
+    }
     public void markMap(int workType){
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
@@ -311,10 +317,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
             fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
                 LatLng currentLocation = new LatLng(location.getLatitude(),
                         location.getLongitude());
-                GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions()
-                        .image(BitmapDescriptorFactory.fromResource(workType))
-                        .position(currentLocation, 20f, 20f);
-                mMap.addGroundOverlay(groundOverlayOptions);
+                draw(workType, currentLocation);
             });
         }
     }
