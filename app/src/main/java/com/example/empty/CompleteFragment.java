@@ -7,15 +7,23 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.DialogFragmentNavigatorDestinationBuilder;
 
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.empty.databinding.FragmentCompleteBinding;
 import com.example.empty.databinding.FragmentCountDownBinding;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -50,6 +58,7 @@ public class CompleteFragment extends Fragment {
         mainActivity = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
+        float featherCount = sharedPreferences.getFloat("featherCount", 0);
 
 
         float longitude = sharedPreferences.getFloat("longitude", 0);
@@ -63,10 +72,8 @@ public class CompleteFragment extends Fragment {
         reference = rootNode.getReference().child("users").child(uid);
         reference.push().setValue(new LocationStruct(longitude, latitude, true, category, new DateStr().getDateStr()));
 
-
-        Float featherCount = sharedPreferences.getFloat("featherCount", 0);
         binding.rewardCount.setText("You have received " + featherCount);
-
+        edit.putInt("complete_success", 1);
         edit.putFloat("featherCount", 0);
         edit.apply();
 
@@ -76,5 +83,6 @@ public class CompleteFragment extends Fragment {
 
 
     }
+
 
 }

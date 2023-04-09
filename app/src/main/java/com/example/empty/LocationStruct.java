@@ -2,6 +2,8 @@ package com.example.empty;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Calendar;
@@ -35,7 +37,7 @@ public class LocationStruct {
         this.dateStr = dateStr;
     }
 
-    public double getLatitude() {
+    public float getLatitude() {
         return latitude;
     }
 
@@ -43,7 +45,7 @@ public class LocationStruct {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public float getLongitude() {
         return longitude;
     }
 
@@ -62,6 +64,14 @@ public class LocationStruct {
     public String getDateStr() { return dateStr; }
 
     public void setDateStr(String dateStr) { this.dateStr = dateStr; }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return getComplete() + " " + getLatitude() + " " +
+                getLongitude() + " " + getType() + " " +
+                getDateStr() + " ";
+    }
 
 
 }

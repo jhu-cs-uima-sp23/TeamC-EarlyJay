@@ -131,7 +131,7 @@ public class DateStr {
         int difference = comp(new DateStr(dateStr));
 
         return (difference < 0 && difference * -1 < 8 - dayOfTheWeek) ||
-                (difference > 0 && difference < dayOfTheWeek);
+                (difference > 0 && difference < dayOfTheWeek || difference == 0);
     }
 
     public boolean isMonthly(String dateStr) {
