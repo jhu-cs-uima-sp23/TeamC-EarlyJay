@@ -1,3 +1,17 @@
+Features Completed:
+
+* The system displays the user's current location on the map.
+* Users can add activities by tapping the FAB button, which opens a pop-up screen with a task type spinner and a circular progress drag bar to set up time.
+* After starting a task, a countdown screen appears to help users stay on track.
+* A congratulation page will pop up if users finish the task. 
+* A warning screen will pop up if user want to stop it before completion. User will have the option to return the task or cancel it. 
+* Tasks are stored in the database with information on the task type, location, and time it was created.
+* Completed tasks are marked on the map for easy reference.
+* Users can switch between day, week, or month view to see their tasks in different time frames.
+
+
+Instructions:
+
 *We have applied the Google Maps API in our app, which is a restricted service. To enable this feature on any new emulator before testing, we need to add your SHA1 fingerprint on our Google Cloud Platform. To obtain your SHA1 fingerprint, please follow these steps:
 
 1.	Click on AndroidStudio->Preference/Settings->Experimental.
@@ -11,3 +25,19 @@
 2.	Go to Location->input the name of any building in our Homewood campus->select the “Set Location” button at the lower right corner.
 
 * Additionally, our app requires users to authorize the Location function inside the emulator settings before using its map function. If you open the app without authorizing the Location function, you won’t see your current location on the map, although the app won't crash."
+
+
+* When the user first clicked into the app, they will be assigned a random user id at the welcome page and the id will be where their task information will be stored on the database. Before then, the user would not have any default data, so their map will remain blank until they actually complete / fail a task.
+
+* To work on a task, user can click on the "+" button at the buttom of the map page. After choosing the time using the progress bar, the user can then start a task and see the countdown timer.
+
+* By clicking on the cancel button at the bottom, the user can attempt to cancel the current task. This will bring the user to the Quit Warning page, where the user can either choose to go back and resume the countdown or quit and have a failed record.
+
+* After the timer is completed, the user will see a pop up window celebrating their completion and will then be brought back to the map page.
+
+* A completion or a failure would be recorded on firebase and reflected on the map. Note that since the emulator location is manually set, one potential problem may be all the markers are stacked together. To see dots at different positions, user can manually add records on our firebase realtime database using the link below:
+
+https://console.firebase.google.com/project/earlyjay-b4f20/database/earlyjay-b4f20-default-rtdb/data
+
+* However, upon the first entry, the user might need to share their email / gmail account with our team members so that we can share the firebase site.
+
