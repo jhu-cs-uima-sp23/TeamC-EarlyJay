@@ -89,7 +89,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
             SpinnerItem selectedItem = (SpinnerItem) binding.spinner.getSelectedItem();
             String[] categories = selectedItem.getText().split(" ");
             String category = categories[categories.length - 1];
-//            String category = selectedItem.getText();
             edit.putString("category", category);
 //            category icon
             edit.putInt("workType", selectedItem.getImageResId());
@@ -119,13 +118,14 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 //        mSpinner.setAdapter(adapter);
 
         List<SpinnerItem> spinnerItems = new ArrayList<>();
-        spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, "         Work"));
-        spinnerItems.add(new SpinnerItem(R.drawable.yellows, "         Class"));
-        spinnerItems.add(new SpinnerItem(R.drawable.triangle_48, "         Team"));
-        spinnerItems.add(new SpinnerItem(R.drawable.star_2_xxl, "         Sports"));
+        spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, "Work"));
+        spinnerItems.add(new SpinnerItem(R.drawable.yellows, "Class"));
+        spinnerItems.add(new SpinnerItem(R.drawable.triangle_48, "Team"));
+        spinnerItems.add(new SpinnerItem(R.drawable.star_2_xxl, "Sports"));
 
         CustomSpinnerAdapter adapter = new CustomSpinnerAdapter(getContext(), spinnerItems);
         mSpinner.setAdapter(adapter);
+
 
 
     }
