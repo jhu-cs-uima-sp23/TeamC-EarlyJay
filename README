@@ -37,5 +37,7 @@ Instructions:
 
 * A completion or a failure would be recorded on firebase and reflected on the map. Note that since the emulator location is manually set, one potential problem may be all the markers are stacked together. To see dots at different positions, user can manually add records on our firebase realtime database using the link below:
 
+https://console.firebase.google.com/project/earlyjay-b4f20/database/earlyjay-b4f20-default-rtdb/data
 
+However, upon the first entry, the user might need to share their email / gmail account with our team members so that we can share the firebase site.
 
