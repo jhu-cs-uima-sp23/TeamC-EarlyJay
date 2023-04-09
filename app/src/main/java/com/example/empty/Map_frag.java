@@ -145,7 +145,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                 String dwm_view_name = getResources().getResourceName(R.id.dwm_view);
                 if (task_completed == 1 && viewName.equals(dwm_view_name)){
                     Log.d("TAG", "onLayoutChange: BINGO");
-                    markMap();
+                    markMap(sharedPreferences.getInt("workType", R.drawable.triangle_48));
                     editor.putInt("complete_success", 0);
                     editor.apply();
                 }else if(task_completed == 2 && viewName.equals(dwm_view_name)){
@@ -301,7 +301,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                     Toast.LENGTH_SHORT).show();
         }
     }
-    public void markMap(){
+    public void markMap(int workType){
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
@@ -309,7 +309,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                 LatLng currentLocation = new LatLng(location.getLatitude(),
                         location.getLongitude());
                 GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions()
-                        .image(BitmapDescriptorFactory.fromResource(R.drawable.star_2_xxl))
+                        .image(BitmapDescriptorFactory.fromResource(workType))
                         .position(currentLocation, 20f, 20f);
                 mMap.addGroundOverlay(groundOverlayOptions);
             });
