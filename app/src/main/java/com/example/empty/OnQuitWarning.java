@@ -65,6 +65,7 @@ public class OnQuitWarning extends Fragment {
             reference = rootNode.getReference().child("users").child(uid);
             reference.push().setValue(new LocationStruct(longitude, latitude, false, category, new DateStr().getDateStr()));
             editor.putInt("complete_success", 2);
+            editor.apply();
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
 

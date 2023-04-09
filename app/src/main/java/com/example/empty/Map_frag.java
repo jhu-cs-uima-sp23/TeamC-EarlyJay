@@ -149,7 +149,10 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                     editor.putInt("complete_success", 0);
                     editor.apply();
                 }else if(task_completed == 2 && viewName.equals(dwm_view_name)){
-                    Log.d("TAG", "onLayoutChange: pork guy you failed");
+                    markMap(R.drawable.skull);
+                    editor.putInt("complete_success", 0);
+                    editor.apply();
+                    Log.d("TAG", "task not completed");
                 }else{
                     Log.d("TAG", "onLayoutChange: bruh nothing changed" + getResources().getResourceName(contentId));
                 }
