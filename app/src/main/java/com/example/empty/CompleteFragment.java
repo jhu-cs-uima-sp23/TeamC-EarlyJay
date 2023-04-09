@@ -65,6 +65,7 @@ public class CompleteFragment extends Fragment {
         float latitude = sharedPreferences.getFloat("latitude", 0);
         String uid = sharedPreferences.getString("uid", "");
         String category = sharedPreferences.getString("category", "");
+        category = category.trim().replaceAll("\\s+", "");
         DateStr dateStrObj = new DateStr();
         String datestr = dateStrObj.getDateStr();
 

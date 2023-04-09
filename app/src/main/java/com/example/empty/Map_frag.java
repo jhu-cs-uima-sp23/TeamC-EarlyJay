@@ -130,7 +130,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
 
             // move the camera to the location
            // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
-           Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
+
+            Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
         }
 
         binding.stuffOnMap.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
