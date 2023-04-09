@@ -24,11 +24,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Dictionary;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import me.tankery.lib.circularseekbar.CircularSeekBar;
 
@@ -46,7 +42,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
     private MainActivity main;
 
     private FusedLocationProviderClient fusedLocationClient;
-
 
     private double latitude;
     private double longitude;
@@ -94,6 +89,8 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
             SpinnerItem selectedItem = (SpinnerItem) binding.spinner.getSelectedItem();
             String category = selectedItem.getText();
             edit.putString("category", category);
+//            category icon
+            edit.putInt("workType", selectedItem.getImageResId());
             edit.putInt("numSeconds", numSeconds);
             edit.putFloat("featherCount", featherCount);
             edit.putFloat("latitude", (float) latitude);
