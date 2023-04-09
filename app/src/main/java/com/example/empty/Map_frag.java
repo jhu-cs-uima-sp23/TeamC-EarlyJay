@@ -56,6 +56,7 @@ import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class Map_frag extends Fragment implements OnMapReadyCallback{
 
@@ -94,6 +95,10 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         main = (MainActivity) getActivity();
         main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         context = main.getApplicationContext();
+
+        locStructListByDay = new ArrayList<>();
+        locStructListByWeek = new ArrayList<>();
+        locStructListByMonth = new ArrayList<>();
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         uid = sharedPreferences.getString("uid", "");
@@ -134,15 +139,110 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         }
 
         binding.stuffOnMap.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+
             @Override
             public void onLayoutChange(View view, int left, int top, int right, int bottom,
                                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 View content = binding.stuffOnMap.getChildAt(0);
                 int contentId = content.getId();
 //                0 - no action; 1 - success; 2 - failed
+
+                DateStr now = new DateStr();
+
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        locStructListByDay = new ArrayList<>();
+                        locStructListByWeek = new ArrayList<>();
+                        locStructListByMonth = new ArrayList<>();
+
+                        for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                            try {
+                                LocationStruct locStruct = childSnapshot.getValue(LocationStruct.class);
+                                if (locStruct == null) {
+                                    // client is null, error out
+                                    Log.e("DBREF:", "Data is unexpectedly null");
+                                } else {
+                                    DateStr now = new DateStr();
+                                    String dataDateStr = locStruct.getDateStr();
+                                    if (now.isDaily(dataDateStr)) {
+                                        locStructListByDay.add(locStruct);
+                                    }
+                                    if (now.isWeekly(dataDateStr)) {
+                                        locStructListByWeek.add(locStruct);
+                                    }
+                                    if (now.isMonthly(dataDateStr)) {
+                                        locStructListByMonth.add(locStruct);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                continue;
+                            }
+                        }
+
+                        System.out.println("daily array: ");
+                        System.out.println(Arrays.toString(locStructListByDay.toArray()));
+                        System.out.println("weekly array: ");
+                        System.out.println(Arrays.toString(locStructListByWeek.toArray()));
+                        System.out.println("monthly array: ");
+                        System.out.println(Arrays.toString(locStructListByMonth.toArray()));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        // Handle error
+                    }
+                });
+
                 int task_completed = sharedPreferences.getInt("complete_success", 0);
                 String viewName = getResources().getResourceName(contentId);
                 String dwm_view_name = getResources().getResourceName(R.id.dwm_view);
+                int selected = sharedPreferences.getInt("last_selected", 0);
+                switch(selected) {
+                    case 1:
+                        for (LocationStruct locStr : locStructListByWeek) {
+                            int drawable = getResID(locStr.getType());
+                            float latitude = locStr.getLatitude();
+                            float longitude = locStr.getLongitude();
+                            boolean complete = locStr.getComplete();
+                            if (complete) {
+                                markMapPast(drawable,latitude,longitude);
+                            } else {
+                                markMapPast(R.drawable.skull,latitude,longitude);
+                            }
+
+                        }
+                        break;
+                    case 2:
+                        for (LocationStruct locStr : locStructListByMonth) {
+                            int drawable = getResID(locStr.getType());
+                            float latitude = locStr.getLatitude();
+                            float longitude = locStr.getLongitude();
+                            boolean complete = locStr.getComplete();
+                            if (complete) {
+                                markMapPast(drawable,latitude,longitude);
+                            } else {
+                                markMapPast(R.drawable.skull,latitude,longitude);
+                            }
+
+                        }
+                        break;
+                    default:
+                        for (LocationStruct locStr : locStructListByDay) {
+                            int drawable = getResID(locStr.getType());
+                            float latitude = locStr.getLatitude();
+                            float longitude = locStr.getLongitude();
+                            boolean complete = locStr.getComplete();
+                            if (complete) {
+                                markMapPast(drawable,latitude,longitude);
+                            } else {
+                                markMapPast(R.drawable.skull,latitude,longitude);
+                            }
+
+                        }
+                        break;
+                }
+                /*
                 if (task_completed == 1 && viewName.equals(dwm_view_name)){
                     Log.d("TAG", "onLayoutChange: BINGO");
                     markMap(sharedPreferences.getInt("workType", R.drawable.triangle_48));
@@ -158,8 +258,11 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                 }
                 Log.d("TAG", "onLayoutChange: bruh nothing changed" + viewName.equals(dwm_view_name));
                 Log.d("TAG", "onLayoutChange: bruh nothing changed" + (task_completed));
+                 */
             }
+
         });
+
         return binding.getRoot();
     }
 
@@ -168,55 +271,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        DateStr now = new DateStr();
-        int dayOfTheWeek = now.getDayOfTheWeek();
-        String startOfWeek = now.getStartOfWeek();
-        String nowString = now.getDateStr();
-
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                locStructListByDay = new ArrayList<>();
-                locStructListByWeek = new ArrayList<>();
-                locStructListByMonth = new ArrayList<>();
-
-                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                    try {
-                        LocationStruct locStruct = childSnapshot.getValue(LocationStruct.class);
-                        if (locStruct == null) {
-                            // client is null, error out
-                            Log.e("DBREF:", "Data is unexpectedly null");
-                        } else {
-                            DateStr now = new DateStr();
-                            String dataDateStr = locStruct.getDateStr();
-                            if (now.isDaily(dataDateStr)) {
-                                locStructListByDay.add(locStruct);
-                            }
-                            if (now.isWeekly(dataDateStr)) {
-                                locStructListByWeek.add(locStruct);
-                            }
-                            if (now.isMonthly(dataDateStr)) {
-                                locStructListByMonth.add(locStruct);
-                            }
-                        }
-                    } catch (Exception e) {
-                        continue;
-                    }
-                }
-
-            System.out.println("daily array: ");
-            System.out.println(Arrays.toString(locStructListByDay.toArray()));
-            System.out.println("weekly array: ");
-            System.out.println(Arrays.toString(locStructListByWeek.toArray()));
-            System.out.println("monthly array: ");
-            System.out.println(Arrays.toString(locStructListByMonth.toArray()));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle error
-            }
-        });
 
     }
 
@@ -319,6 +373,33 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                         location.getLongitude());
                 draw(workType, currentLocation);
             });
+        }
+    }
+
+    public void markMapPast(int workType, float latitude, float longitude){
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+            fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
+                LatLng currentLocation = new LatLng(latitude,
+                        longitude);
+                draw(workType, currentLocation);
+            });
+        }
+    }
+
+    private int getResID(String type) {
+        String[] types = type.split(" ");
+        type = types[types.length - 1];
+
+        if (type.equals("Work")) {
+            return R.drawable.circle_dashed_6_xxl;
+        } else if (type.equals("Class")) {
+            return R.drawable.yellows;
+        } else if (type.equals("Team")) {
+            return R.drawable.triangle_48;
+        } else {
+            return R.drawable.star_2_xxl;
         }
     }
 

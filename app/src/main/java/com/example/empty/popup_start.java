@@ -87,7 +87,8 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 //                return;
             }
             SpinnerItem selectedItem = (SpinnerItem) binding.spinner.getSelectedItem();
-            String category = selectedItem.getText();
+            String[] categories = selectedItem.getText().split(" ");
+            String category = categories[categories.length - 1];
             edit.putString("category", category);
 //            category icon
             edit.putInt("workType", selectedItem.getImageResId());
