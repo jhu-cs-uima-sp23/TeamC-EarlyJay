@@ -15,11 +15,21 @@ import android.view.ViewGroup;
 
 import com.example.empty.databinding.FragmentOnQuitWarningBinding;
 import com.example.empty.databinding.FragmentPopupStartBinding;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class OnQuitWarning extends Fragment {
     private FragmentOnQuitWarningBinding binding;
     private MainActivity main;
     private Context context;
+
+    private FirebaseDatabase rootNode;
+    private DatabaseReference reference;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -43,6 +53,17 @@ public class OnQuitWarning extends Fragment {
         });
 
         binding.no.setOnClickListener(v -> {
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+            float longitude = sharedPreferences.getFloat("longitude", 0);
+            float latitude = sharedPreferences.getFloat("latitude", 0);
+            String uid = sharedPreferences.getString("uid", "");
+            String category = sharedPreferences.getString("category", "");
+            DateStr dateStrObj = new DateStr();
+            String datestr = dateStrObj.getDateStr();
+            rootNode = FirebaseDatabase.getInstance();
+            reference = rootNode.getReference().child("users").child(uid);
+            reference.push().setValue(new LocationStruct(longitude, latitude, false, category, new DateStr().getDateStr()));
             editor.putInt("complete_success", 2);
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
