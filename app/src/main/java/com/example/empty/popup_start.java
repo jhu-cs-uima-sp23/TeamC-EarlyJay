@@ -91,8 +91,8 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
             edit.putString("category", category);
             edit.putInt("numSeconds", numSeconds);
             edit.putFloat("featherCount", featherCount);
-            edit.putString("latitude", String.valueOf(latitude));
-            edit.putString("longitude", String.valueOf(longitude));
+            edit.putFloat("latitude", (float) latitude);
+            edit.putFloat("longitude", (float) longitude);
             edit.apply();
             main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
         });

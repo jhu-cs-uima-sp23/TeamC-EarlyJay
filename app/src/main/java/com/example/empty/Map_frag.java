@@ -2,16 +2,28 @@ package com.example.empty;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -25,12 +37,25 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.security.PrivateKey;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 
 public class Map_frag extends Fragment implements OnMapReadyCallback{
 
@@ -40,11 +65,22 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
 
     private double latitude;
     private double longitude;
+
+    private SharedPreferences sharedPreferences;
+
+    private Context context;
+    private String uid;
     private FusedLocationProviderClient mLocationProviderClient;
     private MainActivity main;
     private FloatingActionButton start;
-    private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+
+    private DatabaseReference reference;
+
+    private ArrayList<LocationStruct> locStructListByDay;
+    private ArrayList<LocationStruct> locStructListByWeek;
+    private ArrayList<LocationStruct> locStructListByMonth;
+
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private GroundOverlayOptions groundOverlayOptions;
@@ -57,7 +93,12 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         binding = FragmentMapBinding.inflate(inflater, container, false);
         main = (MainActivity) getActivity();
         main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+        context = main.getApplicationContext();
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        uid = sharedPreferences.getString("uid", "");
+        reference = FirebaseDatabase.getInstance().getReference().
+                child("users").child(uid);
 
         // ADDED THIS LINE TO AVOID USING THE ChatViewModel class
         binding.mapView.onCreate(savedInstanceState);
@@ -75,12 +116,12 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         editor = sharedPreferences.edit();
 
-        String latitudeString = sharedPreferences.getString("latitude", "0");
-        String longitudeString = sharedPreferences.getString("longitude", "0");
+        float latitude_tmp = sharedPreferences.getFloat("latitude", 0);
+        float longitude_tmp = sharedPreferences.getFloat("longitude", 0);
 
-        if (!latitudeString.equals("0") && !longitudeString.equals("0")) {
-            latitude = Double.parseDouble(latitudeString);
-            longitude = Double.parseDouble(longitudeString);
+        if (latitude_tmp!=0 && longitude_tmp!=0) {
+            latitude = latitude_tmp;
+            longitude = longitude_tmp;
            // LatLng location = new LatLng(latitude, longitude);
 
             // add marker to the map
@@ -118,6 +159,74 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         });
         return binding.getRoot();
     }
+
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        DateStr now = new DateStr();
+        int dayOfTheWeek = now.getDayOfTheWeek();
+        String startOfWeek = now.getStartOfWeek();
+        String nowString = now.getDateStr();
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                locStructListByDay = new ArrayList<>();
+                locStructListByWeek = new ArrayList<>();
+                locStructListByMonth = new ArrayList<>();
+
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    try {
+                        LocationStruct locStruct = childSnapshot.getValue(LocationStruct.class);
+                        if (locStruct == null) {
+                            // client is null, error out
+                            Log.e("DBREF:", "Data is unexpectedly null");
+                        } else {
+                            DateStr now = new DateStr();
+                            String dataDateStr = locStruct.getDateStr();
+                            if (now.isDaily(dataDateStr)) {
+                                locStructListByDay.add(locStruct);
+                            }
+                            if (now.isWeekly(dataDateStr)) {
+                                locStructListByWeek.add(locStruct);
+                            }
+                            if (now.isMonthly(dataDateStr)) {
+                                locStructListByMonth.add(locStruct);
+                            }
+                        }
+                    } catch (Exception e) {
+                        continue;
+                    }
+                }
+
+            System.out.println("daily array: ");
+            System.out.println(Arrays.toString(locStructListByDay.toArray()));
+            System.out.println("weekly array: ");
+            System.out.println(Arrays.toString(locStructListByWeek.toArray()));
+            System.out.println("monthly array: ");
+            System.out.println(Arrays.toString(locStructListByMonth.toArray()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
+            }
+        });
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void onDestroyView() {
@@ -182,6 +291,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
 
                         }
+
                     });
             // Apply the custom map style
             mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.style_json));
@@ -205,4 +315,11 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
             });
         }
     }
+
+    /*
+    private LocationStruct[] getCurrentLocInfo() {
+        DateStr dateNow = new DateStr();
+
+    }
+*/
 }
