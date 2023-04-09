@@ -1,9 +1,10 @@
 Features Completed:
 
 * The system displays the user's current location on the map.
-* Users can add activities by tapping the FAB button, which opens a screen with a task type spinner and a circular drag bar.
+* Users can add activities by tapping the FAB button, which opens a pop-up screen with a task type spinner and a circular progress drag bar to set up time.
 * After starting a task, a countdown screen appears to help users stay on track.
-* A congratulation/warning page will pop up if users finish the task or want to quit in the middle if it. 
+* A congratulation page will pop up if users finish the task. 
+* A warning screen will pop up if user want to stop it before completion. User will have the option to return the task or cancel it. 
 * Tasks are stored in the database with information on the task type, location, and time it was created.
 * Completed tasks are marked on the map for easy reference.
 * Users can switch between day, week, or month view to see their tasks in different time frames.
