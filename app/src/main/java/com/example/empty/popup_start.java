@@ -94,6 +94,8 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
             SpinnerItem selectedItem = (SpinnerItem) binding.spinner.getSelectedItem();
             String category = selectedItem.getText();
             edit.putString("category", category);
+//            category icon
+            edit.putInt("workType", selectedItem.getImageResId());
             edit.putInt("numSeconds", numSeconds);
             edit.putFloat("featherCount", featherCount);
             edit.putFloat("latitude", (float) latitude);
