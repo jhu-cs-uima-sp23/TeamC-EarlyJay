@@ -1,3 +1,16 @@
+Features Completed:
+
+* The system displays the user's current location on the map.
+* Users can add activities by tapping the FAB button, which opens a screen with a task type spinner and a circular drag bar.
+* After starting a task, a countdown screen appears to help users stay on track.
+* A congratulation/warning page will pop up if users finish the task or want to quit in the middle if it. 
+* Tasks are stored in the database with information on the task type, location, and time it was created.
+* Completed tasks are marked on the map for easy reference.
+* Users can switch between day, week, or month view to see their tasks in different time frames.
+
+
+Instructions:
+
 *We have applied the Google Maps API in our app, which is a restricted service. To enable this feature on any new emulator before testing, we need to add your SHA1 fingerprint on our Google Cloud Platform. To obtain your SHA1 fingerprint, please follow these steps:
 
 1.	Click on AndroidStudio->Preference/Settings->Experimental.
@@ -11,3 +24,5 @@
 2.	Go to Location->input the name of any building in our Homewood campus->select the “Set Location” button at the lower right corner.
 
 * Additionally, our app requires users to authorize the Location function inside the emulator settings before using its map function. If you open the app without authorizing the Location function, you won’t see your current location on the map, although the app won't crash."
+
+
