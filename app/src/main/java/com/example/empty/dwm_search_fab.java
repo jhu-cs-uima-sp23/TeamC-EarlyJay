@@ -80,6 +80,7 @@ public class dwm_search_fab extends Fragment {
                 }
                 edit.putInt("last_selected", selected);
                 edit.commit();
+                mainActivity.replaceFragment(R.id.frame_layout, new Map_frag());
                 return true;
             });
 

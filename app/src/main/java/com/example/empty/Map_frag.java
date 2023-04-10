@@ -194,6 +194,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                 int contentId = content.getId();
 //                0 - no action; 1 - success; 2 - failed
 
+                // mMap.clear();
+
                 DateStr now = new DateStr();
 
                 int task_completed = sharedPreferences.getInt("complete_success", 0);
@@ -240,7 +242,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                             } else {
                                 markMapPast(R.drawable.skull,latitude,longitude);
                             }
-
                         }
                         break;
                 }
