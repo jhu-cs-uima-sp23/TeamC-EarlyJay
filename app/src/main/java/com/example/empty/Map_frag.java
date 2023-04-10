@@ -78,9 +78,9 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
 
     private DatabaseReference reference;
 
-    private ArrayList<LocationStruct> locStructListByDay;
-    private ArrayList<LocationStruct> locStructListByWeek;
-    private ArrayList<LocationStruct> locStructListByMonth;
+    private ArrayList<LocationStruct> locStructListByDay = new ArrayList<>();
+    private ArrayList<LocationStruct> locStructListByWeek = new ArrayList<>();
+    private ArrayList<LocationStruct> locStructListByMonth = new ArrayList<>();
 
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -96,16 +96,11 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         context = main.getApplicationContext();
 
-        locStructListByDay = new ArrayList<>();
-        locStructListByWeek = new ArrayList<>();
-        locStructListByMonth = new ArrayList<>();
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         uid = sharedPreferences.getString("uid", "");
         reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
 
-        // ADDED THIS LINE TO AVOID USING THE ChatViewModel class
         binding.mapView.onCreate(savedInstanceState);
 
         // Get the MapView from the layout
@@ -124,6 +119,11 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         float latitude_tmp = sharedPreferences.getFloat("latitude", 0);
         float longitude_tmp = sharedPreferences.getFloat("longitude", 0);
 
+        int selected = sharedPreferences.getInt("last_selected", 0);
+
+
+
+
         if (latitude_tmp!=0 && longitude_tmp!=0) {
             latitude = latitude_tmp;
             longitude = longitude_tmp;
@@ -139,6 +139,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
             Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
         }
 
+
+
         binding.stuffOnMap.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
 
             @Override
@@ -149,6 +151,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
 //                0 - no action; 1 - success; 2 - failed
 
                 DateStr now = new DateStr();
+
 
                 reference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -187,20 +190,42 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                         System.out.println(Arrays.toString(locStructListByWeek.toArray()));
                         System.out.println("monthly array: ");
                         System.out.println(Arrays.toString(locStructListByMonth.toArray()));
+
+                        for (LocationStruct locStr : locStructListByWeek) {
+                            int drawable = getResID(locStr.getType());
+                            float latitude = locStr.getLatitude();
+                            float longitude = locStr.getLongitude();
+                            boolean complete = locStr.getComplete();
+                            if (complete) {
+                                markMapPast(drawable,latitude,longitude);
+                            } else {
+                                markMapPast(R.drawable.skull,latitude,longitude);
+                            }
+
+                        }
+
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                         // Handle error
                     }
+
+
                 });
+
+
+
 
                 int task_completed = sharedPreferences.getInt("complete_success", 0);
                 String viewName = getResources().getResourceName(contentId);
                 String dwm_view_name = getResources().getResourceName(R.id.dwm_view);
                 int selected = sharedPreferences.getInt("last_selected", 0);
+
                 switch(selected) {
                     case 1:
+                        System.out.println("Hello!!!!!");
+                        System.out.println(Arrays.toString(locStructListByWeek.toArray()));
                         for (LocationStruct locStr : locStructListByWeek) {
                             int drawable = getResID(locStr.getType());
                             float latitude = locStr.getLatitude();
@@ -243,7 +268,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                         }
                         break;
                 }
-                /*
+
+
                 if (task_completed == 1 && viewName.equals(dwm_view_name)){
                     Log.d("TAG", "onLayoutChange: BINGO");
                     markMap(sharedPreferences.getInt("workType", R.drawable.triangle_48));
@@ -259,7 +285,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                 }
                 Log.d("TAG", "onLayoutChange: bruh nothing changed" + viewName.equals(dwm_view_name));
                 Log.d("TAG", "onLayoutChange: bruh nothing changed" + (task_completed));
-                 */
+
             }
 
         });
@@ -382,14 +408,13 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
             fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
-                LatLng currentLocation = new LatLng(latitude,
-                        longitude);
+                LatLng currentLocation = new LatLng(latitude,longitude);
                 draw(workType, currentLocation);
             });
         }
     }
 
-    private int getResID(String type) {
+    public int getResID(String type) {
         String[] types = type.split(" ");
         type = types[types.length - 1];
 
