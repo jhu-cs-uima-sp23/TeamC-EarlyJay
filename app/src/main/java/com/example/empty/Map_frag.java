@@ -242,7 +242,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                         }
                         break;
                 }
-                /*
+
                 if (task_completed == 1 && viewName.equals(dwm_view_name)){
                     Log.d("TAG", "onLayoutChange: BINGO");
                     markMap(sharedPreferences.getInt("workType", R.drawable.triangle_48));
@@ -258,7 +258,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                 }
                 Log.d("TAG", "onLayoutChange: bruh nothing changed" + viewName.equals(dwm_view_name));
                 Log.d("TAG", "onLayoutChange: bruh nothing changed" + (task_completed));
-                 */
+
             }
 
         });
@@ -273,16 +273,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         super.onViewCreated(view, savedInstanceState);
 
     }
-
-
-
-
-
-
-
-
-
-
 
 
     @Override

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.empty.databinding.FragmentCountDownBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.example.empty.databinding.FragmentDwmSearchFabBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -91,15 +92,20 @@ public class CountDownFragment extends Fragment {
 
             public void onFinish() {
                 mainActivity.replaceFragment(R.id.stuff_on_map, new CompleteFragment());
+                showBottomNavigationView();
             }
 
         };
+
+        hideBottomNavigationView();
+        cTimer.start();
 
         binding.cancelButton.setOnClickListener(v -> {
             cancelTimer();
             edit.putInt("numSeconds", hour * 3600 + min * 60 + sec);
             edit.apply();
             mainActivity.replaceFragment(R.id.stuff_on_map, new OnQuitWarning());
+            showBottomNavigationView();
         });
 
         cTimer.start();
@@ -121,4 +127,16 @@ public class CountDownFragment extends Fragment {
         if (cTimer != null)
             cTimer.cancel();
     }
+
+
+    private void hideBottomNavigationView() {
+        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setVisibility(View.GONE);
+    }
+
+    private void showBottomNavigationView() {
+        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.animate().translationY(0).setDuration(300);
+    }
+
 }
