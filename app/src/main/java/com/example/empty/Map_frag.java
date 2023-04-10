@@ -100,6 +100,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         locStructListByWeek = new ArrayList<>();
         locStructListByMonth = new ArrayList<>();
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         uid = sharedPreferences.getString("uid", "");
         reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
@@ -149,7 +150,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
             }
         });
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
 
         // ADDED THIS LINE TO AVOID USING THE ChatViewModel class
         binding.mapView.onCreate(savedInstanceState);

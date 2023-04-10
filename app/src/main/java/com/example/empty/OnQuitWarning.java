@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.empty.databinding.FragmentOnQuitWarningBinding;
 import com.example.empty.databinding.FragmentPopupStartBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -69,5 +70,27 @@ public class OnQuitWarning extends Fragment {
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
 
+    }
+
+    public void onResume() {
+        super.onResume();
+        hideBottomNavigationView();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        showBottomNavigationView();
+    }
+
+    private void hideBottomNavigationView() {
+        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setVisibility(View.GONE);
+    }
+
+    private void showBottomNavigationView() {
+        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setVisibility(View.VISIBLE);
+        bottomNavigationView.animate().translationY(0).setDuration(300);
     }
 }
