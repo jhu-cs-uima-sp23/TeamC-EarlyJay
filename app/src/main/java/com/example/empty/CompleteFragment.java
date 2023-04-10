@@ -24,6 +24,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -78,10 +79,33 @@ public class CompleteFragment extends Fragment {
         edit.apply();
 
         binding.okButton.setOnClickListener(v -> {
+            showBottomNavigationView();
             mainActivity.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
 
 
+    }
+
+    public void onResume() {
+        super.onResume();
+        hideBottomNavigationView();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        showBottomNavigationView();
+    }
+
+    private void hideBottomNavigationView() {
+        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setVisibility(View.GONE);
+    }
+
+    private void showBottomNavigationView() {
+        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setVisibility(View.VISIBLE);
+        bottomNavigationView.animate().translationY(0).setDuration(300);
     }
 
 
