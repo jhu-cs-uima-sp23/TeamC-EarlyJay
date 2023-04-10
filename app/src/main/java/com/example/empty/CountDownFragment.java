@@ -92,20 +92,17 @@ public class CountDownFragment extends Fragment {
 
             public void onFinish() {
                 mainActivity.replaceFragment(R.id.stuff_on_map, new CompleteFragment());
-                showBottomNavigationView();
             }
 
         };
 
         hideBottomNavigationView();
-        cTimer.start();
 
         binding.cancelButton.setOnClickListener(v -> {
             cancelTimer();
             edit.putInt("numSeconds", hour * 3600 + min * 60 + sec);
             edit.apply();
             mainActivity.replaceFragment(R.id.stuff_on_map, new OnQuitWarning());
-            showBottomNavigationView();
         });
 
         cTimer.start();

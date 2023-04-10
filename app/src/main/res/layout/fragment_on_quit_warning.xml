@@ -8,6 +8,7 @@
     android:id="@+id/on_quit_warning">
 
     <!-- TODO: Update blank fragment layout -->
+
     <TextView
         android:id="@+id/warning_title"
         android:layout_width="0dp"
@@ -17,15 +18,19 @@
         android:layout_marginEnd="64dp"
         android:layout_marginBottom="196dp"
         android:background="@drawable/popup_shape"
+        android:fontFamily="sans-serif"
         android:gravity="center_horizontal"
         android:includeFontPadding="true"
         android:paddingTop="16dp"
         android:text="@string/wait"
-        android:textSize="20sp"
+        android:textSize="34sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.47" />
 
     <TextView
         android:id="@+id/warning_txt"
@@ -36,23 +41,27 @@
         android:layout_marginEnd="32dp"
         android:gravity="center_horizontal"
         android:text="@string/warning_txt"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/yes"
         app:layout_constraintEnd_toEndOf="@+id/warning_title"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/warning_title"
         app:layout_constraintTop_toTopOf="@+id/warning_title"
-        app:layout_constraintVertical_bias="0.17000002" />
+        app:layout_constraintVertical_bias="0.132" />
 
     <TextView
         android:id="@+id/confirm_prompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
         android:text="@string/keep_going"
-        android:textSize="20sp"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/yes"
         app:layout_constraintEnd_toEndOf="@+id/warning_title"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="@+id/warning_title"
-        app:layout_constraintTop_toBottomOf="@+id/warning_txt"
-        app:layout_constraintVertical_bias="0.87" />
+        app:layout_constraintTop_toBottomOf="@+id/warning_txt" />
 
     <Button
         android:id="@+id/yes"
