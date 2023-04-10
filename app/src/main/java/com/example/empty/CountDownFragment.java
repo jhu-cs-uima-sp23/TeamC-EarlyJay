@@ -136,6 +136,7 @@ public class CountDownFragment extends Fragment {
 
     private void showBottomNavigationView() {
         BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setVisibility(View.VISIBLE);
         bottomNavigationView.animate().translationY(0).setDuration(300);
     }
 
