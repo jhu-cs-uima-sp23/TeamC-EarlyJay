@@ -84,7 +84,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
                 Toast.makeText(context,
                         "Time interval needs to be greater than 0!", Toast.LENGTH_LONG).show();
                 numSeconds = 1;
-//                return;
+               return;
             }
             SpinnerItem selectedItem = (SpinnerItem) binding.spinner.getSelectedItem();
             String[] categories = selectedItem.getText().split(" ");
