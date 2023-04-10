@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.lang.*;
 
 public class Map_frag extends Fragment implements OnMapReadyCallback{
 
@@ -100,6 +101,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         locStructListByWeek = new ArrayList<>();
         locStructListByMonth = new ArrayList<>();
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         uid = sharedPreferences.getString("uid", "");
         reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
@@ -149,7 +151,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
             }
         });
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
 
         // ADDED THIS LINE TO AVOID USING THE ChatViewModel class
         binding.mapView.onCreate(savedInstanceState);
@@ -201,6 +203,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                 String viewName = getResources().getResourceName(contentId);
                 String dwm_view_name = getResources().getResourceName(R.id.dwm_view);
                 int selected = sharedPreferences.getInt("last_selected", 0);
+
+
                 switch(selected) {
                     case 1:
                         for (LocationStruct locStr : locStructListByWeek) {
@@ -319,7 +323,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         mMap.setLatLngBoundsForCameraTarget(JHU_BOUNDS);
 
 
-
         // Check if location permission is granted
         if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -352,6 +355,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
             Toast.makeText(getContext(), "Location permission not granted, showing empty map",
                     Toast.LENGTH_SHORT).show();
         }
+
+        markMapPast(R.drawable.skull, 39.3298983, -76.6202283);
 
         int selected = sharedPreferences.getInt("last_selected", 0);
         switch(selected) {
@@ -417,14 +422,15 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         }
     }
 
-    public void markMapPast(int workType, float latitude, float longitude){
+    public void markMapPast(int workType, double latitude, double longitude){
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
             fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
-                LatLng currentLocation = new LatLng(latitude,
-                        longitude);
-                System.out.println(workType);
+                LatLng currentLocation = new LatLng((double)latitude,
+                        (double)longitude);
+//                LatLng currentLocation = new LatLng(location.getLatitude(),
+//                        location.getLongitude());
                 draw(workType, currentLocation);
             });
         }
