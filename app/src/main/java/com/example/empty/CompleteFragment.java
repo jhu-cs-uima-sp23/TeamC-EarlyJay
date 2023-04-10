@@ -72,7 +72,7 @@ public class CompleteFragment extends Fragment {
 
         rootNode = FirebaseDatabase.getInstance();
         reference = rootNode.getReference().child("users").child(uid);
-        reference.push().setValue(new LocationStruct(longitude, latitude, true, category, new DateStr().getDateStr()));
+        reference.push().setValue(new LocationStruct(latitude,longitude, true, category, new DateStr().getDateStr()));
 
         binding.rewardCount.setText("You have received " + featherCount);
         edit.putInt("complete_success", 1);
