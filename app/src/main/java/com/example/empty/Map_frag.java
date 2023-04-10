@@ -416,13 +416,13 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         }
     }
 
-    public void markMapPast(int workType, float latitude, float longitude){
+    public void markMapPast(int workType, double latitude_custom, double longitude_custom){
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
             fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
-                LatLng currentLocation = new LatLng(latitude,
-                        longitude);
+                LatLng currentLocation = new LatLng(latitude_custom,
+                        longitude_custom);
                 System.out.println(workType);
                 draw(workType, currentLocation);
             });
