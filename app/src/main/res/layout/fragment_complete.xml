@@ -23,6 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:fontFamily="@font/amarante"
         android:text="Good Job!"
         android:textColor="@color/black"
         android:textSize="34sp"
@@ -54,10 +55,11 @@
             android:id="@+id/reward_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="You have received 12 "
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="normal" />
 
         <ImageView
             android:id="@+id/imageView2"
