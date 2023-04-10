@@ -138,6 +138,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
            Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
         }
 
+
+
         binding.stuffOnMap.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
 
             @Override
