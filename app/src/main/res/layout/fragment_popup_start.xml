@@ -121,7 +121,7 @@
         android:id="@+id/spinner"
         android:layout_width="157dp"
         android:layout_height="45dp"
-        android:contentDescription="@string/worktype"
+        android:contentDescription="@string/workType"
         app:layout_constraintBottom_toTopOf="@+id/circular_seek_bar"
         app:layout_constraintEnd_toEndOf="@+id/textView5"
         app:layout_constraintStart_toStartOf="@+id/textView5"
