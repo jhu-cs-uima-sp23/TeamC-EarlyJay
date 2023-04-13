@@ -1,6 +1,7 @@
 package com.example.empty;
 
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -79,21 +80,21 @@ public class DateStr {
         return daysInAMonth[1] + 1;
     }
 
-    public String getStartOfWeek() {
+    public String getPastDay(int dayNum) {
         int startYear = 0;
         int startMonth = 0;
         int startDay = 0;
-        int startDayOfTheWeek = 1;
-        if (day >= dayOfTheWeek) {
-            startDay = day - dayOfTheWeek + 1;
+        int startDayOfTheWeek = (dayOfTheWeek - dayNum + 7 * dayNum) % 7;
+        if (day > dayNum) {
+            startDay = day - dayNum;
             startMonth = month;
             startYear = year;
         } else if (month != 1) {
-            startDay = getMonthDays(year, month - 1) + day - dayOfTheWeek + 1;
+            startDay = getMonthDays(year, month - 1) + day - dayNum;
             startMonth = month - 1;
             startYear = year;
         } else {
-            startDay = getMonthDays(year - 1, 12) + day - dayOfTheWeek + 1;
+            startDay = getMonthDays(year - 1, 12) + day - dayNum;
             startMonth = 12;
             startYear = year - 1;
         }
@@ -137,5 +138,24 @@ public class DateStr {
     public boolean isMonthly(String dateStr) {
         DateStr dateStrObj = new DateStr(dateStr);
         return (year == dateStrObj.getYear() && month == dateStrObj.getMonth());
+    }
+
+
+    public boolean isPastDay(String dateStr) {
+        DateStr yesterdayStrObj = new DateStr(getPastDay(1));
+        DateStr dateStrObj = new DateStr(dateStr);
+        return (yesterdayStrObj.getYear() == dateStrObj.getYear() &&
+                yesterdayStrObj.getMonth() == dateStrObj.getMonth()
+                && yesterdayStrObj.getDay() == dateStrObj.getDay());
+    }
+
+    public boolean isPastWeek(String dateStr) {
+        DateStr lastWeekStrObj = new DateStr(getPastDay(dayOfTheWeek));
+        return lastWeekStrObj.isWeekly(dateStr);
+    }
+
+    public boolean isPastMonth(String dateStr) {
+        DateStr lastMonthStrObj = new DateStr(getPastDay(day));
+        return lastMonthStrObj.isMonthly(dateStr);
     }
 }
