@@ -101,7 +101,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         locStructListByMonth = new ArrayList<>();
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        uid = sharedPreferences.getString("uid", "");
+        uid = "80452D1AA54E419DB945437220D4ACA3";
         reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
 
