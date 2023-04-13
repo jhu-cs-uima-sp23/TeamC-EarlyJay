@@ -46,7 +46,7 @@ public class OnQuitWarning extends Fragment {
         main = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         editor = sharedPreferences.edit();
-        float reward_amount = sharedPreferences.getFloat("featherCount", 0);
+        int reward_amount = sharedPreferences.getInt("featherCount", 0);
         String formatted = getString(R.string.warning_txt, reward_amount);
         binding.warningTxt.setText(formatted);
         binding.yes.setOnClickListener(v -> {
@@ -60,11 +60,13 @@ public class OnQuitWarning extends Fragment {
             float latitude = sharedPreferences.getFloat("latitude", 0);
             String uid = sharedPreferences.getString("uid", "");
             String category = sharedPreferences.getString("category", "");
-            DateStr dateStrObj = new DateStr();
-            String datestr = dateStrObj.getDateStr();
+            int numSeconds = sharedPreferences.getInt("numSeconds", 0);
+            int timeInterval = sharedPreferences.getInt("totalTimeInterval", 0);
+            int featherCount = -1 * numSeconds / 300;
             rootNode = FirebaseDatabase.getInstance();
             reference = rootNode.getReference().child("users").child(uid);
-            reference.push().setValue(new LocationStruct(latitude,longitude, false, category, new DateStr().getDateStr()));
+            reference.push().setValue(new LocationStruct(latitude,longitude, false, category, new DateStr().getDateStr(),
+                    timeInterval, featherCount));
             editor.putInt("complete_success", 2);
             editor.apply();
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());

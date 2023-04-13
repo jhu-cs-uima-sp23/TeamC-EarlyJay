@@ -15,8 +15,6 @@ import com.google.firebase.database.FirebaseDatabase;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    FirebaseDatabase rootNode;
-    DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -43,7 +43,6 @@ public class Login extends AppCompatActivity {
         reference = rootNode.getReference("users");
 
         String uid = sharedPreferences.getString("uid", "");
-        System.out.println(uid);
         if (uid.equals("")) {
             uid = createTransactionID();
             edit.putString("uid", uid);
@@ -53,12 +52,6 @@ public class Login extends AppCompatActivity {
         }
 
         reference = reference.child(uid);
-
-
-
-
-
-
 
 
         Button enter = findViewById(R.id.let_s_go);
