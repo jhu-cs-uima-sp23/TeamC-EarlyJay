@@ -107,33 +107,34 @@ public class dwm_search_fab extends Fragment {
         searchButton = binding.searchButton;
         searchButton.setOnClickListener(v -> {
             String searchString = searchEditText.getText().toString().trim();
-            if (!searchString.endsWith("hall") || !searchString.endsWith("Hall")) {
-                searchString += " Hall";
-            }
             searchString += "Johns Hopkins";
-            LatLngBounds campusBounds = new LatLngBounds(
-                    new LatLng(39.326622, -76.630514), // Southwest corner of campus
-                    new LatLng(39.333874, -76.621764)  // Northeast corner of campus
-            );
+            double minLat = 39.327128;
+            double maxLat = 39.332359;
+            double minLng = -76.624858;
+            double maxLng = -76.614914;
             if (!searchString.isEmpty()) {
                 Geocoder geocoder = new Geocoder(context);
                 try {
                     List<Address> addresses = geocoder.getFromLocationName(searchString, 1);
                     if (addresses.size() > 0) {
+                        int test = 0;
                         for (Address address : addresses) {
                             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
 
-                            if (campusBounds.contains(latLng)) {
+                            if (latLng.latitude >= minLat && latLng.latitude <= maxLat && latLng.longitude >= minLng && latLng.longitude <= maxLng) {
+                                test = 1;
                                 // send the LatLng to the Map fragment
                                 Bundle args = new Bundle();
                                 args.putParcelable("location", latLng);
                                 Map_frag mapFrag = new Map_frag();
                                 mapFrag.setArguments(args);
                                 mainActivity.replaceFragment(R.id.frame_layout, mapFrag);
-                                return;
+                                break;
                             }
                         }
-                        Toast.makeText(context, "Location is not within the Johns Hopkins Homewood campus", Toast.LENGTH_SHORT).show();
+                        if (test == 0) {
+                            Toast.makeText(context, "Location is not within the Johns Hopkins Homewood campus", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         Toast.makeText(context, "No results found", Toast.LENGTH_SHORT).show();
                     }
