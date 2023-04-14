@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item><layer-list>
+        <item
+            android:drawable="@drawable/popup_shape"/>
+        <item
+            android:gravity="right"
+            android:drawable="@drawable/round_arrow_drop_down_24"/>
+    </layer-list></item>
+</selector>

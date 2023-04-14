@@ -70,5 +70,14 @@
         "color": "#808080"
       }
     ]
+  },
+  {
+    "featureType": "poi.sports_complex",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
   }
 ]

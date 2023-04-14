@@ -54,12 +54,6 @@ public class Login extends AppCompatActivity {
         reference = reference.child(uid);
 
 
-
-
-
-
-
-
         Button enter = findViewById(R.id.let_s_go);
         enter.setOnClickListener(v -> {
             startActivity(new Intent(Login.this, MainActivity.class));

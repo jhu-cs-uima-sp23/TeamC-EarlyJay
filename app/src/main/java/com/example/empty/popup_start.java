@@ -8,6 +8,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -22,11 +24,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Dictionary;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import me.tankery.lib.circularseekbar.CircularSeekBar;
 
@@ -50,14 +48,15 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
     private Spinner mSpinner;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
-
-    private float featherCount;
+    private Map_child_viewModel shared_data;
+    private int featherCount;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
         binding = FragmentPopupStartBinding.inflate(inflater, container, false);
+        shared_data = new ViewModelProvider(requireActivity()).get(Map_child_viewModel.class);
         return binding.getRoot();
     }
 
@@ -66,7 +65,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         main = (MainActivity) getActivity();
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
 
@@ -75,22 +73,28 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
         progressCircular.setMax(MAX);
         factorProgress = 12;
-        featherCount = 6;
+        featherCount = 12;
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
 
 
         binding.saveButton.setOnClickListener(v -> {
+            int numSeconds = factorProgress * 5 * 60;
             if (factorProgress == 0) {
                 Toast.makeText(context,
-                        "Time inverval needs to be a positive number!", Toast.LENGTH_LONG).show();
-                return;
+                        "Time interval needs to be greater than 0!", Toast.LENGTH_LONG).show();
+                numSeconds = 1;
+               return;
             }
             SpinnerItem selectedItem = (SpinnerItem) binding.spinner.getSelectedItem();
-            String category = selectedItem.getText();
+            String[] categories = selectedItem.getText().split(" ");
+            String category = categories[categories.length - 1];
             edit.putString("category", category);
-            edit.putInt("numSeconds", factorProgress * 5 * 60);
-            edit.putFloat("featherCount", featherCount);
+//            category icon
+            edit.putInt("workType", selectedItem.getImageResId());
+            edit.putInt("numSeconds", numSeconds);
+            edit.putInt("totalTimeInterval", factorProgress * 5);
+            edit.putInt("featherCount", featherCount);
             edit.putFloat("latitude", (float) latitude);
             edit.putFloat("longitude", (float) longitude);
             edit.apply();
@@ -99,6 +103,9 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
         binding.button.setOnClickListener(v -> {
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+            shared_data.getData().observe(getViewLifecycleOwner(), data -> {
+                //TODO: you can add stuff here to get data
+            });
         });
 
         progressCircular.setOnSeekBarChangeListener(this);
@@ -112,13 +119,14 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 //        mSpinner.setAdapter(adapter);
 
         List<SpinnerItem> spinnerItems = new ArrayList<>();
-        spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, "         Work"));
-        spinnerItems.add(new SpinnerItem(R.drawable.yellows, "         Class"));
-        spinnerItems.add(new SpinnerItem(R.drawable.triangle_48, "         Team"));
-        spinnerItems.add(new SpinnerItem(R.drawable.star_2_xxl, "         Sports"));
+        spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, "Work"));
+        spinnerItems.add(new SpinnerItem(R.drawable.yellows, "Class"));
+        spinnerItems.add(new SpinnerItem(R.drawable.triangle_48, "Team"));
+        spinnerItems.add(new SpinnerItem(R.drawable.star_2_xxl, "Sports"));
 
         CustomSpinnerAdapter adapter = new CustomSpinnerAdapter(getContext(), spinnerItems);
         mSpinner.setAdapter(adapter);
+
 
 
     }
@@ -132,7 +140,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
-                            Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
+                           // Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
 
                         }
                     });
@@ -152,7 +160,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
             factorProgress = (int) (progress / 5);
         }
         binding.countNum.setText(factorProgress * 5 + " min");
-        featherCount = (float) factorProgress / 2;
+        featherCount = factorProgress;
 
         binding.rewardLine.setText("Reward: " + featherCount);
     }

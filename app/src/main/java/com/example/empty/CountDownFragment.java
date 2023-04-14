@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.empty.databinding.FragmentCountDownBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.example.empty.databinding.FragmentDwmSearchFabBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -61,11 +62,8 @@ public class CountDownFragment extends Fragment {
         binding.taskCat.setText(category);
         numSeconds = sharedPreferences.getInt("numSeconds", 0);
         hour = numSeconds / 3600;
-        System.out.println("hour = " + hour);
         min = (numSeconds %  3600) / 60;
-        System.out.println("minutes = " + min);
         sec = numSeconds % 60;
-        System.out.println("seconds = " + sec);
         milisec = numSeconds * 1000;
 
         setRemainTime(hour, min, sec);
@@ -95,6 +93,8 @@ public class CountDownFragment extends Fragment {
 
         };
 
+        hideBottomNavigationView();
+
         binding.cancelButton.setOnClickListener(v -> {
             cancelTimer();
             edit.putInt("numSeconds", hour * 3600 + min * 60 + sec);
@@ -121,4 +121,17 @@ public class CountDownFragment extends Fragment {
         if (cTimer != null)
             cTimer.cancel();
     }
+
+
+    private void hideBottomNavigationView() {
+        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setVisibility(View.GONE);
+    }
+
+    private void showBottomNavigationView() {
+        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setVisibility(View.VISIBLE);
+        bottomNavigationView.animate().translationY(0).setDuration(300);
+    }
+
 }
