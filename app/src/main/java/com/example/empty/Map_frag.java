@@ -88,7 +88,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
     private GroundOverlayOptions groundOverlayOptions;
     private Map_child_viewModel shared_data;
     private static final LatLngBounds JHU_BOUNDS = new LatLngBounds(
-            new LatLng(39.3256, -76.6228), new LatLng(39.3297, -76.6189));
+            new LatLng(39.3256, -76.6228), new LatLng(39.3303, -76.6189));
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -310,7 +310,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
             search_location = args.getParcelable("location");
             MarkerOptions markerOptions = new MarkerOptions().position(search_location);
             mMap.addMarker(markerOptions);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(search_location));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(search_location, 17));
         }
 
         // Check if location permission is granted

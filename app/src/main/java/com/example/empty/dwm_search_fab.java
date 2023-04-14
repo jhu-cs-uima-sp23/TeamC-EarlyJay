@@ -107,7 +107,7 @@ public class dwm_search_fab extends Fragment {
         searchButton = binding.searchButton;
         searchButton.setOnClickListener(v -> {
             String searchString = searchEditText.getText().toString().trim();
-            searchString += "Johns Hopkins";
+           // searchString += "Johns Hopkins";
             double minLat = 39.327128;
             double maxLat = 39.332359;
             double minLng = -76.624858;
