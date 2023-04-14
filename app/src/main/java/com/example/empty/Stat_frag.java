@@ -3,6 +3,7 @@ package com.example.empty;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,9 +15,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.empty.databinding.FragmentStatBinding;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,6 +63,11 @@ public class Stat_frag extends Fragment {
     private StatsCalculator weeklyPastStats;
     private StatsCalculator todayMonthlyStats;
     private StatsCalculator monthlyPastStats;
+    private BarChart barChart;
+    private ProgressBar progressBar;
+    private TextView txtper;
+    private TextView featherNumber;
+    int featherAmount;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -152,6 +170,52 @@ public class Stat_frag extends Fragment {
             }
         });
 
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+        );
+        barChart = new BarChart(getContext());
+        barChart.setLayoutParams(layoutParams);
+        LinearLayout chartContainer = binding.containerForChart;
+        chartContainer.addView(barChart);
+
+        ArrayList<BarEntry> entries = new ArrayList<>();
+
+        if (currDatePage == "Daily") {
+            int work_time = todayDailyStats.getWorkTime();
+            int class_time = todayDailyStats.getClassTime();
+            int team_time = todayDailyStats.getTeamTime();
+            int sports_time = todayDailyStats.getSportTime();
+            entries.add(new BarEntry(0, (float)work_time)); // Work
+            entries.add(new BarEntry(1, (float)class_time)); // Study
+            entries.add(new BarEntry(2, (float)team_time)); // Class
+            entries.add(new BarEntry(3, (float)sports_time)); // Sports
+        }
+
+        BarDataSet barDataSet = new BarDataSet(entries, "");
+        int[] colors = new int[] {Color.CYAN, Color.BLUE, Color.GRAY, Color.BLACK};
+        barDataSet.setColors(colors);
+
+        BarData barData = new BarData(barDataSet);
+        barChart.setData(barData);
+        barData.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf(value);
+            }
+        });
+        barData.setDrawValues(true);
+        barData.setBarWidth(0.5f);
+        initBarChart();
+
+        int completion = (int) calculateCompletion(currDatePage);
+        progressBar = binding.progressBarDaily;
+        progressBar.setProgress(completion*100);
+
+
+        featherNumber = binding.featherNumber;
+        featherAmount = getFeather(currDatePage);
+        featherNumber.setText(Integer.toString(featherAmount));
 
         return binding.getRoot();
     }
@@ -178,5 +242,86 @@ public class Stat_frag extends Fragment {
                 break;
         }
     }
+
+    private void initBarChart(){
+        //hiding the grey background of the chart, default false if not set
+        barChart.setDrawGridBackground(false);
+        //remove the bar shadow, default false if not set
+        barChart.setDrawBarShadow(false);
+        //remove border of the chart, default false if not set
+        barChart.setDrawBorders(false);
+
+        //remove the description label text located at the lower right corner
+        Description description = new Description();
+        description.setEnabled(false);
+        barChart.setDescription(description);
+
+        //setting animation for y-axis, the bar will pop up from 0 to its value within the time we set
+        barChart.animateY(1000);
+        //setting animation for x-axis, the bar will pop up separately within the time we set
+        barChart.animateX(1000);
+
+        XAxis xAxis = barChart.getXAxis();
+        //change the position of x-axis to the bottom
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        //set the horizontal distance of the grid line
+        xAxis.setGranularity(1f);
+        //hiding the x-axis line, default true if not set
+        xAxis.setDrawAxisLine(false);
+        //hiding the vertical grid lines, default true if not set
+        xAxis.setDrawGridLines(false);
+
+        YAxis leftAxis = barChart.getAxisLeft();
+        //hiding the left y-axis line, default true if not set
+        leftAxis.setDrawAxisLine(false);
+
+        YAxis rightAxis = barChart.getAxisRight();
+        //hiding the right y-axis line, default true if not set
+        rightAxis.setDrawAxisLine(false);
+
+        Legend legend = barChart.getLegend();
+        //setting the shape of the legend form to line, default square shape
+        legend.setForm(Legend.LegendForm.LINE);
+        //setting the text size of the legend
+        legend.setTextSize(11f);
+        //setting the alignment of legend toward the chart
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        //setting the stacking direction of legend
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        //setting the location of legend outside the chart, default false if not set
+        legend.setDrawInside(false);
+
+    }
+
+    private float calculateCompletion(String currDatePage) {
+        if (currDatePage.equals("Daily")) {
+            int totalTime = todayDailyStats.getTotalCompleteTask() + todayDailyStats.getTotalFailTask();
+            if (totalTime != 0 ) {
+                return (float)todayDailyStats.getTotalFailTask() / totalTime;
+            }
+        } else if (currDatePage.equals("Weekly")) {
+            int totalTime = todayWeeklyStats.getTotalCompleteTask() + todayWeeklyStats.getTotalFailTask();
+            if (totalTime != 0 ) {
+                return (float)todayWeeklyStats.getTotalFailTask() / totalTime;
+            }
+        } else {
+            int totalTime = todayMonthlyStats.getTotalCompleteTask() + todayMonthlyStats.getTotalFailTask();
+            if (totalTime != 0 ) {
+                return (float)todayMonthlyStats.getTotalFailTask() / totalTime;
+            }
+        }
+        return 0;
+    }
+
+    private int getFeather(String currDatePage) {
+        if (currDatePage.equals("Daily")) {
+            return todayDailyStats.getTotalFeather();
+        } else if (currDatePage.equals("Weekly")) {
+            return todayWeeklyStats.getTotalFeather();
+        }
+        return todayMonthlyStats.getTotalFeather();
+    }
+
 
 }

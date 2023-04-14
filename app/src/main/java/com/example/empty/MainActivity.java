@@ -30,8 +30,7 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment(frame, new Map_frag());
                     break;
                 case R.id.stat:
-//                    replaceFragment(frame, new Stat_frag());
-                    replaceFragment(frame,new Analytics());
+                    replaceFragment(frame, new Stat_frag());
                     break;
                 case R.id.planner:
                     replaceFragment(frame, new Planner_frag());

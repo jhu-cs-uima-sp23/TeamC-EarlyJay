@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 import com.example.empty.databinding.FragmentDailyStatsBinding;
 import com.example.empty.databinding.FragmentMonthlyStatsBinding;
 
-/**
- */
 public class DailyStatsFragment extends Fragment {
 
     private FragmentDailyStatsBinding binding;
