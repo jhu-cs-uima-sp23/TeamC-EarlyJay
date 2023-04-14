@@ -67,6 +67,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
     private double latitude;
     private double longitude;
 
+    private LatLng search_location;
+
     private SharedPreferences sharedPreferences;
 
     private Context context;
@@ -104,7 +106,11 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
 
+
+
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 locStructListByDay = new ArrayList<>();
@@ -299,7 +305,13 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
 
         mMap.setLatLngBoundsForCameraTarget(JHU_BOUNDS);
 
-
+        Bundle args = getArguments();
+        if (args != null) {
+            search_location = args.getParcelable("location");
+            MarkerOptions markerOptions = new MarkerOptions().position(search_location);
+            mMap.addMarker(markerOptions);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(search_location));
+        }
 
         // Check if location permission is granted
         if (ContextCompat.checkSelfPermission(getContext(),

@@ -16,7 +16,6 @@
         android:importantForAutofill="no"
         android:inputType="textShortMessage"
         android:padding="15dp"
-        android:textAlignment="center"
         android:textColorHint="#78909C"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
