@@ -107,7 +107,10 @@ public class dwm_search_fab extends Fragment {
         searchButton = binding.searchButton;
         searchButton.setOnClickListener(v -> {
             String searchString = searchEditText.getText().toString().trim();
-            searchString = searchString + "Johns Hopkins";
+            if (!searchString.endsWith("hall") || !searchString.endsWith("Hall")) {
+                searchString += " Hall";
+            }
+            searchString += "Johns Hopkins";
             LatLngBounds campusBounds = new LatLngBounds(
                     new LatLng(39.326622, -76.630514), // Southwest corner of campus
                     new LatLng(39.333874, -76.621764)  // Northeast corner of campus
