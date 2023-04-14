@@ -105,12 +105,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         uid = sharedPreferences.getString("uid", "");
         reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
-
-
-
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
-
-
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 locStructListByDay = new ArrayList<>();
@@ -255,15 +250,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
 
         return binding.getRoot();
     }
-
-
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-    }
-
 
     @Override
     public void onDestroyView() {

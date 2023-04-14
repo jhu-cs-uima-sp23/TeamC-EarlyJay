@@ -27,11 +27,17 @@
     <string name="keep_going">Want to keep going?</string>
     <string name="welcome">Welcome to\nEarlyJay</string>
     <string name="menu">menu</string>
+    <string name="select_start_time">Select Start Time</string>
+    <string name="select_duration">Select Duration</string>
+    <string name="simple">Simple</string>
+    <string name="advanced">Advanced</string>
+    <string name="done">Done</string>
+    <string name="select_alert">Select Alert</string>
     <string-array name="type_array">
         <item>Work</item>
         <item>Class</item>
         <item>Team</item>
-        <item>Sports</item>
+        <item>Sport</item>
     </string-array>
     <string-array name="Stats_Display">
         <item>Daily</item>
