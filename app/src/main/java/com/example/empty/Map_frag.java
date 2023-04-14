@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 import android.widget.Toast;
@@ -291,13 +292,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
 
         mMap.setLatLngBoundsForCameraTarget(JHU_BOUNDS);
 
-        Bundle args = getArguments();
-        if (args != null) {
-            search_location = args.getParcelable("location");
-            MarkerOptions markerOptions = new MarkerOptions().position(search_location);
-            mMap.addMarker(markerOptions);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(search_location, 17));
-        }
 
         // Check if location permission is granted
         if (ContextCompat.checkSelfPermission(getContext(),
@@ -326,6 +320,14 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                     });
             // Apply the custom map style
             mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.style_json));
+
+            Bundle args = getArguments();
+            if (args != null) {
+                search_location = args.getParcelable("location");
+                MarkerOptions markerOptions = new MarkerOptions().position(search_location);
+                mMap.addMarker(markerOptions);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(search_location, 17));
+            }
         } else {
             // Show an empty map if location permission is not granted
             Toast.makeText(getContext(), "Location permission not granted, showing empty map",
