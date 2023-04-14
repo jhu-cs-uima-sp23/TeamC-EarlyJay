@@ -62,11 +62,8 @@ public class CountDownFragment extends Fragment {
         binding.taskCat.setText(category);
         numSeconds = sharedPreferences.getInt("numSeconds", 0);
         hour = numSeconds / 3600;
-        System.out.println("hour = " + hour);
         min = (numSeconds %  3600) / 60;
-        System.out.println("minutes = " + min);
         sec = numSeconds % 60;
-        System.out.println("seconds = " + sec);
         milisec = numSeconds * 1000;
 
         setRemainTime(hour, min, sec);

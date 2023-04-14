@@ -49,7 +49,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
     private Map_child_viewModel shared_data;
-    private float featherCount;
+    private int featherCount;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,7 +73,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
         progressCircular.setMax(MAX);
         factorProgress = 12;
-        featherCount = 6;
+        featherCount = 12;
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
 
@@ -93,7 +93,8 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 //            category icon
             edit.putInt("workType", selectedItem.getImageResId());
             edit.putInt("numSeconds", numSeconds);
-            edit.putFloat("featherCount", featherCount);
+            edit.putInt("totalTimeInterval", factorProgress * 5);
+            edit.putInt("featherCount", featherCount);
             edit.putFloat("latitude", (float) latitude);
             edit.putFloat("longitude", (float) longitude);
             edit.apply();
@@ -159,7 +160,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
             factorProgress = (int) (progress / 5);
         }
         binding.countNum.setText(factorProgress * 5 + " min");
-        featherCount = (float) factorProgress / 2;
+        featherCount = factorProgress;
 
         binding.rewardLine.setText("Reward: " + featherCount);
     }

@@ -59,24 +59,23 @@ public class CompleteFragment extends Fragment {
         mainActivity = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
-        float featherCount = sharedPreferences.getFloat("featherCount", 0);
+        int featherCount = sharedPreferences.getInt("featherCount", 0);
 
 
         float longitude = sharedPreferences.getFloat("longitude", 0);
         float latitude = sharedPreferences.getFloat("latitude", 0);
         String uid = sharedPreferences.getString("uid", "");
         String category = sharedPreferences.getString("category", "");
-        category = category.trim().replaceAll("\\s+", "");
-        DateStr dateStrObj = new DateStr();
-        String datestr = dateStrObj.getDateStr();
+        int timeInterval = sharedPreferences.getInt("totalTimeInterval", 0);
 
         rootNode = FirebaseDatabase.getInstance();
         reference = rootNode.getReference().child("users").child(uid);
-        reference.push().setValue(new LocationStruct(latitude,longitude, true, category, new DateStr().getDateStr()));
+        reference.push().setValue(new LocationStruct(latitude,longitude, true, category, new DateStr().getDateStr(),
+                timeInterval, featherCount));
 
         binding.rewardCount.setText("You have received " + featherCount);
         edit.putInt("complete_success", 1);
-        edit.putFloat("featherCount", 0);
+        edit.putInt("featherCount", 0);
         edit.apply();
 
         binding.okButton.setOnClickListener(v -> {

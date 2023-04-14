@@ -2,6 +2,8 @@ package com.example.empty;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,13 +17,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.example.empty.databinding.FragmentDwmSearchFabBinding;
 import com.example.empty.databinding.FragmentMapBinding;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.io.IOException;
+import java.util.List;
 
 public class dwm_search_fab extends Fragment {
     private FragmentDwmSearchFabBinding binding;
@@ -30,6 +39,10 @@ public class dwm_search_fab extends Fragment {
     private MainActivity mainActivity;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
+
+    private EditText searchEditText;
+
+    private ImageButton searchButton;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -89,8 +102,50 @@ public class dwm_search_fab extends Fragment {
         binding.floatingActionButton.setOnClickListener(view1 -> {
             mainActivity.replaceFragment(R.id.stuff_on_map, new popup_start());
         });
-        binding.searchButton.setOnClickListener(v -> {
-            Toast.makeText(context, "YOOOO STOP CLICKING ME", Toast.LENGTH_LONG).show();
+
+        searchEditText = view.findViewById(R.id.loc_input);
+        searchButton = binding.searchButton;
+        searchButton.setOnClickListener(v -> {
+            String searchString = searchEditText.getText().toString().trim();
+           // searchString += "Johns Hopkins";
+            double minLat = 39.327128;
+            double maxLat = 39.332359;
+            double minLng = -76.624858;
+            double maxLng = -76.614914;
+            if (!searchString.isEmpty()) {
+                Geocoder geocoder = new Geocoder(context);
+                try {
+                    List<Address> addresses = geocoder.getFromLocationName(searchString, 1);
+                    if (addresses.size() > 0) {
+                        int test = 0;
+                        for (Address address : addresses) {
+                            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+
+                            if (latLng.latitude >= minLat && latLng.latitude <= maxLat && latLng.longitude >= minLng && latLng.longitude <= maxLng) {
+                                test = 1;
+                                // send the LatLng to the Map fragment
+                                Bundle args = new Bundle();
+                                args.putParcelable("location", latLng);
+                                Map_frag mapFrag = new Map_frag();
+                                mapFrag.setArguments(args);
+                                mainActivity.replaceFragment(R.id.frame_layout, mapFrag);
+                                break;
+                            }
+                        }
+                        if (test == 0) {
+                            Toast.makeText(context, "Location is not within the Johns Hopkins Homewood campus", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(context, "No results found", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "Error searching for location", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(context, "Please enter a search query", Toast.LENGTH_SHORT).show();
+            }
         });
+
     }
 }

@@ -67,13 +67,14 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
     private double latitude;
     private double longitude;
 
+    private LatLng search_location;
+
     private SharedPreferences sharedPreferences;
 
     private Context context;
     private String uid;
     private FusedLocationProviderClient mLocationProviderClient;
     private MainActivity main;
-    private FloatingActionButton start;
     private SharedPreferences.Editor editor;
 
     private DatabaseReference reference;
@@ -87,7 +88,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
     private GroundOverlayOptions groundOverlayOptions;
     private Map_child_viewModel shared_data;
     private static final LatLngBounds JHU_BOUNDS = new LatLngBounds(
-            new LatLng(39.3256, -76.6228), new LatLng(39.3297, -76.6189));
+            new LatLng(39.3256, -76.6228), new LatLng(39.3303, -76.6189));
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -105,7 +106,11 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
 
+
+
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 locStructListByDay = new ArrayList<>();
@@ -135,13 +140,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                         continue;
                     }
                 }
-
-                System.out.println("daily array: ");
-                System.out.println(Arrays.toString(locStructListByDay.toArray()));
-                System.out.println("weekly array: ");
-                System.out.println(Arrays.toString(locStructListByWeek.toArray()));
-                System.out.println("monthly array: ");
-                System.out.println(Arrays.toString(locStructListByMonth.toArray()));
             }
 
             @Override
@@ -174,14 +172,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         if (latitude_tmp!=0 && longitude_tmp!=0) {
             latitude = latitude_tmp;
             longitude = longitude_tmp;
-           // LatLng location = new LatLng(latitude, longitude);
-
-            // add marker to the map
-           // MarkerOptions markerOptions = new MarkerOptions().position(location).title("My Location");
-           // mMap.addMarker(markerOptions);
-
-            // move the camera to the location
-           // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
            Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
         }
 
@@ -194,9 +184,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
                 int contentId = content.getId();
 //                0 - no action; 1 - success; 2 - failed
 
-                // mMap.clear();
-
-                DateStr now = new DateStr();
 
                 int task_completed = sharedPreferences.getInt("complete_success", 0);
                 String viewName = getResources().getResourceName(contentId);
@@ -318,7 +305,13 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
 
         mMap.setLatLngBoundsForCameraTarget(JHU_BOUNDS);
 
-
+        Bundle args = getArguments();
+        if (args != null) {
+            search_location = args.getParcelable("location");
+            MarkerOptions markerOptions = new MarkerOptions().position(search_location);
+            mMap.addMarker(markerOptions);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(search_location, 17));
+        }
 
         // Check if location permission is granted
         if (ContextCompat.checkSelfPermission(getContext(),
@@ -424,7 +417,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
             fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
                 LatLng currentLocation = new LatLng(latitude_custom,
                         longitude_custom);
-                System.out.println(workType);
                 draw(workType, currentLocation);
             });
         }
@@ -435,7 +427,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         type = types[types.length - 1];
 
         if (type.equals("Work")) {
-            System.out.println("in work");
             return R.drawable.circle_dashed_6_xxl;
         } else if (type.equals("Class")) {
             return R.drawable.yellows;
@@ -446,10 +437,4 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         }
     }
 
-    /*
-    private LocationStruct[] getCurrentLocInfo() {
-        DateStr dateNow = new DateStr();
-
-    }
-*/
 }
