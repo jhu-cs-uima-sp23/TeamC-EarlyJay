@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import com.example.empty.databinding.FragmentStatBinding;
 import com.google.firebase.database.DataSnapshot;
@@ -31,6 +33,8 @@ public class Stat_frag extends Fragment {
     private FragmentStatBinding binding;
 
     private String uid;
+
+    private String currDatePage;
 
     private MainActivity main;
 
@@ -56,6 +60,10 @@ public class Stat_frag extends Fragment {
 
         main = (MainActivity) getActivity();
         context = main.getApplicationContext();
+
+
+        main.replaceFragment(R.id.stuff_on_dates, new DailyStatsFragment());
+        currDatePage = "Daily";
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         uid = sharedPreferences.getString("uid", "");
@@ -105,37 +113,6 @@ public class Stat_frag extends Fragment {
                         continue;
                     }
                 }
-                /*
-                System.out.println("daily: ");
-                System.out.println("class: " + todayDailyStats.getClassTime());
-                System.out.println("work: " + todayDailyStats.getWorkTime());
-                System.out.println("team: " + todayDailyStats.getTeamTime());
-                System.out.println("sport: " + todayDailyStats.getSportTime());
-                System.out.println("fail: " + todayDailyStats.getTotalFailTime());
-                System.out.println("task completed: " + todayDailyStats.getTotalCompleteTask());
-                System.out.println("task failed: " + todayDailyStats.getTotalFailTask());
-                System.out.println("feather: " + todayDailyStats.getTotalFeather());
-
-                System.out.println("weekly: ");
-                System.out.println("class: " + todayWeeklyStats.getClassTime());
-                System.out.println("work: " + todayWeeklyStats.getWorkTime());
-                System.out.println("team: " + todayWeeklyStats.getTeamTime());
-                System.out.println("sport: " + todayWeeklyStats.getSportTime());
-                System.out.println("fail: " + todayWeeklyStats.getTotalFailTime());
-                System.out.println("task completed: " + todayWeeklyStats.getTotalCompleteTask());
-                System.out.println("task failed: " + todayWeeklyStats.getTotalFailTask());
-                System.out.println("feather: " + todayWeeklyStats.getTotalFeather());
-
-                System.out.println("monthly: ");
-                System.out.println("class: " + todayMonthlyStats.getClassTime());
-                System.out.println("work: " + todayMonthlyStats.getWorkTime());
-                System.out.println("team: " + todayMonthlyStats.getTeamTime());
-                System.out.println("sport: " + todayMonthlyStats.getSportTime());
-                System.out.println("fail: " + todayMonthlyStats.getTotalFailTime());
-                System.out.println("task completed: " + todayMonthlyStats.getTotalCompleteTask());
-                System.out.println("task failed: " + todayMonthlyStats.getTotalFailTask());
-                System.out.println("feather: " + todayMonthlyStats.getTotalFeather());
-                 */
             }
 
             @Override
@@ -143,6 +120,38 @@ public class Stat_frag extends Fragment {
                 // Handle error
             }
         });
+
+        Spinner dateSpinner = binding.spinner2;
+
+        dateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selected = adapterView.getItemAtPosition(i).toString();
+                System.out.println("selected item: " + selected);
+                if (selected.equals(currDatePage)) {
+                    return;
+                }
+                switch(selected) {
+                    case "Weekly":
+                        main.replaceFragment(R.id.stuff_on_dates, new WeeklyStatsFragment());
+                        break;
+                    case "Monthly":
+                        main.replaceFragment(R.id.stuff_on_dates, new MonthlyStatsFragment());
+                        break;
+                    default:
+                        main.replaceFragment(R.id.stuff_on_dates, new DailyStatsFragment());
+                        break;
+                }
+                currDatePage = selected;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+
+            }
+        });
+
 
         return binding.getRoot();
     }

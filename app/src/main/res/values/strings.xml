@@ -33,4 +33,9 @@
         <item>Team</item>
         <item>Sports</item>
     </string-array>
+    <string-array name="Stats_Display">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+    </string-array>
 </resources>
