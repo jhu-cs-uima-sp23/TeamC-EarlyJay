@@ -67,6 +67,9 @@ public class dwm_search_fab extends Fragment {
             int last_selected = sharedPreferences.getInt("last_selected", -1);
             if(last_selected != -1){
                 popup.getMenu().getItem(last_selected).setChecked(true);
+            } else {
+                last_selected = 0;
+                popup.getMenu().getItem(last_selected).setChecked(true);
             }
             popup.setOnMenuItemClickListener(menuItem -> {
                 int selected = -1;
