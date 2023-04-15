@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -42,6 +43,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 import me.tankery.lib.circularseekbar.CircularSeekBar;
 
@@ -95,6 +97,7 @@ public class Stat_frag extends Fragment {
 
         uid = sharedPreferences.getString("uid", "");
         currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
+        System.out.println("currDateStr " + currDateStr);
         DateStr now = new DateStr(currDateStr);
         currDatePage = sharedPreferences.getString("currDatePage", "Daily");
 
@@ -119,6 +122,7 @@ public class Stat_frag extends Fragment {
         weeklyPastStats = new StatsCalculator();
         todayMonthlyStats = new StatsCalculator();
         monthlyPastStats = new StatsCalculator();
+
 
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -155,6 +159,10 @@ public class Stat_frag extends Fragment {
                         continue;
                     }
                 }
+                adjustData();
+
+                Log.d("datacheck", "adjusted data");
+
             }
 
             @Override
@@ -162,6 +170,7 @@ public class Stat_frag extends Fragment {
                 // Handle error
             }
         });
+
 
         Spinner dateSpinner = binding.spinner2;
         ArrayAdapter myAdapter = (ArrayAdapter) dateSpinner.getAdapter();
@@ -235,53 +244,6 @@ public class Stat_frag extends Fragment {
                 main.replaceFragment(R.id.frame_layout, new Stat_frag());
             }
         });
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-        );
-        barChart = new BarChart(getContext());
-        barChart.setLayoutParams(layoutParams);
-        LinearLayout chartContainer = binding.containerForChart;
-        chartContainer.addView(barChart);
-
-        ArrayList<BarEntry> entries = new ArrayList<>();
-
-        if (currDatePage == "Daily") {
-            int work_time = todayDailyStats.getWorkTime();
-            int class_time = todayDailyStats.getClassTime();
-            int team_time = todayDailyStats.getTeamTime();
-            int sports_time = todayDailyStats.getSportTime();
-            entries.add(new BarEntry(0, (float)work_time)); // Work
-            entries.add(new BarEntry(1, (float)class_time)); // Study
-            entries.add(new BarEntry(2, (float)team_time)); // Class
-            entries.add(new BarEntry(3, (float)sports_time)); // Sports
-        }
-
-        BarDataSet barDataSet = new BarDataSet(entries, "");
-        int[] colors = new int[] {Color.CYAN, Color.BLUE, Color.GRAY, Color.BLACK};
-        barDataSet.setColors(colors);
-
-        BarData barData = new BarData(barDataSet);
-        barChart.setData(barData);
-        barData.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value) {
-                return String.valueOf(value);
-            }
-        });
-        barData.setDrawValues(true);
-        barData.setBarWidth(0.5f);
-        initBarChart();
-
-        int completion = (int) calculateCompletion(currDatePage);
-        progressBar = binding.progressBarDaily;
-        progressBar.setProgress(completion*100);
-
-
-        featherNumber = binding.featherNumber;
-        featherAmount = getFeather(currDatePage);
-        featherNumber.setText(Integer.toString(featherAmount));
 
         return binding.getRoot();
     }
@@ -364,17 +326,17 @@ public class Stat_frag extends Fragment {
         if (currDatePage.equals("Daily")) {
             int totalTime = todayDailyStats.getTotalCompleteTask() + todayDailyStats.getTotalFailTask();
             if (totalTime != 0 ) {
-                return (float)todayDailyStats.getTotalFailTask() / totalTime;
+                return (float)todayDailyStats.getTotalCompleteTask() / totalTime;
             }
         } else if (currDatePage.equals("Weekly")) {
             int totalTime = todayWeeklyStats.getTotalCompleteTask() + todayWeeklyStats.getTotalFailTask();
             if (totalTime != 0 ) {
-                return (float)todayWeeklyStats.getTotalFailTask() / totalTime;
+                return (float)todayWeeklyStats.getTotalCompleteTask() / totalTime;
             }
         } else {
             int totalTime = todayMonthlyStats.getTotalCompleteTask() + todayMonthlyStats.getTotalFailTask();
             if (totalTime != 0 ) {
-                return (float)todayMonthlyStats.getTotalFailTask() / totalTime;
+                return (float)todayMonthlyStats.getTotalCompleteTask() / totalTime;
             }
         }
         return 0;
@@ -388,6 +350,148 @@ public class Stat_frag extends Fragment {
         }
         return todayMonthlyStats.getTotalFeather();
     }
+
+    private double calculateProductionRate(String currDatePage) {
+        double currRate= 0;
+        double pastRate = 0;
+        double productionRate;
+        switch(currDatePage) {
+            case "Weekly":
+                currRate = (todayWeeklyStats.getTotalCompleteTime() + todayWeeklyStats.getTotalFailTime()== 0) ?
+                        0 : (double) todayWeeklyStats.getTotalCompleteTime() /
+                        (todayWeeklyStats.getTotalCompleteTime() + todayWeeklyStats.getTotalFailTime());
+                pastRate = (weeklyPastStats.getTotalCompleteTime() + weeklyPastStats.getTotalFailTime()== 0) ?
+                        0 : (double) weeklyPastStats.getTotalCompleteTime() /
+                        (weeklyPastStats.getTotalCompleteTime() + weeklyPastStats.getTotalFailTime());
+                Log.d("datacheck", "this week: " + currRate);
+                Log.d("datacheck", "last week: " + pastRate);
+                break;
+            case "Monthly":
+                currRate = (todayMonthlyStats.getTotalCompleteTime() + todayMonthlyStats.getTotalFailTime()== 0) ?
+                        0 : (double) todayMonthlyStats.getTotalCompleteTime() /
+                        (todayMonthlyStats.getTotalCompleteTime() + todayMonthlyStats.getTotalFailTime());
+                pastRate = (monthlyPastStats.getTotalCompleteTime() + monthlyPastStats.getTotalFailTime()== 0) ?
+                        0 : (double) monthlyPastStats.getTotalCompleteTime() /
+                        (monthlyPastStats.getTotalCompleteTime() + monthlyPastStats.getTotalFailTime());
+                Log.d("datacheck", "this month: " + currRate);
+                Log.d("datacheck", "last month: " +  pastRate);
+                break;
+            default:
+                currRate = (todayDailyStats.getTotalCompleteTime() + todayDailyStats.getTotalFailTime()== 0) ?
+                        0 : (double) todayDailyStats.getTotalCompleteTime() /
+                        (todayDailyStats.getTotalCompleteTime() + todayDailyStats.getTotalFailTime());
+                pastRate = (dailyPastStats.getTotalCompleteTime() + dailyPastStats.getTotalFailTime()== 0) ?
+                        0 : (double) dailyPastStats.getTotalCompleteTime() /
+                        (dailyPastStats.getTotalCompleteTime() + dailyPastStats.getTotalFailTime());
+                Log.d("datacheck", "today: " + currRate);
+                Log.d("datacheck", "yesterday: " + pastRate);
+                break;
+        }
+        productionRate = (currRate == 0) ?
+                0 : (currRate - pastRate) / currRate;
+        Log.d("datacheck", "production rate: " + productionRate);
+        return productionRate;
+    }
+
+    private void adjustData() {
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+        );
+
+
+        barChart = new BarChart(getContext());
+        barChart.setLayoutParams(layoutParams);
+        LinearLayout chartContainer = binding.containerForChart;
+        chartContainer.addView(barChart);
+
+
+
+        ArrayList<BarEntry> entries = new ArrayList<>();
+
+        int work_time;
+        int class_time;
+        int team_time;
+        int sports_time;
+        String dayinfo = "";
+
+        switch(currDatePage) {
+            case "Weekly":
+                work_time = todayWeeklyStats.getWorkTime();
+                class_time = todayWeeklyStats.getClassTime();
+                team_time = todayWeeklyStats.getTeamTime();
+                sports_time = todayWeeklyStats.getSportTime();;
+                dayinfo = "week";
+                break;
+            case "Monthly":
+                work_time = todayMonthlyStats.getWorkTime();
+                class_time = todayMonthlyStats.getClassTime();
+                team_time = todayMonthlyStats.getTeamTime();
+                sports_time = todayMonthlyStats.getSportTime();
+                dayinfo = "month";
+                break;
+            default:
+                work_time = todayDailyStats.getWorkTime();
+                class_time = todayDailyStats.getClassTime();
+                team_time = todayDailyStats.getTeamTime();
+                sports_time = todayDailyStats.getSportTime();
+                dayinfo = "day";
+                break;
+        }
+        entries.add(new BarEntry(0, (float)work_time)); // Work
+        entries.add(new BarEntry(1, (float)class_time)); // Study
+        entries.add(new BarEntry(2, (float)team_time)); // Class
+        entries.add(new BarEntry(3, (float)sports_time)); // Sports
+
+        BarDataSet barDataSet = new BarDataSet(entries, "");
+        int[] colors = new int[] {Color.CYAN, Color.BLUE, Color.GRAY, Color.BLACK};
+        barDataSet.setColors(colors);
+
+        BarData barData = new BarData(barDataSet);
+        barChart.setData(barData);
+        barData.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf(value);
+            }
+        });
+        barData.setDrawValues(true);
+        barData.setBarWidth(0.5f);
+        initBarChart();
+
+        double completion = calculateCompletion(currDatePage) * 100;
+        String completion_formatted = getString(R.string.percentage_display, completion);
+        Log.d("datacheck", "completion: " + completion);
+        progressBar = binding.progressBarDaily;
+        progressBar.setProgress((int) completion);
+        TextView progressPercentage = binding.progressPercentage;
+        progressPercentage.setText(completion_formatted);
+
+
+        featherNumber = binding.featherNumber;
+        featherAmount = getFeather(currDatePage);
+        Log.d("datacheck", "featherAmount: " + featherAmount);
+        featherNumber.setText(Integer.toString(featherAmount));
+
+        double productionPercentCalculated = calculateProductionRate(currDatePage) * 100;
+        Log.d("datacheck", "completionPercentCalculated: " + productionPercentCalculated);
+        if (productionPercentCalculated < 0) {
+            String progress_formatted = getString(R.string.percentage_display, -1 * productionPercentCalculated);
+            ImageView imageArrow = binding.upImage;
+            imageArrow.setRotation(180);
+            imageArrow.setColorFilter(getResources().getColor(R.color.red));
+            binding.productivityPercentage.setText(progress_formatted);
+            binding.productivityPercentage.setTextColor(getResources().getColor(R.color.red));
+            binding.productivityComment.setText("less productive than previous " + dayinfo +  "... Focus!");
+
+        } else {
+            String progress_formatted = getString(R.string.percentage_display, productionPercentCalculated);
+            binding.productivityPercentage.setText(progress_formatted);
+            binding.productivityComment.setText("more productive than previous " + dayinfo +  "!");
+        }
+
+    }
+
 
 
 }
