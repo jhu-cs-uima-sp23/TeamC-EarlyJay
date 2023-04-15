@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,10 +16,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.empty.databinding.FragmentStatBinding;
 import com.github.mikephil.charting.charts.BarChart;
@@ -49,6 +54,8 @@ public class Stat_frag extends Fragment {
 
     private String currDatePage;
 
+    private String currDateStr;
+
     private MainActivity main;
 
     private Context context;
@@ -56,6 +63,7 @@ public class Stat_frag extends Fragment {
     private DatabaseReference reference;
 
     private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor edit;
 
     private StatsCalculator todayDailyStats;
     private StatsCalculator dailyPastStats;
@@ -80,11 +88,28 @@ public class Stat_frag extends Fragment {
         context = main.getApplicationContext();
 
 
-        main.replaceFragment(R.id.stuff_on_dates, new DailyStatsFragment());
-        currDatePage = "Daily";
+
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        edit = sharedPreferences.edit();
+
         uid = sharedPreferences.getString("uid", "");
+        currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
+        DateStr now = new DateStr(currDateStr);
+        currDatePage = sharedPreferences.getString("currDatePage", "Daily");
+
+        switch(currDatePage) {
+            case "Weekly":
+                main.replaceFragment(R.id.stuff_on_dates, new WeeklyStatsFragment());
+                break;
+            case "Monthly":
+                main.replaceFragment(R.id.stuff_on_dates, new MonthlyStatsFragment());
+                break;
+            default:
+                main.replaceFragment(R.id.stuff_on_dates, new DailyStatsFragment());
+                break;
+        }
+
         reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
 
@@ -106,7 +131,6 @@ public class Stat_frag extends Fragment {
                             // client is null, error out
                             Log.e("DBREF:", "Data is unexpectedly null");
                         } else {
-                            DateStr now = new DateStr();
                             String dataDateStr = locStruct.getDateStr();
                             if (now.isDaily(dataDateStr)) {
                                 UpdateTimeInfo(locStruct, todayDailyStats);
@@ -140,33 +164,75 @@ public class Stat_frag extends Fragment {
         });
 
         Spinner dateSpinner = binding.spinner2;
-
+        ArrayAdapter myAdapter = (ArrayAdapter) dateSpinner.getAdapter();
+        dateSpinner.setSelection(myAdapter.getPosition(currDatePage));
         dateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String selected = adapterView.getItemAtPosition(i).toString();
-                System.out.println("selected item: " + selected);
                 if (selected.equals(currDatePage)) {
                     return;
                 }
-                switch(selected) {
-                    case "Weekly":
-                        main.replaceFragment(R.id.stuff_on_dates, new WeeklyStatsFragment());
-                        break;
-                    case "Monthly":
-                        main.replaceFragment(R.id.stuff_on_dates, new MonthlyStatsFragment());
-                        break;
-                    default:
-                        main.replaceFragment(R.id.stuff_on_dates, new DailyStatsFragment());
-                        break;
-                }
-                currDatePage = selected;
+                edit.putString("currDatePage", selected);
+                edit.putString("currDateStr", new DateStr().getDateStr());
+                edit.apply();
+                main.replaceFragment(R.id.frame_layout, new Stat_frag());
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
 
+            }
+        });
+
+        ImageButton leftButton = binding.leftRollButton;
+        ImageButton rightButton = binding.rightRollButton;
+
+        leftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String dateStr = "";
+                switch(currDatePage) {
+                    case "Weekly":
+                        dateStr = now.getPastDay(7);
+                        break;
+                    case "Monthly":
+                        dateStr = now.getPastDay(new DateStr(now.getPastDay(now.getDay())).getMonthDays());
+                        break;
+                    default:
+                        dateStr = now.getPastDay(1);
+                        break;
+                }
+                edit.putString("currDateStr", dateStr);
+                edit.apply();
+                main.replaceFragment(R.id.frame_layout, new Stat_frag());
+            }
+        });
+
+        rightButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String dateStr = "";
+                switch(currDatePage) {
+                    case "Weekly":
+                        dateStr = now.getFutureDay(7);
+                        break;
+                    case "Monthly":
+                        dateStr = now.getFutureDay(now.getMonthDays());
+                        break;
+                    default:
+                        dateStr = now.getFutureDay(1);
+                        break;
+                }
+                if (new DateStr(dateStr).comp(new DateStr()) > 0) {
+                    Toast.makeText(context,
+                            "This is the most recent day!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                edit.putString("currDateStr", dateStr);
+                edit.apply();
+                main.replaceFragment(R.id.frame_layout, new Stat_frag());
             }
         });
 
