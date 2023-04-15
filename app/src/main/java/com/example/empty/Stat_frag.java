@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.example.empty.databinding.FragmentStatBinding;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -36,7 +37,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -79,6 +82,7 @@ public class Stat_frag extends Fragment {
     private TextView txtper;
     private TextView featherNumber;
     int featherAmount;
+    private XAxis xAxis;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -274,6 +278,12 @@ public class Stat_frag extends Fragment {
 
     private void initBarChart(){
         //hiding the grey background of the chart, default false if not set
+
+        barChart.getDescription().setEnabled(false);
+        barChart.setDrawValueAboveBar(false);
+        barChart.setPinchZoom(false);
+        barChart.setDrawBarShadow(false);
+
         barChart.setDrawGridBackground(false);
         //remove the bar shadow, default false if not set
         barChart.setDrawBarShadow(false);
@@ -284,43 +294,32 @@ public class Stat_frag extends Fragment {
         Description description = new Description();
         description.setEnabled(false);
         barChart.setDescription(description);
-
-        //setting animation for y-axis, the bar will pop up from 0 to its value within the time we set
         barChart.animateY(1000);
-        //setting animation for x-axis, the bar will pop up separately within the time we set
         barChart.animateX(1000);
 
         XAxis xAxis = barChart.getXAxis();
-        //change the position of x-axis to the bottom
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        //set the horizontal distance of the grid line
         xAxis.setGranularity(1f);
-        //hiding the x-axis line, default true if not set
         xAxis.setDrawAxisLine(false);
-        //hiding the vertical grid lines, default true if not set
         xAxis.setDrawGridLines(false);
+        xAxis.setDrawLabels(true);
 
         YAxis leftAxis = barChart.getAxisLeft();
-        //hiding the left y-axis line, default true if not set
         leftAxis.setDrawAxisLine(false);
 
         YAxis rightAxis = barChart.getAxisRight();
-        //hiding the right y-axis line, default true if not set
         rightAxis.setDrawAxisLine(false);
+        YAxis yAxis = barChart.getAxisLeft();
+        yAxis.setAxisMinimum(0f);
 
         Legend legend = barChart.getLegend();
-        //setting the shape of the legend form to line, default square shape
-        legend.setForm(Legend.LegendForm.LINE);
-        //setting the text size of the legend
-        legend.setTextSize(11f);
-        //setting the alignment of legend toward the chart
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-        //setting the stacking direction of legend
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        //setting the location of legend outside the chart, default false if not set
         legend.setDrawInside(false);
-
+        legend.setEnabled(true);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        legend.setTextColor(R.color.red);
     }
 
     private float calculateCompletion(String currDatePage) {
@@ -406,8 +405,6 @@ public class Stat_frag extends Fragment {
         LinearLayout chartContainer = binding.containerForChart;
         chartContainer.addView(barChart);
 
-
-
         ArrayList<BarEntry> entries = new ArrayList<>();
 
         int work_time;
@@ -439,26 +436,58 @@ public class Stat_frag extends Fragment {
                 dayinfo = "day";
                 break;
         }
-        entries.add(new BarEntry(0, (float)work_time)); // Work
-        entries.add(new BarEntry(1, (float)class_time)); // Study
-        entries.add(new BarEntry(2, (float)team_time)); // Class
-        entries.add(new BarEntry(3, (float)sports_time)); // Sports
+        entries.add(new BarEntry(0,(float)work_time,"Work")); // Work
+        entries.add(new BarEntry(1,(float)class_time,"Study")); // Study
+        entries.add(new BarEntry(2,(float)team_time,"Class")); // Class
+        entries.add(new BarEntry(3,(float)sports_time,"Sports")); // Sports
 
         BarDataSet barDataSet = new BarDataSet(entries, "");
         int[] colors = new int[] {Color.CYAN, Color.BLUE, Color.GRAY, Color.BLACK};
         barDataSet.setColors(colors);
 
-        BarData barData = new BarData(barDataSet);
-        barChart.setData(barData);
-        barData.setValueFormatter(new ValueFormatter() {
+        barDataSet.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return String.valueOf(value);
+                // Format the value as needed, e.g., convert to int or round to specific decimal places
+                // and return as String
+                return String.format("%.2f", value);
             }
         });
-        barData.setDrawValues(true);
+
+        barDataSet.setDrawValues(true);
+        BarData barData = new BarData(barDataSet);
+        barChart.setData(barData);
+        barData.setDrawValues(false);
         barData.setBarWidth(0.5f);
+        xAxis = barChart.getXAxis();
+
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                // Convert the float value to an integer index for the barEntries ArrayList
+                int index = (int) value;
+                if (index >= 0 && index < entries.size()) {
+                    // Return the custom label for the corresponding bar entry
+                    switch (index) {
+                        case 0:
+                            return "Work";
+                        case 1:
+                            return "Study";
+                        case 2:
+                            return "Class";
+                        case 3:
+                            return "Sports";
+                        default:
+                            return "";
+                    }
+                } else {
+                    return "";
+                }
+            }
+        });
+        // Get the X-axis from the BarChart object
         initBarChart();
+
 
         double completion = calculateCompletion(currDatePage) * 100;
         String completion_formatted = getString(R.string.percentage_display, completion);
@@ -507,7 +536,4 @@ public class Stat_frag extends Fragment {
         }
 
     }
-
-
-
 }
