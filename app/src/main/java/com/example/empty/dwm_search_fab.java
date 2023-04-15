@@ -43,6 +43,8 @@ public class dwm_search_fab extends Fragment {
     private EditText searchEditText;
 
     private ImageButton searchButton;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,11 +60,15 @@ public class dwm_search_fab extends Fragment {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
 
+        // Setting Button
         binding.settingButton.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(mainActivity, binding.settingButton);
             popup.getMenuInflater().inflate(R.menu.setting_map_frag_menu, popup.getMenu());
             int last_selected = sharedPreferences.getInt("last_selected", -1);
             if(last_selected != -1){
+                popup.getMenu().getItem(last_selected).setChecked(true);
+            } else {
+                last_selected = 0;
                 popup.getMenu().getItem(last_selected).setChecked(true);
             }
             popup.setOnMenuItemClickListener(menuItem -> {
@@ -99,10 +105,12 @@ public class dwm_search_fab extends Fragment {
 
             popup.show();
         });
+
         binding.floatingActionButton.setOnClickListener(view1 -> {
             mainActivity.replaceFragment(R.id.stuff_on_map, new popup_start());
         });
 
+        // Search Bar
         searchEditText = view.findViewById(R.id.loc_input);
         searchButton = binding.searchButton;
         searchButton.setOnClickListener(v -> {
@@ -126,6 +134,7 @@ public class dwm_search_fab extends Fragment {
                                 // send the LatLng to the Map fragment
                                 Bundle args = new Bundle();
                                 args.putParcelable("location", latLng);
+                                args.putString("input_name", searchString);
                                 Map_frag mapFrag = new Map_frag();
                                 mapFrag.setArguments(args);
                                 mainActivity.replaceFragment(R.id.frame_layout, mapFrag);
@@ -145,6 +154,12 @@ public class dwm_search_fab extends Fragment {
             } else {
                 Toast.makeText(context, "Please enter a search query", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        // Clear search mark
+        ImageButton clearButton = binding.clearButton;
+        clearButton.setOnClickListener(v -> {
+            mainActivity.replaceFragment(R.id.frame_layout,  new Map_frag());
         });
 
     }

@@ -1,6 +1,7 @@
 package com.example.empty;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,8 @@ public class AdvancedSetting extends Fragment {
     private FragmentAdvancedSettingBinding binding;
     private Context context;
     private MainActivity main;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -31,6 +35,8 @@ public class AdvancedSetting extends Fragment {
         context = getActivity().getApplicationContext();
         binding = FragmentAdvancedSettingBinding.inflate(inflater, container, false);
         main = (MainActivity) getActivity();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        editor = sharedPreferences.edit();
         return binding.getRoot();
     }
 
@@ -45,8 +51,20 @@ public class AdvancedSetting extends Fragment {
             spinnerItems.add(new SpinnerItem(R.drawable.star_2_xxl, "Sports"));
             CustomSpinnerAdapter adapter = new CustomSpinnerAdapter(getContext(), spinnerItems);
             binding.workType.setAdapter(adapter);}
-        binding.advance.setOnClickListener(e->{
-            main.replaceFragment(R.id.popUp, new AdvancedSetting());
+        binding.simple.setOnClickListener(e->{
+            main.replaceFragment(R.id.popUp, new SimpleSetting());
         });
+        binding.close.setOnClickListener(e->{
+            main.removeFragment(R.id.popUp, this);
+        });
+        binding.done.setOnClickListener(e->{
+            String title = binding.cusomeTitle.getText().toString();
+            String startTime = binding.startTime.getText().toString();
+            editor.putBoolean("newPlan", true);
+//            editor.putString();
+            editor.apply();
+            main.removeFragment(R.id.popUp, this);
+        });
+
     }
 }

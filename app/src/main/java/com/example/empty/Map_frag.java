@@ -3,31 +3,19 @@ package com.example.empty;
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.PopupWindow;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.Fragment;
-
-import android.content.SharedPreferences;
 import com.example.empty.databinding.FragmentMapBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -37,28 +25,18 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import java.security.PrivateKey;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
-public class Map_frag extends Fragment implements OnMapReadyCallback{
+public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback{
 
     private FragmentMapBinding binding;
     private MapView mMapView;
@@ -83,10 +61,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
     private ArrayList<LocationStruct> locStructListByWeek;
     private ArrayList<LocationStruct> locStructListByMonth;
 
-
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private GroundOverlayOptions groundOverlayOptions;
-    private Map_child_viewModel shared_data;
     private static final LatLngBounds JHU_BOUNDS = new LatLngBounds(
             new LatLng(39.3256, -76.6228), new LatLng(39.3303, -76.6189));
 
@@ -150,8 +124,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
 
         // Get the MapView from the layout
         mMapView = binding.mapView;
-        // Important: call onCreate() on the MapView
-        mMapView.onCreate(savedInstanceState);
+
         // Register the callback for when the map is ready
         mMapView.getMapAsync(this);
 
@@ -167,7 +140,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
         if (latitude_tmp!=0 && longitude_tmp!=0) {
             latitude = latitude_tmp;
             longitude = longitude_tmp;
-           Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
+            Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
         }
 
         binding.stuffOnMap.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -287,19 +260,11 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
 
+        mMap = googleMap;
         mMap.setLatLngBoundsForCameraTarget(JHU_BOUNDS);
 
-        Bundle args = getArguments();
-        if (args != null) {
-            search_location = args.getParcelable("location");
-            MarkerOptions markerOptions = new MarkerOptions().position(search_location);
-            mMap.addMarker(markerOptions);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(search_location, 17));
-        }
 
-        // Check if location permission is granted
         if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
@@ -330,6 +295,14 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
             // Show an empty map if location permission is not granted
             Toast.makeText(getContext(), "Location permission not granted, showing empty map",
                     Toast.LENGTH_SHORT).show();
+        }
+
+        Bundle args = getArguments();
+        if (args != null) {
+            search_location = args.getParcelable("location");
+            MarkerOptions markerOptions = new MarkerOptions().position(search_location);
+            mMap.addMarker(markerOptions);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(search_location, 17));
         }
 
         int selected = sharedPreferences.getInt("last_selected", 0);
@@ -422,5 +395,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback{
             return R.drawable.star_2_xxl;
         }
     }
+
 
 }

@@ -71,4 +71,19 @@
         app:backgroundTint="@color/lavender"
         tools:ignore="ImageContrastCheck" />
 
+    <ImageButton
+        android:id="@+id/clearButton"
+        android:layout_width="34dp"
+        android:layout_height="35dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/cancel_search_button"
+        app:layout_constraintBottom_toBottomOf="@+id/loc_input"
+        app:layout_constraintEnd_toEndOf="@+id/loc_input"
+        app:layout_constraintHorizontal_bias="0.961"
+        app:layout_constraintStart_toStartOf="@+id/loc_input"
+        app:layout_constraintTop_toTopOf="@+id/loc_input"
+        app:tint="#7E7E7E" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,7 @@
 package com.example.empty;
 
 import android.content.Context;
-import android.view.ContentInfo;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -15,12 +15,15 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
     Context context;
     ArrayList<PlannerItemModel> plannerItemModels;
     public PlannerItemAdapter(Context context, ArrayList<PlannerItemModel> plannerItemModels){
-
+        this.context = context;
+        this.plannerItemModels = plannerItemModels;
     }
     @NonNull
     @Override
     public PlannerItemAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.planner_item, parent, false);
+        return new PlannerItemAdapter.MyViewHolder(view);
     }
 
     @Override
@@ -43,8 +46,8 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
         Boolean pinned;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.Title);
-            startTime = itemView.findViewById(R.id.time);
+            title = itemView.findViewById(R.id.itemTitle);
+            startTime = itemView.findViewById(R.id.itemTime);
 
         }
     }
