@@ -1,5 +1,6 @@
 package com.example.empty;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -463,10 +464,25 @@ public class Stat_frag extends Fragment {
         String completion_formatted = getString(R.string.percentage_display, completion);
         Log.d("datacheck", "completion: " + completion);
         progressBar = binding.progressBarDaily;
-        progressBar.setProgress((int) completion);
+
+        if ((int) completion == 0) {
+            Log.d("datacheck", "completion is 0");
+            progressBar.setProgress(0);
+        } else {
+            // Create an ObjectAnimator to animate the ProgressBar progress
+            ObjectAnimator progressAnimator = ObjectAnimator.ofInt(progressBar,
+                    "progress", 0, (int) completion);
+
+            // Set the duration of the animation (in milliseconds)
+            progressAnimator.setDuration(1500);
+
+            // Start the animation
+            progressAnimator.start();
+
+        }
+        // progressBar.setProgress((int) completion);
         TextView progressPercentage = binding.progressPercentage;
         progressPercentage.setText(completion_formatted);
-
 
         featherNumber = binding.featherNumber;
         featherAmount = getFeather(currDatePage);
