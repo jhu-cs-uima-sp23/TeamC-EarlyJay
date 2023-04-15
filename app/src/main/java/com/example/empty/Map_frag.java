@@ -61,7 +61,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
     private ArrayList<LocationStruct> locStructListByWeek;
     private ArrayList<LocationStruct> locStructListByMonth;
 
-    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 123;
     private static final LatLngBounds JHU_BOUNDS = new LatLngBounds(
             new LatLng(39.3256, -76.6228), new LatLng(39.3303, -76.6189));
 
@@ -141,7 +140,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
         if (latitude_tmp!=0 && longitude_tmp!=0) {
             latitude = latitude_tmp;
             longitude = longitude_tmp;
-           Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
+            Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
         }
 
         binding.stuffOnMap.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -265,10 +264,9 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
         mMap = googleMap;
         mMap.setLatLngBoundsForCameraTarget(JHU_BOUNDS);
 
-        // Check if location permission is granted
+
         if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
 
             // Enable the "My Location" layer on the map
             mMap.setMyLocationEnabled(true);
@@ -293,22 +291,19 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
                     });
             // Apply the custom map style
             mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.style_json));
-
-            Bundle args = getArguments();
-            if (args != null) {
-                search_location = args.getParcelable("location");
-                MarkerOptions markerOptions = new MarkerOptions().position(search_location);
-                mMap.addMarker(markerOptions);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(search_location, 17));
-            }
-
         } else {
             // Show an empty map if location permission is not granted
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_LOCATION);
+            Toast.makeText(getContext(), "Location permission not granted, showing empty map",
+                    Toast.LENGTH_SHORT).show();
         }
 
+        Bundle args = getArguments();
+        if (args != null) {
+            search_location = args.getParcelable("location");
+            MarkerOptions markerOptions = new MarkerOptions().position(search_location);
+            mMap.addMarker(markerOptions);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(search_location, 17));
+        }
 
         int selected = sharedPreferences.getInt("last_selected", 0);
         switch(selected) {
@@ -398,22 +393,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
             return R.drawable.triangle_48;
         } else {
             return R.drawable.star_2_xxl;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,String[] permissions, int[] grantResults)
-    {
-
-        if (requestCode == MY_PERMISSIONS_REQUEST_LOCATION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, regenerate the map with current location
-                onMapReady(mMap);
-            } else {
-                // Permission denied, show a message or do something else
-                Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
-                main.setContentView(R.layout.activity_empty);
-            }
         }
     }
 
