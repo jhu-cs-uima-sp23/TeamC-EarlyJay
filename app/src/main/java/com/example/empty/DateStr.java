@@ -80,11 +80,23 @@ public class DateStr {
         return daysInAMonth[1] + 1;
     }
 
+    public int getMonthDays() {
+        int[] daysInAMonth = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        if (month != 2) {
+            return daysInAMonth[month - 1];
+        }
+        if (getYearDays(year) == 365) {
+            return daysInAMonth[1];
+        }
+        return daysInAMonth[1] + 1;
+    }
+
+
     public String getPastDay(int dayNum) {
         int startYear = 0;
         int startMonth = 0;
         int startDay = 0;
-        int startDayOfTheWeek = (dayOfTheWeek - dayNum + 7 * dayNum) % 7;
+        int startDayOfTheWeek = (dayOfTheWeek - 1 - dayNum + 7 * dayNum) % 7 + 1;
         if (day > dayNum) {
             startDay = day - dayNum;
             startMonth = month;
@@ -97,6 +109,29 @@ public class DateStr {
             startDay = getMonthDays(year - 1, 12) + day - dayNum;
             startMonth = 12;
             startYear = year - 1;
+        }
+        String startMonthStr = (startMonth < 10) ? "0" + startMonth : Integer.toString(startMonth);
+        String startDayStr = (startDay < 10) ? "0" + startDay : Integer.toString(startDay);
+        return startYear + "-" + startMonthStr + "-" + startDayStr + "-" + startDayOfTheWeek;
+    }
+
+    public String getFutureDay(int dayNum) {
+        int startYear;
+        int startMonth;
+        int startDay;
+        int startDayOfTheWeek = (dayOfTheWeek - 1+ dayNum ) % 7 + 1;
+        if (day + dayNum <= getMonthDays(year, month)) {
+            startYear = year;
+            startMonth = month;
+            startDay = day + dayNum;
+        } else if (month != 12) {
+            startMonth = month + 1;
+            startYear = year;
+            startDay = day + dayNum - getMonthDays(year, month);
+        } else {
+            startYear = year + 1;
+            startMonth = 1;
+            startDay = day + dayNum - getMonthDays(year, month);
         }
         String startMonthStr = (startMonth < 10) ? "0" + startMonth : Integer.toString(startMonth);
         String startDayStr = (startDay < 10) ? "0" + startDay : Integer.toString(startDay);

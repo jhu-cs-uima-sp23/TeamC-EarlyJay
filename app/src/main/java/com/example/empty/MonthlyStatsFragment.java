@@ -1,10 +1,12 @@
 package com.example.empty;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,8 @@ public class MonthlyStatsFragment extends Fragment {
 
     private DateStr currDay;
 
+    private SharedPreferences sharedPreferences;
+
     private MainActivity main;
 
     private Context context;
@@ -40,14 +44,14 @@ public class MonthlyStatsFragment extends Fragment {
         binding = FragmentMonthlyStatsBinding.inflate(inflater, container, false);
         main = (MainActivity) getActivity();
         context = main.getApplicationContext();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-        currDay = new DateStr();
+        currDay = new DateStr(sharedPreferences.getString("currDateStr", new DateStr().getDateStr()));
 
         binding.yearNumMonthly.setText(Integer.toString(currDay.getYear()));
         binding.thisMonth.setText(Months[currDay.getMonth() - 1]);
         binding.lastMonth.setText(Months[(currDay.getMonth() - 2 + 12) % 12]);
         binding.nextMonth.setText(Months[currDay.getMonth() % 12]);
-
 
         return binding.getRoot();
     }

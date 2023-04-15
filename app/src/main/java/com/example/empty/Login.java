@@ -51,6 +51,8 @@ public class Login extends AppCompatActivity {
         reference = rootNode.getReference("users");
 
         String uid = sharedPreferences.getString("uid", "");
+
+        System.out.println("uid: " + uid);
         if (uid.equals("")) {
             uid = createTransactionID();
             edit.putString("uid", uid);

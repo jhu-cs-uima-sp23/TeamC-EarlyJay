@@ -1,64 +1,73 @@
 package com.example.empty;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.empty.databinding.FragmentMonthlyStatsBinding;
+import com.example.empty.databinding.FragmentWeeklyStatsBinding;
+
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link WeeklyStatsFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class WeeklyStatsFragment extends Fragment {
+    private FragmentWeeklyStatsBinding binding;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private DateStr currDay;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private int[] daysInAWeek;
 
-    public WeeklyStatsFragment() {
-        // Required empty public constructor
-    }
+    private SharedPreferences sharedPreferences;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment WeeklyStatsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static WeeklyStatsFragment newInstance(String param1, String param2) {
-        WeeklyStatsFragment fragment = new WeeklyStatsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private MainActivity main;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private Context context;
+
+    private String[] Months = {"January", "February", "March", "April", "May", "June", "July",
+            "August", "September", "October", "November", "December"};
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_weekly_stats, container, false);
+
+        daysInAWeek = new int[7];
+
+        binding = FragmentWeeklyStatsBinding.inflate(inflater, container, false);
+        main = (MainActivity) getActivity();
+        context = main.getApplicationContext();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        currDay = new DateStr(sharedPreferences.getString("currDateStr", new DateStr().getDateStr()));
+
+        int i = 1;
+
+        for (; i < currDay.getDayOfTheWeek(); ++i) {
+            daysInAWeek[i - 1] = new DateStr(currDay.getPastDay(currDay.getDayOfTheWeek() - i)).getDay();
+        }
+        daysInAWeek[i - 1] = currDay.getDay();
+        i++;
+        for (; i <= 7; ++i) {
+            daysInAWeek[i - 1] = new DateStr(currDay.getFutureDay(i - currDay.getDayOfTheWeek())).getDay();
+        }
+
+        binding.yearNumWeekly.setText(Integer.toString(currDay.getYear()));
+        binding.monthNumWeekly.setText(Months[currDay.getMonth() - 1]);
+        binding.sundayDate.setText(Integer.toString(daysInAWeek[0]));
+        binding.mondayDate.setText(Integer.toString(daysInAWeek[1]));
+        binding.tuesdayDate.setText(Integer.toString(daysInAWeek[2]));
+        binding.wednesdayDate.setText(Integer.toString(daysInAWeek[3]));
+        binding.thursdayDate.setText(Integer.toString(daysInAWeek[4]));
+        binding.fridayDate.setText(Integer.toString(daysInAWeek[5]));
+        binding.saturdayDate.setText(Integer.toString(daysInAWeek[6]));
+
+        return binding.getRoot();
     }
+
 }

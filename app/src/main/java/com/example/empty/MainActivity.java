@@ -6,7 +6,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 import com.example.empty.databinding.ActivityMainBinding;
 import com.google.firebase.database.DatabaseReference;
@@ -16,10 +19,18 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
+    private Context context;
+
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor edit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
+        context = getApplicationContext();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        edit = sharedPreferences.edit();
         setContentView(binding.getRoot());
         int frame = R.id.frame_layout;
         replaceFragment(frame, new Map_frag());
@@ -30,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment(frame, new Map_frag());
                     break;
                 case R.id.stat:
+                    edit.putString("currDatePage", "Daily");
+                    edit.putString("currDateStr", new DateStr().getDateStr());
+                    edit.apply();
                     replaceFragment(frame, new Stat_frag());
                     break;
                 case R.id.planner:
