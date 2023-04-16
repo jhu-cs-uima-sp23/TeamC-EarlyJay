@@ -2,10 +2,12 @@ package com.example.empty;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,20 +61,32 @@ public class Planner_frag extends Fragment {
                         String title = sharedPreferences.getString("title", "");
                         String startTime = sharedPreferences.getString("startTime", "0");
                         String durationTxt = sharedPreferences.getString("durationTxt", "0");
+                        String notificationTxt = sharedPreferences.getString("notification", "");
                         durationTxt = durationTxt.substring(0, durationTxt.indexOf(" "));
                         int duration = Integer.parseInt(durationTxt);
+                        int notification = -1;
+                        if(!notificationTxt.equals(getString(R.string.select_alert))){
+                            notificationTxt = notificationTxt.substring(0, notificationTxt.indexOf(" "));
+                            notification = Integer.parseInt(notificationTxt);
+                        }
                         int workType = sharedPreferences.getInt("workType", -1);
-                        int notification = Integer.parseInt(sharedPreferences.getString("notification", "-1"));
-                        addPlan(title,startTime,duration,workType,notification);
-                        editor.putBoolean("newPlan", false);
-                        editor.putString("durationTxt", getResources().getString(R.string.select_duration));
-                        editor.apply();
+                        String cardBackgroundColor = "#D04C25";
+                        switch (workType){
+                            case R.drawable.yellows:
+                                cardBackgroundColor = "#F3A83B";
+                                break;
+                            case R.drawable.triangle_48:
+                                cardBackgroundColor = "#ACCC8C";
+                                break;
+                            case R.drawable.star_2_xxl:
+                                cardBackgroundColor = "#65BFF5";
+                                break;
+                            default:
+                                break;
+                        }
+                        addPlan(title,startTime,duration,workType,notification, Color.parseColor(cardBackgroundColor));
+                        reset();
                     }
-                }else{
-                    View content = binding.popUp.getChildAt(0);
-                    int contentId = content.getId();
-                    String viewName = getResources().getResourceName(contentId);
-                    Log.d("TAG", "onLayoutChange: "+viewName);
                 }
             }
         });
@@ -87,11 +101,25 @@ public class Planner_frag extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
     }
 
-    public void addPlan(String title, String startTime, int duration, int workType, int notification){
-        plannerItemModels.add(new PlannerItemModel(title, startTime, duration, workType, notification));
-//        recyclerView.getLayoutManager().addView(view);
+    public void addPlan(String title, String startTime, int duration, int workType, int notification, int color){
+        plannerItemModels.add(new PlannerItemModel(title, startTime, duration, workType, notification, color));
         adapter.notifyItemInserted(plannerItemModels.size()-1);
         Log.d("TAG", "addPlan: added");
     }
 
+    public void reset(){
+        editor.putBoolean("newPlan", false);
+        editor.putInt("lastSelected", 0);
+        editor.putInt("workType", -1);
+        editor.putString("title", "");
+        editor.putString("startTime", getString(R.string.select_start_time));
+        editor.putString("durationTxt", getResources().getString(R.string.select_duration));
+        editor.putString("notification", getString(R.string.select_alert));
+        editor.apply();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        reset();
+    }
 }

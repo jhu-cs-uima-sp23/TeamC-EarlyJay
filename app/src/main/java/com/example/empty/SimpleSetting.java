@@ -4,7 +4,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -43,7 +42,6 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private String startTime;
-    private Resources res;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,7 +51,6 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
         main = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         editor = sharedPreferences.edit();
-        res = getResources();
         return binding.getRoot();
     }
 
@@ -62,33 +59,48 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
         super.onViewCreated(view, savedInstanceState);
 //        spinner
         List<SpinnerItem> spinnerItems = new ArrayList<>();
-        spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, "Work"));
-        spinnerItems.add(new SpinnerItem(R.drawable.yellows, "Class"));
-        spinnerItems.add(new SpinnerItem(R.drawable.triangle_48, "Team"));
-        spinnerItems.add(new SpinnerItem(R.drawable.star_2_xxl, "Sports"));
+        spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, getString(R.string.work)));
+        spinnerItems.add(new SpinnerItem(R.drawable.yellows, getString(R.string.class_)));
+        spinnerItems.add(new SpinnerItem(R.drawable.triangle_48, getString(R.string.team)));
+        spinnerItems.add(new SpinnerItem(R.drawable.star_2_xxl, getString(R.string.sport)));
         CustomSpinnerAdapter adapter = new CustomSpinnerAdapter(getContext(), spinnerItems);
-        TimePickerDialog.OnTimeSetListener onTimeSetListener= new TimePickerDialog.OnTimeSetListener(){
-
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minuteOfDay) {
-                String hour = ""+hourOfDay, minute = ""+minuteOfDay;
-                if(hourOfDay<10){
-                    hour = "0"+hour;
-                }
-                if(minuteOfDay<10){
-                    minute = "0"+minute;
-                }
-                startTime = hour+":"+minute;
-                binding.startTime.setText(startTime);
+        TimePickerDialog.OnTimeSetListener onTimeSetListener= (view1, hourOfDay, minuteOfDay) -> {
+            String hour = ""+hourOfDay, minute = ""+minuteOfDay;
+            if(hourOfDay<10){
+                hour = "0"+hour;
             }
+            if(minuteOfDay<10){
+                minute = "0"+minute;
+            }
+            startTime = hour+":"+minute;
+            if(startTime.charAt(0)=='0'){
+                startTime = startTime.substring(1);
+            }
+            binding.startTime.setText(startTime);
         };
+
+//        for switching from advanced view
         binding.workType.setAdapter(adapter);
+        binding.workType.setSelection(sharedPreferences.getInt("lastSelected", 0));
+        binding.startTime.setText(sharedPreferences.getString("startTime", getString(R.string.select_start_time)));
+        binding.duration.setText(sharedPreferences.getString("durationTxt", getString(R.string.select_duration)));
+
+//        click handlers
         binding.advance.setOnClickListener(e->{
+            editor.putInt("lastSelected", binding.workType.getSelectedItemPosition());
+            editor.putString("startTime", binding.startTime.getText().toString());
+            editor.putString("durationTxt", binding.duration.getText().toString());
+            editor.apply();
             main.replaceFragment(R.id.popUp, new AdvancedSetting());
         });
         binding.close.setOnClickListener(e->{
-            editor.putString("durationTxt", res.getString(R.string.select_duration));
-            editor.commit();
+            editor.putInt("lastSelected", 0);
+            editor.putInt("workType", -1);
+            editor.putString("title", "");
+            editor.putString("startTime", getString(R.string.select_start_time));
+            editor.putString("durationTxt", getResources().getString(R.string.select_duration));
+            editor.putString("notification", getString(R.string.select_alert));
+            editor.apply();
             main.removeFragment(R.id.popUp, this);
         });
         binding.startTime.setOnClickListener(e->{
@@ -96,8 +108,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
             timePickerDialog.show();
 
         });
-        Button durationButton = binding.duration;
-        durationButton.setOnClickListener(e->{
+        binding.duration.setOnClickListener(e->{
             NumberPicker numberPicker = new NumberPicker();
             numberPicker.setOnDialogDismissedListener(this);
             numberPicker.show(getChildFragmentManager(), "");
@@ -108,8 +119,8 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
             Log.d("TAG", "onViewCreated: "+workType);
             String startTime = binding.startTime.getText().toString();
             String durationTxt = binding.duration.getText().toString();
-            if(checkEmpty(startTime, res.getString(R.string.select_start_time)) ||
-                    checkEmpty(durationTxt, res.getString(R.string.select_duration))) {
+            if(checkEmpty(startTime, getString(R.string.select_start_time)) ||
+                    checkEmpty(durationTxt, getString(R.string.select_duration))) {
                 return;
             }
             editor.putBoolean("newPlan", true);
@@ -129,7 +140,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
     }
     @Override
     public void onDismissed() {
-        String duration = sharedPreferences.getString("durationTxt", res.getString(R.string.select_duration));
+        String duration = sharedPreferences.getString("durationTxt", getString(R.string.select_duration));
         binding.duration.setText(duration);
     }
 }

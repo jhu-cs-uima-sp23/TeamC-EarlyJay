@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/dwm_group">
+        <item android:title="@string/_5_minutes_before" />
+        <item android:title="@string/_10_minutes_before" />
+        <item android:title="@string/_15_minutes_before" />
+        <item android:title="@string/_30_minutes_before" />
+        <item android:title="@string/_1_hour_before" />
+        <item android:title="@string/_2_hours_before" />
+    </group>
+</menu>
