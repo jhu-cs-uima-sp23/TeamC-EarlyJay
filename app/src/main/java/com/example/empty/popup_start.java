@@ -69,8 +69,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
         edit = sharedPreferences.edit();
 
         progressCircular = binding.circularSeekBar;
-
-
         progressCircular.setMax(MAX);
         factorProgress = 12;
         featherCount = 12;
@@ -103,9 +101,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
         binding.button.setOnClickListener(v -> {
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
-            shared_data.getData().observe(getViewLifecycleOwner(), data -> {
-                //TODO: you can add stuff here to get data
-            });
         });
 
         progressCircular.setOnSeekBarChangeListener(this);
@@ -164,15 +159,9 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
         binding.rewardLine.setText("Reward: " + featherCount);
     }
-        @Override
-        public void onStopTrackingTouch(CircularSeekBar seekBar) {
-
-
-        }
-
-        @Override
-        public void onStartTrackingTouch(CircularSeekBar seekBar) {
-
-        }
+    @Override
+    public void onStopTrackingTouch(CircularSeekBar seekBar) {}
+    @Override
+    public void onStartTrackingTouch(CircularSeekBar seekBar) {}
 
 }

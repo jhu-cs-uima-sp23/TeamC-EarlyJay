@@ -29,7 +29,8 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
     @Override
     public void onBindViewHolder(@NonNull PlannerItemAdapter.MyViewHolder holder, int position) {
         holder.title.setText(plannerItemModels.get(position).title);
-        holder.startTime.setText(plannerItemModels.get(position).startTime);
+        String timeRange = plannerItemModels.get(position).startTime + "-" + plannerItemModels.get(position).endTime;
+        holder.startTime.setText(timeRange);
     }
 
     @Override
