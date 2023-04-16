@@ -5,29 +5,21 @@ import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.preference.PreferenceManager;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.PopupMenu;
-import android.widget.PopupWindow;
-import android.widget.Toast;
-
 import com.example.empty.databinding.FragmentDwmSearchFabBinding;
-import com.example.empty.databinding.FragmentMapBinding;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,9 +33,6 @@ public class dwm_search_fab extends Fragment {
     private SharedPreferences.Editor edit;
 
     private EditText searchEditText;
-
-    private ImageButton searchButton;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,10 +101,8 @@ public class dwm_search_fab extends Fragment {
 
         // Search Bar
         searchEditText = view.findViewById(R.id.loc_input);
-        searchButton = binding.searchButton;
-        searchButton.setOnClickListener(v -> {
+        binding.searchButton.setOnClickListener(v -> {
             String searchString = searchEditText.getText().toString().trim();
-           // searchString += "Johns Hopkins";
             double minLat = 39.327128;
             double maxLat = 39.332359;
             double minLng = -76.624858;
@@ -157,8 +144,7 @@ public class dwm_search_fab extends Fragment {
         });
 
         // Clear search mark
-        ImageButton clearButton = binding.clearButton;
-        clearButton.setOnClickListener(v -> {
+        binding.clearButton.setOnClickListener(v -> {
             mainActivity.replaceFragment(R.id.frame_layout,  new Map_frag());
         });
 
