@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout7"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/popup_shape"
+    tools:context=".NumberPicker">
+
+    <me.tankery.lib.circularseekbar.CircularSeekBar
+        android:id="@+id/circular_seek_bar"
+        android:layout_width="213dp"
+        android:layout_height="214dp"
+        app:cs_circle_color="@color/light_gray"
+        app:cs_circle_fill="@color/white"
+        app:cs_circle_progress_color="@color/lavender"
+        app:cs_circle_stroke_width="6dp"
+        app:cs_circle_style="round"
+        app:cs_circle_x_radius="0dp"
+        app:cs_circle_y_radius="0dp"
+        app:cs_disable_pointer="false"
+        app:cs_disable_progress_glow="true"
+        app:cs_hide_progress_when_empty="true"
+        app:cs_lock_enabled="true"
+        app:cs_maintain_equal_circle="true"
+        app:cs_max="120"
+        app:cs_move_outside_circle="true"
+        app:cs_negative_enabled="false"
+        app:cs_pointer_alpha_ontouch="5"
+        app:cs_pointer_angle="0"
+        app:cs_pointer_color="@color/lavender"
+        app:cs_pointer_stroke_width="20dp"
+        app:cs_progress="60"
+        app:cs_use_custom_radii="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.402" />
+
+    <TextView
+        android:id="@+id/count_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/time_span"
+        android:textColor="@color/lavender"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/circular_seek_bar"
+        app:layout_constraintEnd_toEndOf="@+id/circular_seek_bar"
+        app:layout_constraintStart_toStartOf="@+id/circular_seek_bar"
+        app:layout_constraintTop_toTopOf="@+id/circular_seek_bar" />
+
+    <Button
+        android:id="@+id/cancel_button"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="-96dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#F44336"
+        android:text="@string/cancel"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/circular_seek_bar"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/circular_seek_bar"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-96dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/confirm"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/circular_seek_bar"
+        app:layout_constraintTop_toBottomOf="@+id/circular_seek_bar"
+        app:layout_constraintVertical_bias="0.0" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

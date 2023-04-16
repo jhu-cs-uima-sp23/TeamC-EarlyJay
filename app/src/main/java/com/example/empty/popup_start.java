@@ -69,8 +69,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
         edit = sharedPreferences.edit();
 
         progressCircular = binding.circularSeekBar;
-
-
         progressCircular.setMax(MAX);
         factorProgress = 12;
         featherCount = 12;
@@ -103,9 +101,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
         binding.button.setOnClickListener(v -> {
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
-            shared_data.getData().observe(getViewLifecycleOwner(), data -> {
-                //TODO: you can add stuff here to get data
-            });
         });
 
         progressCircular.setOnSeekBarChangeListener(this);
@@ -119,16 +114,13 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 //        mSpinner.setAdapter(adapter);
 
         List<SpinnerItem> spinnerItems = new ArrayList<>();
-        spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, "Work"));
-        spinnerItems.add(new SpinnerItem(R.drawable.yellows, "Class"));
-        spinnerItems.add(new SpinnerItem(R.drawable.triangle_48, "Team"));
-        spinnerItems.add(new SpinnerItem(R.drawable.star_2_xxl, "Sports"));
+        spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, getString(R.string.work)));
+        spinnerItems.add(new SpinnerItem(R.drawable.yellows, getString(R.string.class_)));
+        spinnerItems.add(new SpinnerItem(R.drawable.triangle_48, getString(R.string.team)));
+        spinnerItems.add(new SpinnerItem(R.drawable.star_2_xxl, getString(R.string.sport)));
 
         CustomSpinnerAdapter adapter = new CustomSpinnerAdapter(getContext(), spinnerItems);
         mSpinner.setAdapter(adapter);
-
-
-
     }
 
     @Override
@@ -164,15 +156,9 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
         binding.rewardLine.setText("Reward: " + featherCount);
     }
-        @Override
-        public void onStopTrackingTouch(CircularSeekBar seekBar) {
-
-
-        }
-
-        @Override
-        public void onStartTrackingTouch(CircularSeekBar seekBar) {
-
-        }
+    @Override
+    public void onStopTrackingTouch(CircularSeekBar seekBar) {}
+    @Override
+    public void onStartTrackingTouch(CircularSeekBar seekBar) {}
 
 }

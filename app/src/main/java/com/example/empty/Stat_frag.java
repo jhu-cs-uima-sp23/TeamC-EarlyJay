@@ -102,7 +102,6 @@ public class Stat_frag extends Fragment {
 
         uid = sharedPreferences.getString("uid", "");
         currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
-        System.out.println("currDateStr " + currDateStr);
         DateStr now = new DateStr(currDateStr);
         currDatePage = sharedPreferences.getString("currDatePage", "Daily");
 
@@ -437,12 +436,12 @@ public class Stat_frag extends Fragment {
                 break;
         }
         entries.add(new BarEntry(0,(float)work_time,"Work")); // Work
-        entries.add(new BarEntry(1,(float)class_time,"Study")); // Study
-        entries.add(new BarEntry(2,(float)team_time,"Class")); // Class
+        entries.add(new BarEntry(1,(float)class_time,"Class")); // Study
+        entries.add(new BarEntry(2,(float)team_time,"Team")); // Class
         entries.add(new BarEntry(3,(float)sports_time,"Sports")); // Sports
 
         BarDataSet barDataSet = new BarDataSet(entries, "");
-        int[] colors = new int[] {Color.CYAN, Color.BLUE, Color.GRAY, Color.BLACK};
+        int[] colors = new int[] {Color.RED, Color.parseColor("#fab728"), Color.parseColor("#82cc58"), Color.parseColor("#69d9f5")};
         barDataSet.setColors(colors);
 
         barDataSet.setValueFormatter(new ValueFormatter() {

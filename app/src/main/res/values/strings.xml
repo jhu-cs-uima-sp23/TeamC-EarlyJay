@@ -34,15 +34,24 @@
     <string name="done">Done</string>
     <string name="percentage_display">%.1f%%</string>
     <string name="select_alert">Select Alert</string>
-    <string-array name="type_array">
-        <item>Work</item>
-        <item>Class</item>
-        <item>Team</item>
-        <item>Sport</item>
-    </string-array>
+    <string name="cancel">Cancel</string>
+    <string name="work">Work</string>
+    <string name="class_">Class</string>
+    <string name="team">Team</string>
+    <string name="sport">Sport</string>
+    <string name="_5_minutes_before">5 min before</string>
+    <string name="_10_minutes_before">10 min before</string>
+    <string name="_15_minutes_before">15 min before</string>
+    <string name="_30_minutes_before">30 min before</string>
+    <string name="_1_hour_before">1 hour before</string>
+    <string name="_2_hours_before">2 hours before</string>
     <string-array name="Stats_Display">
         <item>Daily</item>
         <item>Weekly</item>
         <item>Monthly</item>
+    </string-array>
+    <string-array name="Planner_Display">
+        <item>Daily</item>
+        <item>Weekly</item>
     </string-array>
 </resources>

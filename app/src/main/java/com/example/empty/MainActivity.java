@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment(frame, new Stat_frag());
                     break;
                 case R.id.planner:
+                    edit.putString("currDatePage", "Daily");
+                    edit.putString("currDateStr", new DateStr().getDateStr());
+                    edit.apply();
                     replaceFragment(frame, new Planner_frag());
                     break;
             }

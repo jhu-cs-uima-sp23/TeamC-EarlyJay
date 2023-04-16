@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -28,8 +29,11 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull PlannerItemAdapter.MyViewHolder holder, int position) {
-        holder.title.setText(plannerItemModels.get(position).title);
-        holder.startTime.setText(plannerItemModels.get(position).startTime);
+        PlannerItemModel item = plannerItemModels.get(position);
+        holder.title.setText(item.title);
+        String timeRange = item.startTime + " - " + item.endTime;
+        holder.startTime.setText(timeRange);
+        holder.cardView.setCardBackgroundColor(item.cardBackgroundColor);
     }
 
     @Override
@@ -40,6 +44,7 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         TextView title;
         TextView startTime;
+        CardView cardView;
         int duration;
         String workType;
         int notification;
@@ -48,7 +53,7 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
             super(itemView);
             title = itemView.findViewById(R.id.itemTitle);
             startTime = itemView.findViewById(R.id.itemTime);
-
+            cardView = itemView.findViewById(R.id.planner_card_view);
         }
     }
 }
