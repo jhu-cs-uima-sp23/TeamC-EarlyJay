@@ -30,7 +30,6 @@
         android:layout_alignStart="@+id/switch_img"
         android:layout_marginStart="0dp"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/round_hourglass_empty_24"
         app:srcCompat="@drawable/round_notifications_none_24" />
 
     <Spinner
@@ -65,7 +64,6 @@
         android:layout_alignStart="@+id/startTimeImg"
         android:layout_marginStart="0dp"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/round_access_time"
         app:srcCompat="@drawable/round_edit_24" />
 
     <ImageView

@@ -29,7 +29,6 @@
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/lavender"
         android:contentDescription="@string/search"
-        android:onClick="showPopUpSettingMapPage"
         android:padding="15dp"
         android:scaleType="fitCenter"
         android:src="@drawable/search"
@@ -65,7 +64,6 @@
         android:src="@drawable/add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:tint="@color/white"
         app:backgroundTint="@color/lavender"
@@ -76,6 +74,7 @@
         android:layout_width="34dp"
         android:layout_height="35dp"
         android:background="@android:color/transparent"
+        android:contentDescription="@string/cancel"
         android:scaleType="fitCenter"
         android:src="@drawable/cancel_search_button"
         app:layout_constraintBottom_toBottomOf="@+id/loc_input"
@@ -83,7 +82,8 @@
         app:layout_constraintHorizontal_bias="0.961"
         app:layout_constraintStart_toStartOf="@+id/loc_input"
         app:layout_constraintTop_toTopOf="@+id/loc_input"
-        app:tint="#7E7E7E" />
+        app:tint="#7E7E7E"
+        tools:ignore="TouchTargetSizeCheck" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
