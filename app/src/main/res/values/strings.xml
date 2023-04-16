@@ -50,4 +50,8 @@
         <item>Weekly</item>
         <item>Monthly</item>
     </string-array>
+    <string-array name="Planner_Display">
+        <item>Daily</item>
+        <item>Weekly</item>
+    </string-array>
 </resources>

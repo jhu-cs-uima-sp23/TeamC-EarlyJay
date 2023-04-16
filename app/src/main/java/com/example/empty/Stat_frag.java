@@ -102,7 +102,6 @@ public class Stat_frag extends Fragment {
 
         uid = sharedPreferences.getString("uid", "");
         currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
-        System.out.println("currDateStr " + currDateStr);
         DateStr now = new DateStr(currDateStr);
         currDatePage = sharedPreferences.getString("currDatePage", "Daily");
 

@@ -17,8 +17,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.empty.databinding.FragmentPlannerBinding;
 
@@ -38,6 +43,10 @@ public class Planner_frag extends Fragment {
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private PlannerItemAdapter adapter;
+
+    private String currDateStr;
+    private String currDatePage;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,6 +58,23 @@ public class Planner_frag extends Fragment {
         editor = sharedPreferences.edit();
         editor.putBoolean("newPlan", false);
         editor.apply();
+
+        currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
+        DateStr now = new DateStr(currDateStr);
+        currDatePage = sharedPreferences.getString("currDatePage", "Daily");
+
+        switch(currDatePage) {
+            case "Weekly":
+                mainActivity.replaceFragment(R.id.stuff_on_date, new WeeklyStatsFragment());
+                break;
+            case "Monthly":
+                mainActivity.replaceFragment(R.id.stuff_on_date, new MonthlyStatsFragment());
+                break;
+            default:
+                mainActivity.replaceFragment(R.id.stuff_on_date, new DailyStatsFragment());
+                break;
+        }
+
         binding.newPlan.setOnClickListener(e->{
             mainActivity.replaceFragment(R.id.popUp, new SimpleSetting());
         });
@@ -88,6 +114,75 @@ public class Planner_frag extends Fragment {
                         reset();
                     }
                 }
+            }
+        });
+
+        ImageButton leftButton = binding.leftRollButton2;
+        ImageButton rightButton = binding.rightRollButton2;
+
+        leftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String dateStr = "";
+                switch(currDatePage) {
+                    case "Weekly":
+                        dateStr = now.getPastDay(7);
+                        break;
+                    default:
+                        dateStr = now.getPastDay(1);
+                        break;
+                }
+                editor.putString("currDateStr", dateStr);
+                editor.apply();
+                mainActivity.replaceFragment(R.id.frame_layout, new Planner_frag());
+            }
+        });
+
+        rightButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String dateStr = "";
+                switch(currDatePage) {
+                    case "Weekly":
+                        dateStr = now.getFutureDay(7);
+                        break;
+                    case "Monthly":
+                        dateStr = now.getFutureDay(now.getMonthDays());
+                        break;
+                    default:
+                        dateStr = now.getFutureDay(1);
+                        break;
+                }
+                if (new DateStr(dateStr).comp(new DateStr()) > 0) {
+                    Toast.makeText(context,
+                            "This is the most recent day!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                editor.putString("currDateStr", dateStr);
+                editor.apply();
+                mainActivity.replaceFragment(R.id.frame_layout, new Planner_frag());
+            }
+        });
+
+        Spinner dateSpinner = binding.spinner3;
+        ArrayAdapter myAdapter = (ArrayAdapter) dateSpinner.getAdapter();
+        dateSpinner.setSelection(myAdapter.getPosition(currDatePage));
+        dateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selected = adapterView.getItemAtPosition(i).toString();
+                if (selected.equals(currDatePage)) {
+                    return;
+                }
+                editor.putString("currDatePage", selected);
+                editor.putString("currDateStr", new DateStr().getDateStr());
+                editor.apply();
+                mainActivity.replaceFragment(R.id.frame_layout, new Planner_frag());
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+
             }
         });
         return binding.getRoot();
