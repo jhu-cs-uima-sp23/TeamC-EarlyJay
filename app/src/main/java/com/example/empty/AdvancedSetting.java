@@ -3,6 +3,7 @@ package com.example.empty;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -53,6 +54,10 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        String uid = sharedPreferences.getString("uid", "");
+        rootNode = FirebaseDatabase.getInstance();
+        reference = rootNode.getReference().child("planner").child(uid);
+
 //        spinner
         List<SpinnerItem> spinnerItems = new ArrayList<>();
         spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, "Work"));
@@ -130,6 +135,32 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             editor.putString("durationTxt", durationTxt);
             editor.putString("notification", notification);
             editor.apply();
+
+            String color = "#D04C25";
+            switch (workType){
+                case R.drawable.yellows:
+                    color = "#F3A83B";
+                    break;
+                case R.drawable.triangle_48:
+                    color = "#ACCC8C";
+                    break;
+                case R.drawable.star_2_xxl:
+                    color = "#65BFF5";
+                    break;
+                default:
+                    break;
+            }
+
+            String dateStr = sharedPreferences.getString("currDateStr","");
+            durationTxt = durationTxt.substring(0, durationTxt.indexOf(" "));
+            int duration = Integer.parseInt(durationTxt);
+            int notice = -1;
+            if(!notification.equals(getString(R.string.select_alert))){
+                notification = notification.substring(0, notification.indexOf(" "));
+                notice = Integer.parseInt(notification);
+            }
+            reference.push().setValue(new PlannerItemFirebase(title, startTime, duration, workType, notice, Color.parseColor(color), dateStr));
+
             main.removeFragment(R.id.popUp, this);
         });
         binding.notification.setOnClickListener(e->{
@@ -141,9 +172,8 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             });
             popup.show();
         });
-        String uid = sharedPreferences.getString("uid", "");
-        rootNode = FirebaseDatabase.getInstance();
-        reference = rootNode.getReference().child("planner").child(uid);
+
+
 
     }
     public boolean checkEmpty(String source, String target){
