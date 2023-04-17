@@ -129,11 +129,6 @@ public class Planner_frag extends Fragment {
                     dateStr = now.getFutureDay(1);
                     break;
             }
-            if (new DateStr(dateStr).comp(new DateStr()) > 0) {
-                Toast.makeText(context,
-                        "This is the most recent day!", Toast.LENGTH_LONG).show();
-                return;
-            }
             editor.putString("currDateStr", dateStr);
             editor.apply();
             mainActivity.replaceFragment(R.id.frame_layout, new Planner_frag());
