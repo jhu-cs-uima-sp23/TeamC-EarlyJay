@@ -20,6 +20,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.empty.databinding.FragmentPlannerBinding;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -34,8 +39,15 @@ public class Planner_frag extends Fragment {
     private SharedPreferences.Editor editor;
     private PlannerItemAdapter adapter;
 
+    private ArrayList<PlannerItemFirebase> locStructListByDay;
+
+    FirebaseDatabase rootNode;
+    DatabaseReference reference;
+
     private String currDateStr;
     private String currDatePage;
+
+    private String uid;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -97,8 +109,8 @@ public class Planner_frag extends Fragment {
                         default:
                             break;
                     }
-                    addPlan(title,startTime,duration,workType,notification, Color.parseColor(cardBackgroundColor));
-                    reset();
+                    // addPlan(title,startTime,duration,workType,notification, Color.parseColor(cardBackgroundColor));
+                    // reset();
                 }
             }else{
                 binding.newPlan.hide();
@@ -153,6 +165,63 @@ public class Planner_frag extends Fragment {
         });
         ArrayAdapter myAdapter = (ArrayAdapter) binding.spinner3.getAdapter();
         binding.spinner3.setSelection(myAdapter.getPosition(currDatePage));
+
+        uid = sharedPreferences.getString("uid", uid);
+        rootNode = FirebaseDatabase.getInstance();
+        reference = FirebaseDatabase.getInstance().getReference().
+                child("planner").child(uid);
+
+        locStructListByDay = new ArrayList<>();
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                locStructListByDay = new ArrayList<>();
+
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    try {
+                        PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                        if (plannerItemFirebase == null) {
+                            // client is null, error out
+                            Log.e("DBREF:", "Data is unexpectedly null");
+                        } else {
+                            DateStr now = new DateStr();
+                            String dataDateStr = plannerItemFirebase.getDateStr();
+                            int workType = plannerItemFirebase.getWorkType();
+                            String cardBackgroundColor = "#D04C25";
+                            switch (workType){
+                                case R.drawable.yellows:
+                                    cardBackgroundColor = "#F3A83B";
+                                    break;
+                                case R.drawable.triangle_48:
+                                    cardBackgroundColor = "#ACCC8C";
+                                    break;
+                                case R.drawable.star_2_xxl:
+                                    cardBackgroundColor = "#65BFF5";
+                                    break;
+                                default:
+                                    break;
+                            }
+                            if (now.isDaily(dataDateStr)) {
+                                Log.d("checkdata","daily!");
+                                addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getstartTime(),
+                                        plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
+                                        plannerItemFirebase.getNotification(),
+                                        Color.parseColor(cardBackgroundColor));
+                            }
+                        }
+                    } catch (Exception e) {
+                        continue;
+                    }
+                }
+                reset();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
+            }
+        });
+
         return binding.getRoot();
     }
 
