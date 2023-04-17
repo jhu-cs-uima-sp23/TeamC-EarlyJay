@@ -19,7 +19,7 @@ public class PlannerItemFirebase {
     Boolean pinned = false;
     int cardBackgroundColor;
 
-    int status = 0;
+    int status;
 
     String dateStr;
     public PlannerItemFirebase(String title, String startTime, int duration, int workType,
@@ -51,6 +51,7 @@ public class PlannerItemFirebase {
             }
         }
         this.dateStr = dateStr;
+        this.status = 0;
     }
 
     public String getTitle() { return title; }

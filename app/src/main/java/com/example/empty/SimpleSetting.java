@@ -4,6 +4,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -142,6 +143,25 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
             editor.putString("startTime", startTime);
             editor.putString("durationTxt", durationTxt);
             editor.apply();
+            durationTxt = durationTxt.substring(0, durationTxt.indexOf(" "));
+            int duration = Integer.parseInt(durationTxt);
+            String cardBackgroundColor = "#D04C25";
+            switch (workType){
+                case R.drawable.yellows:
+                    cardBackgroundColor = "#F3A83B";
+                    break;
+                case R.drawable.triangle_48:
+                    cardBackgroundColor = "#ACCC8C";
+                    break;
+                case R.drawable.star_2_xxl:
+                    cardBackgroundColor = "#65BFF5";
+                    break;
+                default:
+                    break;
+            }
+            String dateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
+            reference.push().setValue(new PlannerItemFirebase("", startTime, duration,
+                    workType, -1, Color.parseColor(cardBackgroundColor), dateStr));
             main.removeFragment(R.id.popUp, this);
         });
     }
