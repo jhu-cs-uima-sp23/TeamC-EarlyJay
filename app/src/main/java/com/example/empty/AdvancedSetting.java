@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.example.empty.databinding.FragmentAdvancedSettingBinding;
 import com.example.empty.databinding.FragmentPopupStartBinding;
 import com.example.empty.databinding.FragmentSimpleSettingBinding;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,9 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private String startTime;
+    private FirebaseDatabase rootNode;
+    private DatabaseReference reference;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -136,6 +141,10 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             });
             popup.show();
         });
+        String uid = sharedPreferences.getString("uid", "");
+        rootNode = FirebaseDatabase.getInstance();
+        reference = rootNode.getReference().child("planner").child(uid);
+
     }
     public boolean checkEmpty(String source, String target){
         if(source.equals(target)){
