@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import com.example.empty.databinding.FragmentPopupStartBinding;
 import com.example.empty.databinding.FragmentSimpleSettingBinding;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,6 +45,11 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
     private SharedPreferences.Editor editor;
     private String startTime;
 
+    private String uid;
+
+    FirebaseDatabase rootNode;
+    DatabaseReference reference;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,6 +65,13 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 //        spinner
+
+
+        uid = sharedPreferences.getString("uid", uid);
+        rootNode = FirebaseDatabase.getInstance();
+        reference = FirebaseDatabase.getInstance().getReference().
+                child("planner").child(uid);
+
         List<SpinnerItem> spinnerItems = new ArrayList<>();
         spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, getString(R.string.work)));
         spinnerItems.add(new SpinnerItem(R.drawable.yellows, getString(R.string.class_)));
