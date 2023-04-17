@@ -17,13 +17,12 @@ public class PlannerItemFirebase {
     int workType;
     int notification = -1;
     Boolean pinned = false;
-    int cardBackgroundColor;
 
-    int status;
+    int status = 0;
 
     String dateStr;
     public PlannerItemFirebase(String title, String startTime, int duration, int workType,
-                            int notification, int color, String dateStr, int status){
+                            int notification, String dateStr){
         this.title = title;
         this.startTime = startTime;
         Log.d("check", startTime);
@@ -31,7 +30,6 @@ public class PlannerItemFirebase {
         this.workType = workType;
         this.notification = notification;
         this.endTime = getEndTime(startTime, duration);
-        this.cardBackgroundColor = color;
         if(title.equals("")) {
             switch (workType) {
                 case R.drawable.circle_dashed_6_xxl:
@@ -51,7 +49,6 @@ public class PlannerItemFirebase {
             }
         }
         this.dateStr = dateStr;
-        this.status = 0;
     }
 
     public String getTitle() { return title; }
@@ -62,11 +59,15 @@ public class PlannerItemFirebase {
 
     public String getEndTime() { return endTime; }
 
-    public int getWorkTime() { return workType; }
+    public int getWorkType() { return workType; }
 
     public int getNotification() { return notification; }
 
     public Boolean getPinned() { return pinned; }
+
+    public int getStatus() { return status; }
+
+    public String getDateStr() { return dateStr; }
     public void togglePin(){
         pinned = !pinned;
     }
