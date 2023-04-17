@@ -2,6 +2,7 @@ package com.example.empty;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,6 +21,7 @@ public class PlannerItemModel {
     public PlannerItemModel(String title, String startTime, int duration, int workType, int notification, int color){
         this.title = title;
         this.startTime = startTime;
+        Log.d("check", startTime);
         this.duration = duration;
         this.workType = workType;
         this.notification = notification;
@@ -44,6 +46,20 @@ public class PlannerItemModel {
             }
         }
     }
+
+    public String getTitle() { return title; }
+
+    public String getstartTime() { return startTime; }
+
+    public int getDuration() { return duration; }
+
+    public String getEndTime() { return endTime; }
+
+    public int getWorkTime() { return workType; }
+
+    public int getNotification() { return notification; }
+
+    public Boolean getPinned() { return pinned; }
     public void togglePin(){
         pinned = !pinned;
     }
@@ -78,6 +94,7 @@ public class PlannerItemModel {
         if(formatDate.charAt(0)=='0'){
             formatDate = formatDate.substring(1);
         }
+        Log.d("check", formatDate);
         return formatDate;
     }
 }
