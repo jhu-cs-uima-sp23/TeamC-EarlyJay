@@ -23,7 +23,7 @@ public class PlannerItemFirebase {
 
     String dateStr;
     public PlannerItemFirebase(String title, String startTime, int duration, int workType,
-                            int notification, int color, String dateStr){
+                            int notification, int color, String dateStr, int status){
         this.title = title;
         this.startTime = startTime;
         Log.d("check", startTime);

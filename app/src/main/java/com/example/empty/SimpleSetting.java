@@ -160,8 +160,9 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                     break;
             }
             String dateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
+            int status = 0;
             reference.push().setValue(new PlannerItemFirebase("", startTime, duration,
-                    workType, -1, Color.parseColor(cardBackgroundColor), dateStr));
+                    workType, -1, Color.parseColor(cardBackgroundColor), dateStr, status));
             main.removeFragment(R.id.popUp, this);
         });
     }
