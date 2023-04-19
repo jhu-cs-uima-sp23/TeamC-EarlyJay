@@ -15,7 +15,8 @@ public class PlannerItemFirebase {
     int duration;
     String endTime;
     int workType;
-    int notification = -1;
+//    int notification = -1;
+    String notification;
     Boolean pinned = false;
 
     int status = 0;
@@ -25,12 +26,10 @@ public class PlannerItemFirebase {
 
     String dateStr;
 
-    public PlannerItemFirebase(){
-        this.notification = -1;
-    }
+    public PlannerItemFirebase(){}
 
     public PlannerItemFirebase(String title, String startTime, int duration, int workType,
-                            int notification, String dateStr){
+                            String notification, String dateStr){
         this.title = title;
         this.startTime = startTime;
         Log.d("check", startTime);
@@ -69,7 +68,7 @@ public class PlannerItemFirebase {
 
     public int getWorkType() { return workType; }
 
-    public int getNotification() { return notification; }
+    public String getNotification() { return notification; }
 
     public Boolean getPinned() { return pinned; }
 
@@ -91,7 +90,7 @@ public class PlannerItemFirebase {
     public void setWorkType(int workType) {
         this.workType = workType;
     }
-    public void setNotification(int notification) {
+    public void setNotification(String notification) {
         this.notification = notification;
     }
     public String getEndTime(String startTime, int duration){

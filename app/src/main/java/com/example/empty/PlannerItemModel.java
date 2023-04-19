@@ -13,11 +13,11 @@ public class PlannerItemModel {
     int duration;
     String endTime;
     int workType;
-    int notification = -1;
+    String notification;
     Boolean pinned = false;
     int cardBackgroundColor;
     public PlannerItemModel(String title, String startTime, int duration, int workType,
-                            int notification, int color){
+                            String notification, int color){
         this.title = title;
         this.startTime = startTime;
         Log.d("check", startTime);
@@ -58,7 +58,12 @@ public class PlannerItemModel {
 
     public int getWorkTime() { return workType; }
 
-    public int getNotification() { return notification; }
+//    public String getNotification() { return notification; }
+
+    public int getNotification(){
+        notification = notification.substring(0, notification.indexOf(" "));
+        return Integer.parseInt(notification);
+    }
 
     public Boolean getPinned() { return pinned; }
     public void togglePin(){
@@ -76,7 +81,7 @@ public class PlannerItemModel {
     public void setWorkType(int workType) {
         this.workType = workType;
     }
-    public void setNotification(int notification) {
+    public void setNotification(String notification) {
         this.notification = notification;
     }
     public String getEndTime(String startTime, int duration){
