@@ -109,8 +109,8 @@ public class Planner_frag extends Fragment {
                         default:
                             break;
                     }
-                    // addPlan(title,startTime,duration,workType,notification, Color.parseColor(cardBackgroundColor));
-                    // reset();
+                     addPlan(title,startTime,duration,workType,notification, Color.parseColor(cardBackgroundColor));
+                     reset();
                 }
             }else{
                 binding.newPlan.hide();
@@ -171,7 +171,7 @@ public class Planner_frag extends Fragment {
         reference = FirebaseDatabase.getInstance().getReference().
                 child("planner").child(uid);
 
-        locStructListByDay = new ArrayList<>();
+
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -201,15 +201,19 @@ public class Planner_frag extends Fragment {
                                 default:
                                     break;
                             }
-                            if (now.isDaily(dataDateStr)) {
-                                Log.d("checkdata","daily!");
-                                addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getstartTime(),
+                            DateStr curr = new DateStr(currDateStr);
+                            if (curr.isDaily(dataDateStr)) {
+                                System.out.println(dataDateStr);
+                                System.out.println(currDateStr);
+                                addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getStartTime(),
                                         plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
                                         plannerItemFirebase.getNotification(),
                                         Color.parseColor(cardBackgroundColor));
                             }
                         }
                     } catch (Exception e) {
+                        System.out.println(e.getClass().getSimpleName());
+                        System.out.println(e.getMessage());
                         continue;
                     }
                 }

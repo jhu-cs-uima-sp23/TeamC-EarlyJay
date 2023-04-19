@@ -21,6 +21,11 @@ public class PlannerItemFirebase {
     int status = 0;
 
     String dateStr;
+
+    public PlannerItemFirebase(){
+        this.notification = -1;
+    }
+
     public PlannerItemFirebase(String title, String startTime, int duration, int workType,
                             int notification, String dateStr){
         this.title = title;
@@ -53,7 +58,7 @@ public class PlannerItemFirebase {
 
     public String getTitle() { return title; }
 
-    public String getstartTime() { return startTime; }
+    public String getStartTime() { return startTime; }
 
     public int getDuration() { return duration; }
 
