@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/red"
-        app:cardCornerRadius="5dp"
+        app:cardCornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,20 +59,20 @@
                 android:textSize="20sp" />
 
             <ImageButton
-                android:id="@+id/imageButton"
+                android:id="@+id/optionMenu"
                 android:layout_width="24dp"
                 android:layout_height="35dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="12dp"
                 android:adjustViewBounds="true"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/menu"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/meatball_menu"
+                android:src="@drawable/meatball_menu"
                 tools:ignore="TouchTargetSizeCheck" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>

@@ -41,7 +41,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/spinner_look"
-        android:elevation="4dp"
         android:entries="@array/Planner_Display"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

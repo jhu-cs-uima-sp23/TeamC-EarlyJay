@@ -11,6 +11,7 @@ import java.util.Date;
 
 public class PlannerItemModel {
     String title;
+    String category;
     String startTime;
     int duration;
     String endTime;
@@ -28,23 +29,25 @@ public class PlannerItemModel {
         this.notification = notification;
         this.endTime = getEndTime(startTime, duration);
         this.cardBackgroundColor = color;
+        switch (workType) {
+            case R.drawable.circle_dashed_6_xxl:
+                this.category = "Work";
+                break;
+            case R.drawable.yellows:
+                this.category = "Class";
+                break;
+            case R.drawable.triangle_48:
+                this.category = "Team";
+                break;
+            case R.drawable.star_2_xxl:
+                this.category = "Sport";
+                break;
+            default:
+                this.category = "";
+                break;
+        }
         if(title.equals("")) {
-            switch (workType) {
-                case R.drawable.circle_dashed_6_xxl:
-                    this.title = "Work";
-                    break;
-                case R.drawable.yellows:
-                    this.title = "Class";
-                    break;
-                case R.drawable.triangle_48:
-                    this.title = "Team";
-                    break;
-                case R.drawable.star_2_xxl:
-                    this.title = "Sport";
-                    break;
-                default:
-                    break;
-            }
+            this.title = category;
         }
     }
 
