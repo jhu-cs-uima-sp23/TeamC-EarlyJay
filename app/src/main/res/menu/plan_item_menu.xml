@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/item_menu">
+        <item android:title="@string/start_task" />
+        <item android:title="@string/edit" />
+        <item android:title="@string/pin" />
+        <item android:title="@string/delete" />
+    </group>
+</menu>

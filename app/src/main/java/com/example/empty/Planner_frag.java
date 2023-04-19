@@ -28,7 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class Planner_frag extends Fragment {
+public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDeleteButtonClickListener{
     ArrayList<PlannerItemModel> plannerItemModels = new ArrayList<>();
     RecyclerView recyclerView;
     private Context context;
@@ -158,10 +158,7 @@ public class Planner_frag extends Fragment {
                 mainActivity.replaceFragment(R.id.frame_layout, new Planner_frag());
             }
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) {}
         });
         ArrayAdapter myAdapter = (ArrayAdapter) binding.spinner3.getAdapter();
         binding.spinner3.setSelection(myAdapter.getPosition(currDatePage));
@@ -232,7 +229,7 @@ public class Planner_frag extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         recyclerView = binding.plannerRecyclerView;
-        adapter = new PlannerItemAdapter(context, plannerItemModels);
+        adapter = new PlannerItemAdapter(this, mainActivity, plannerItemModels);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
     }
@@ -257,5 +254,11 @@ public class Planner_frag extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         reset();
+    }
+
+    @Override
+    public void onDeleteButtonClicked(int position) {
+        adapter.notifyItemRemoved(position);
+        plannerItemModels.remove(position);
     }
 }

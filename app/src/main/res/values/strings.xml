@@ -54,4 +54,8 @@
         <item>Daily</item>
         <item>Weekly</item>
     </string-array>
+    <string name="start_task">Start Task</string>
+    <string name="edit">Edit</string>
+    <string name="pin">Pin</string>
+    <string name="delete">Delete</string>
 </resources>

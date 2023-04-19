@@ -132,8 +132,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
-                           // Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
-
                         }
                     });
         } else {

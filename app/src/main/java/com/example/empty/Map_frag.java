@@ -1,11 +1,14 @@
 package com.example.empty;
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.BoringLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +32,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -68,14 +72,18 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMapBinding.inflate(inflater, container, false);
         main = (MainActivity) getActivity();
-        main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         context = main.getApplicationContext();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        editor = sharedPreferences.edit();
+
+//      special case for switching from plan to map
+        BottomNavigationView bottomNavigationView = main.bottomNavigationView;
+        int viewId = bottomNavigationView.getSelectedItemId();
 
         locStructListByDay = new ArrayList<>();
         locStructListByWeek = new ArrayList<>();
         locStructListByMonth = new ArrayList<>();
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         uid = sharedPreferences.getString("uid", "");
         reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
@@ -117,9 +125,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
             }
         });
 
-
-
-        // ADDED THIS LINE TO AVOID USING THE ChatViewModel class
         binding.mapView.onCreate(savedInstanceState);
 
         // Get the MapView from the layout
@@ -131,92 +136,88 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
         // Initialize the location provider client
         mLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        editor = sharedPreferences.edit();
-
         float latitude_tmp = sharedPreferences.getFloat("latitude", 0);
         float longitude_tmp = sharedPreferences.getFloat("longitude", 0);
 
         if (latitude_tmp!=0 && longitude_tmp!=0) {
             latitude = latitude_tmp;
             longitude = longitude_tmp;
-            Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
         }
 
-        binding.stuffOnMap.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-
-            @Override
-            public void onLayoutChange(View view, int left, int top, int right, int bottom,
-                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                View content = binding.stuffOnMap.getChildAt(0);
-                int contentId = content.getId();
+        if(sharedPreferences.getBoolean("startPlanTask", false)){
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+                fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
+                    editor.putFloat("latitude", (float) location.getLatitude());
+                    editor.putFloat("longitude", (float) location.getLongitude());
+                    editor.apply();
+                });
+            }
+            editor.putBoolean("startPlanTask", false);
+            editor.apply();
+            main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
+        }else {
+            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+        }
+        binding.stuffOnMap.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            View content = binding.stuffOnMap.getChildAt(0);
+            int contentId = content.getId();
 //                0 - no action; 1 - success; 2 - failed
-
-
-                int task_completed = sharedPreferences.getInt("complete_success", 0);
-                String viewName = getResources().getResourceName(contentId);
-                String dwm_view_name = getResources().getResourceName(R.id.dwm_view);
-                int selected = sharedPreferences.getInt("last_selected", 0);
-                switch(selected) {
-                    case 1:
-                        for (LocationStruct locStr : locStructListByWeek) {
-                            int drawable = getResID(locStr.getType());
-                            float latitude = locStr.getLatitude();
-                            float longitude = locStr.getLongitude();
-                            boolean complete = locStr.getComplete();
-                            if (complete) {
-                                markMapPast(drawable,latitude,longitude);
-                            } else {
-                                markMapPast(R.drawable.skull,latitude,longitude);
-                            }
-
+            int task_completed = sharedPreferences.getInt("complete_success", 0);
+            String viewName = getResources().getResourceName(contentId);
+            String dwm_view_name = getResources().getResourceName(R.id.dwm_view);
+            int selected = sharedPreferences.getInt("last_selected", 0);
+            switch(selected) {
+                case 1:
+                    for (LocationStruct locStr : locStructListByWeek) {
+                        int drawable = getResID(locStr.getType());
+                        float latitude = locStr.getLatitude();
+                        float longitude = locStr.getLongitude();
+                        boolean complete = locStr.getComplete();
+                        if (complete) {
+                            markMapPast(drawable,latitude,longitude);
+                        } else {
+                            markMapPast(R.drawable.skull,latitude,longitude);
                         }
-                        break;
-                    case 2:
-                        for (LocationStruct locStr : locStructListByMonth) {
-                            int drawable = getResID(locStr.getType());
-                            float latitude = locStr.getLatitude();
-                            float longitude = locStr.getLongitude();
-                            boolean complete = locStr.getComplete();
-                            if (complete) {
-                                markMapPast(drawable,latitude,longitude);
-                            } else {
-                                markMapPast(R.drawable.skull,latitude,longitude);
-                            }
-
+                    }
+                    break;
+                case 2:
+                    for (LocationStruct locStr : locStructListByMonth) {
+                        int drawable = getResID(locStr.getType());
+                        float latitude = locStr.getLatitude();
+                        float longitude = locStr.getLongitude();
+                        boolean complete = locStr.getComplete();
+                        if (complete) {
+                            markMapPast(drawable,latitude,longitude);
+                        } else {
+                            markMapPast(R.drawable.skull,latitude,longitude);
                         }
-                        break;
-                    default:
-                        for (LocationStruct locStr : locStructListByDay) {
-                            int drawable = getResID(locStr.getType());
-                            float latitude = locStr.getLatitude();
-                            float longitude = locStr.getLongitude();
-                            boolean complete = locStr.getComplete();
-                            if (complete) {
-                                markMapPast(drawable,latitude,longitude);
-                            } else {
-                                markMapPast(R.drawable.skull,latitude,longitude);
-                            }
+
+                    }
+                    break;
+                default:
+                    for (LocationStruct locStr : locStructListByDay) {
+                        int drawable = getResID(locStr.getType());
+                        float latitude = locStr.getLatitude();
+                        float longitude = locStr.getLongitude();
+                        boolean complete = locStr.getComplete();
+                        if (complete) {
+                            markMapPast(drawable,latitude,longitude);
+                        } else {
+                            markMapPast(R.drawable.skull,latitude,longitude);
                         }
-                        break;
-                }
+                    }
+                    break;
+            }
 
-                if (task_completed == 1 && viewName.equals(dwm_view_name)){
-                    Log.d("TAG", "onLayoutChange: BINGO");
-                    markMap(sharedPreferences.getInt("workType", R.drawable.triangle_48));
-                    editor.putInt("complete_success", 0);
-                    editor.apply();
-                }else if(task_completed == 2 && viewName.equals(dwm_view_name)){
-                    markMap(R.drawable.skull);
-                    editor.putInt("complete_success", 0);
-                    editor.apply();
-                    Log.d("TAG", "task not completed");
-                }else{
-                    Log.d("TAG", "onLayoutChange: bruh nothing changed" + getResources().getResourceName(contentId));
-                }
-                Log.d("TAG", "onLayoutChange: bruh nothing changed" + viewName.equals(dwm_view_name));
-                Log.d("TAG", "onLayoutChange: bruh nothing changed" + (task_completed));
-
+            if (task_completed == 1 && viewName.equals(dwm_view_name)){
+                markMap(sharedPreferences.getInt("workType", R.drawable.triangle_48));
+                editor.putInt("complete_success", 0);
+                editor.apply();
+            }else if(task_completed == 2 && viewName.equals(dwm_view_name)){
+                markMap(R.drawable.skull);
+                editor.putInt("complete_success", 0);
+                editor.apply();
             }
 
         });

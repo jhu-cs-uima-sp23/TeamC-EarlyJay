@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import com.example.empty.databinding.ActivityMainBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         int frame = R.id.frame_layout;
         replaceFragment(frame, new Map_frag());
+        bottomNavigationView = binding.bottomNavigationView;
         binding.bottomNavigationView.setSelectedItemId(R.id.map);
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             switch(item.getItemId()){
