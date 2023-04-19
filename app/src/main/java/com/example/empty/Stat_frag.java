@@ -67,6 +67,7 @@ public class Stat_frag extends Fragment {
     private Context context;
 
     private DatabaseReference reference;
+    private DatabaseReference plannerRef;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
@@ -77,6 +78,13 @@ public class Stat_frag extends Fragment {
     private StatsCalculator weeklyPastStats;
     private StatsCalculator todayMonthlyStats;
     private StatsCalculator monthlyPastStats;
+    private StatsCalculator todayDailyStatsPlanner;
+    private StatsCalculator dailyPastStatsPlanner;
+    private StatsCalculator todayWeeklyStatsPlanner;
+    private StatsCalculator weeklyPastStatsPlanner;
+    private StatsCalculator todayMonthlyStatsPlanner;
+    private StatsCalculator monthlyPastStatsPlanner;
+
     private BarChart barChart;
     private ProgressBar progressBar;
     private TextView txtper;
@@ -94,9 +102,6 @@ public class Stat_frag extends Fragment {
         main = (MainActivity) getActivity();
         context = main.getApplicationContext();
 
-
-
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
 
@@ -104,6 +109,7 @@ public class Stat_frag extends Fragment {
         currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
         DateStr now = new DateStr(currDateStr);
         currDatePage = sharedPreferences.getString("currDatePage", "Daily");
+
 
         switch(currDatePage) {
             case "Weekly":
@@ -120,13 +126,14 @@ public class Stat_frag extends Fragment {
         reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
 
+        plannerRef = FirebaseDatabase.getInstance().getReference().child("planner").child(uid);
+
         todayDailyStats = new StatsCalculator();
         dailyPastStats = new StatsCalculator();
         todayWeeklyStats = new StatsCalculator();
         weeklyPastStats = new StatsCalculator();
         todayMonthlyStats = new StatsCalculator();
         monthlyPastStats = new StatsCalculator();
-
 
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -275,6 +282,7 @@ public class Stat_frag extends Fragment {
         }
     }
 
+
     private void initBarChart(){
         //hiding the grey background of the chart, default false if not set
 
@@ -308,6 +316,7 @@ public class Stat_frag extends Fragment {
 
         YAxis rightAxis = barChart.getAxisRight();
         rightAxis.setDrawAxisLine(false);
+        rightAxis.setEnabled(false);
         YAxis yAxis = barChart.getAxisLeft();
         yAxis.setAxisMinimum(0f);
 
@@ -325,17 +334,24 @@ public class Stat_frag extends Fragment {
         if (currDatePage.equals("Daily")) {
             int totalTime = todayDailyStats.getTotalCompleteTask() + todayDailyStats.getTotalFailTask();
             if (totalTime != 0 ) {
-                return (float)todayDailyStats.getTotalCompleteTask() / totalTime;
+                int sum = todayDailyStatsPlanner.getTotalCompleteTask() + todayDailyStats.getTotalCompleteTask();
+                return (float) sum / totalTime;
             }
         } else if (currDatePage.equals("Weekly")) {
             int totalTime = todayWeeklyStats.getTotalCompleteTask() + todayWeeklyStats.getTotalFailTask();
-            if (totalTime != 0 ) {
-                return (float)todayWeeklyStats.getTotalCompleteTask() / totalTime;
+            int totalTimePlanner = todayWeeklyStatsPlanner.getTotalCompleteTask() + todayWeeklyStatsPlanner.getTotalFailTask();
+            int total = totalTime + totalTimePlanner;
+            if (total != 0 ) {
+                int sum = todayWeeklyStatsPlanner.getTotalCompleteTask() + todayWeeklyStats.getTotalCompleteTask();
+                return (float) sum / totalTime;
             }
         } else {
             int totalTime = todayMonthlyStats.getTotalCompleteTask() + todayMonthlyStats.getTotalFailTask();
-            if (totalTime != 0 ) {
-                return (float)todayMonthlyStats.getTotalCompleteTask() / totalTime;
+            int totalTimePlanner = todayMonthlyStatsPlanner.getTotalCompleteTask() + todayMonthlyStatsPlanner.getTotalFailTask();
+            int total = totalTime + totalTimePlanner;
+            if (total != 0 ) {
+                int sum = todayMonthlyStatsPlanner.getTotalCompleteTask() + todayMonthlyStats.getTotalCompleteTask();
+                return (float) sum / totalTime;
             }
         }
         return 0;
@@ -343,11 +359,11 @@ public class Stat_frag extends Fragment {
 
     private int getFeather(String currDatePage) {
         if (currDatePage.equals("Daily")) {
-            return todayDailyStats.getTotalFeather();
+            return todayDailyStats.getTotalFeather() + todayDailyStatsPlanner.getTotalFeather();
         } else if (currDatePage.equals("Weekly")) {
-            return todayWeeklyStats.getTotalFeather();
+            return todayWeeklyStats.getTotalFeather() + todayWeeklyStatsPlanner.getTotalFeather();
         }
-        return todayMonthlyStats.getTotalFeather();
+        return todayMonthlyStats.getTotalFeather() + todayMonthlyStatsPlanner.getTotalFeather();
     }
 
     private double calculateProductionRate(String currDatePage) {
@@ -414,24 +430,24 @@ public class Stat_frag extends Fragment {
 
         switch(currDatePage) {
             case "Weekly":
-                work_time = todayWeeklyStats.getWorkTime();
-                class_time = todayWeeklyStats.getClassTime();
-                team_time = todayWeeklyStats.getTeamTime();
-                sports_time = todayWeeklyStats.getSportTime();;
+                work_time = todayWeeklyStats.getWorkTime() + todayWeeklyStatsPlanner.getWorkTime();
+                class_time = todayWeeklyStats.getClassTime() + todayWeeklyStatsPlanner.getClassTime();
+                team_time = todayWeeklyStats.getTeamTime() + todayWeeklyStatsPlanner.getTeamTime();
+                sports_time = todayWeeklyStats.getSportTime() + todayWeeklyStatsPlanner.getSportTime();;
                 dayinfo = "week";
                 break;
             case "Monthly":
-                work_time = todayMonthlyStats.getWorkTime();
-                class_time = todayMonthlyStats.getClassTime();
-                team_time = todayMonthlyStats.getTeamTime();
-                sports_time = todayMonthlyStats.getSportTime();
+                work_time = todayMonthlyStats.getWorkTime() + todayMonthlyStatsPlanner.getWorkTime();
+                class_time = todayMonthlyStats.getClassTime() + todayMonthlyStatsPlanner.getClassTime();
+                team_time = todayMonthlyStats.getTeamTime() + todayMonthlyStatsPlanner.getTeamTime();
+                sports_time = todayMonthlyStats.getSportTime() + todayMonthlyStatsPlanner.getSportTime();
                 dayinfo = "month";
                 break;
             default:
-                work_time = todayDailyStats.getWorkTime();
-                class_time = todayDailyStats.getClassTime();
-                team_time = todayDailyStats.getTeamTime();
-                sports_time = todayDailyStats.getSportTime();
+                work_time = todayDailyStats.getWorkTime() + todayDailyStatsPlanner.getWorkTime();
+                class_time = todayDailyStats.getClassTime() + todayDailyStatsPlanner.getClassTime();
+                team_time = todayDailyStats.getTeamTime() + todayDailyStatsPlanner.getTeamTime();
+                sports_time = todayDailyStats.getSportTime() + todayDailyStatsPlanner.getSportTime();
                 dayinfo = "day";
                 break;
         }

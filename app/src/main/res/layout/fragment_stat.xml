@@ -132,7 +132,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="competion"
+                        android:text="completion"
                         android:textColor="#807C7C"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"

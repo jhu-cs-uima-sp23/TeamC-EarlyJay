@@ -19,6 +19,9 @@ public class PlannerItemFirebase {
     Boolean pinned = false;
 
     int status = 0;
+    // status = 0 - no record
+    // status = 1 - done
+    // status = 2 - fail
 
     String dateStr;
 
