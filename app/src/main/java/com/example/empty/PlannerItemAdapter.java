@@ -1,15 +1,14 @@
 package com.example.empty;
 
-import static android.content.ContentValues.TAG;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -25,14 +24,24 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
     MainActivity main;
     Resources res;
     SharedPreferences.Editor editor;
-    private OnDeleteButtonClickListener mListener;
+    private OnDeleteButtonClickListener deleteListener;
+    private OnEditClickListener editListener;
+    private OnPinListener pinListener;
     public interface OnDeleteButtonClickListener {
         void onDeleteButtonClicked(int position);
     }
-    public PlannerItemAdapter(OnDeleteButtonClickListener listener, MainActivity main, ArrayList<PlannerItemModel> plannerItemModels){
+    public interface OnEditClickListener {
+        void onEditClick(int position);
+    }
+    public interface OnPinListener {
+        void onPinClick(int position);
+    }
+    public PlannerItemAdapter(Planner_frag planner_frag, MainActivity main, ArrayList<PlannerItemModel> plannerItemModels){
         this.plannerItemModels = plannerItemModels;
         this.main = main;
-        this.mListener = listener;
+        this.deleteListener = (OnDeleteButtonClickListener) planner_frag;
+        this.editListener = (OnEditClickListener) planner_frag;
+        this.pinListener = (OnPinListener) planner_frag;
         this.context = main.getApplicationContext();
         this.editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         res = context.getResources();
@@ -54,6 +63,9 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
         holder.menu.setOnClickListener(e->{
             PopupMenu popup = new PopupMenu(context, holder.menu);
             popup.getMenuInflater().inflate(R.menu.plan_item_menu, popup.getMenu());
+            if(item.pinned){
+                popup.getMenu().getItem(2).setTitle(res.getString(R.string.unpin));
+            }
             popup.setOnMenuItemClickListener(menuItem -> {
                 String selectedTxt = menuItem.toString();
                 if(selectedTxt.equals(res.getString(R.string.start_task))){
@@ -66,10 +78,15 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
                     editor.apply();
                     main.bottomNavigationView.setSelectedItemId(R.id.map);
                 }else if(selectedTxt.equals(res.getString(R.string.edit))){
+                    editListener.onEditClick(position);
+                }else if(selectedTxt.equals(res.getString(R.string.unpin))){
+                    holder.pin.setVisibility(View.GONE);
+                    pinListener.onPinClick(position);
                 }else if(selectedTxt.equals(res.getString(R.string.pin))){
-
+                    holder.pin.setVisibility(View.VISIBLE);
+                    pinListener.onPinClick(position);
                 }else if(selectedTxt.equals(res.getString(R.string.delete))){
-                    mListener.onDeleteButtonClicked(position);
+                    deleteListener.onDeleteButtonClicked(position);
                 }
                 return true;
             });
@@ -87,16 +104,15 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
         TextView startTime;
         CardView cardView;
         ImageButton menu;
-        int duration;
-        String workType;
-        int notification;
-        Boolean pinned;
+        ImageView pin;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.itemTitle);
             startTime = itemView.findViewById(R.id.itemTime);
             cardView = itemView.findViewById(R.id.planner_card_view);
             menu = itemView.findViewById(R.id.optionMenu);
+            pin = itemView.findViewById(R.id.pinned);
+            pin.setVisibility(View.GONE);
         }
     }
 }

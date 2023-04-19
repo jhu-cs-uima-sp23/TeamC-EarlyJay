@@ -1,7 +1,4 @@
 package com.example.empty;
-import android.annotation.SuppressLint;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.util.Log;
 
 import java.text.ParseException;
@@ -53,7 +50,7 @@ public class PlannerItemModel {
 
     public String getTitle() { return title; }
 
-    public String getstartTime() { return startTime; }
+    public String getStartTime() { return startTime; }
 
     public int getDuration() { return duration; }
 
@@ -98,7 +95,6 @@ public class PlannerItemModel {
         if(formatDate.charAt(0)=='0'){
             formatDate = formatDate.substring(1);
         }
-        Log.d("check", formatDate);
         return formatDate;
     }
 }
