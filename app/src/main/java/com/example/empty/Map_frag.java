@@ -80,14 +80,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
         BottomNavigationView bottomNavigationView = main.bottomNavigationView;
         int viewId = bottomNavigationView.getSelectedItemId();
 
-        if(sharedPreferences.getBoolean("startPlanTask", false)){
-            editor.putBoolean("startPlanTask", false);
-            editor.apply();
-            main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
-        }else {
-            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
-        }
-
         locStructListByDay = new ArrayList<>();
         locStructListByWeek = new ArrayList<>();
         locStructListByMonth = new ArrayList<>();
@@ -150,9 +142,23 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
         if (latitude_tmp!=0 && longitude_tmp!=0) {
             latitude = latitude_tmp;
             longitude = longitude_tmp;
-            Log.d("Location", "Longitude: " + longitude + " Latitude: " + latitude);
         }
 
+        if(sharedPreferences.getBoolean("startPlanTask", false)){
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+                fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
+                    editor.putFloat("latitude", (float) location.getLatitude());
+                    editor.putFloat("longitude", (float) location.getLongitude());
+                    editor.apply();
+                });
+            }
+            editor.putBoolean("startPlanTask", false);
+            editor.apply();
+            main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
+        }else {
+            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+        }
         binding.stuffOnMap.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             View content = binding.stuffOnMap.getChildAt(0);
             int contentId = content.getId();
@@ -205,7 +211,6 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
             }
 
             if (task_completed == 1 && viewName.equals(dwm_view_name)){
-                Log.d("TAG", "onLayoutChange: BINGO");
                 markMap(sharedPreferences.getInt("workType", R.drawable.triangle_48));
                 editor.putInt("complete_success", 0);
                 editor.apply();
@@ -213,12 +218,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
                 markMap(R.drawable.skull);
                 editor.putInt("complete_success", 0);
                 editor.apply();
-                Log.d("TAG", "task not completed");
-            }else{
-                Log.d("TAG", "onLayoutChange: bruh nothing changed" + getResources().getResourceName(contentId));
             }
-            Log.d("TAG", "onLayoutChange: bruh nothing changed" + viewName.equals(dwm_view_name));
-            Log.d("TAG", "onLayoutChange: bruh nothing changed" + (task_completed));
 
         });
 
