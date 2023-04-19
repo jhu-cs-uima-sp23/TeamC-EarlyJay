@@ -161,7 +161,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
             }
             String dateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
             reference.push().setValue(new PlannerItemFirebase("", startTime, duration,
-                    workType, -1, dateStr));
+                    workType, "", dateStr));
             main.removeFragment(R.id.popUp, this);
         });
     }

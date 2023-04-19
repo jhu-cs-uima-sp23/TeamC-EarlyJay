@@ -154,12 +154,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             String dateStr = sharedPreferences.getString("currDateStr","");
             durationTxt = durationTxt.substring(0, durationTxt.indexOf(" "));
             int duration = Integer.parseInt(durationTxt);
-            int notice = -1;
-            if(!notification.equals(getString(R.string.select_alert))){
-                notification = notification.substring(0, notification.indexOf(" "));
-                notice = Integer.parseInt(notification);
-            }
-            reference.push().setValue(new PlannerItemFirebase(title, startTime, duration, workType, notice, dateStr));
+            reference.push().setValue(new PlannerItemFirebase(title, startTime, duration, workType, notification, dateStr));
 
             main.removeFragment(R.id.popUp, this);
         });
