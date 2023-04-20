@@ -64,9 +64,9 @@ public class OnQuitWarning extends Fragment {
             int timeInterval = sharedPreferences.getInt("totalTimeInterval", 0);
             int featherCount = -1 * numSeconds / 300;
             rootNode = FirebaseDatabase.getInstance();
-            reference = rootNode.getReference().child("users").child(uid);
-            reference.push().setValue(new LocationStruct(latitude,longitude, false, category, new DateStr().getDateStr(),
-                    timeInterval, featherCount));
+            reference = rootNode.getReference().child("users").child(uid).child(new DateStr().getDateStr());
+            reference.push().setValue(new LocationStruct(latitude,longitude, false, category,
+                    new DateStr().getDateStr(), timeInterval, featherCount));
             editor.putInt("complete_success", 2);
             editor.apply();
             main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());

@@ -48,6 +48,8 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
 
     private String uid;
 
+    private String dateStr;
+
     FirebaseDatabase rootNode;
     DatabaseReference reference;
 
@@ -58,6 +60,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
         binding = FragmentSimpleSettingBinding.inflate(inflater, container, false);
         main = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        dateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
         editor = sharedPreferences.edit();
         return binding.getRoot();
     }
@@ -71,7 +74,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
         uid = sharedPreferences.getString("uid", uid);
         rootNode = FirebaseDatabase.getInstance();
         reference = FirebaseDatabase.getInstance().getReference().
-                child("planner").child(uid);
+                child("planner").child(uid).child(dateStr);
 
         List<SpinnerItem> spinnerItems = new ArrayList<>();
         spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, getString(R.string.work)));
@@ -159,7 +162,6 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                 default:
                     break;
             }
-            String dateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
             reference.push().setValue(new PlannerItemFirebase("", startTime, duration,
                     workType, "", dateStr));
             main.removeFragment(R.id.popUp, this);

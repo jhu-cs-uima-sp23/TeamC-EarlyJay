@@ -15,7 +15,7 @@ public class PlannerItemFirebase {
     int duration;
     String endTime;
     int workType;
-//    int notification = -1;
+    // int notification = -1;
     String notification;
     Boolean pinned = false;
 

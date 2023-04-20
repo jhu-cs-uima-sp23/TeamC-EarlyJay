@@ -46,13 +46,14 @@ public class LocationStruct {
         featherNum = timeInterval / 5 * bit;
     }
 
-    public LocationStruct(float latitude, float longitude, boolean complete, String type, String dateStr, int timeInterval,
+    public LocationStruct(float latitude, float longitude, boolean complete, String type, String dateStr,
+                          int timeInterval,
                           int featherNum) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.complete = complete;
-        this.type = type;
         this.dateStr = dateStr;
+        this.type = type;
         this.timeInterval = timeInterval;
         this.featherNum = featherNum;
     }
@@ -81,10 +82,6 @@ public class LocationStruct {
 
     public void setType(String type) { this.type = type; }
 
-    public String getDateStr() { return dateStr; }
-
-    public void setDateStr(String dateStr) { this.dateStr = dateStr; }
-
     public int getTimeInterval() { return timeInterval; }
 
     public void setTimeInterval(int timeInterval) { this.timeInterval = timeInterval; }
@@ -93,12 +90,18 @@ public class LocationStruct {
 
     public void setFeatherNum(int featherNum) { this.featherNum = featherNum; }
 
+    public void setDateStr(String dateStr) { this.dateStr = dateStr; }
+
+    public String getDateStr() { return dateStr; }
+
+
+
     @NonNull
     @Override
     public String toString() {
         return getComplete() + " " + getLatitude() + " " +
-                getLongitude() + " " + getType() + " " +
-                getDateStr() + " " + getTimeInterval() + " " + getFeatherNum();
+                getLongitude() + " " + getType() + " "
+                + getTimeInterval() + " " + getFeatherNum();
     }
 
 

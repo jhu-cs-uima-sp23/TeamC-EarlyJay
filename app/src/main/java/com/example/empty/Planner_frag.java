@@ -176,9 +176,6 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                 case "Weekly":
                     dateStr = now.getFutureDay(7);
                     break;
-                case "Monthly":
-                    dateStr = now.getFutureDay(now.getMonthDays());
-                    break;
                 default:
                     dateStr = now.getFutureDay(1);
                     break;
