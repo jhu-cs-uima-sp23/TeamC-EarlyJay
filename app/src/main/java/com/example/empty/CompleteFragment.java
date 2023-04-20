@@ -69,7 +69,7 @@ public class CompleteFragment extends Fragment {
         int timeInterval = sharedPreferences.getInt("totalTimeInterval", 0);
 
         rootNode = FirebaseDatabase.getInstance();
-        reference = rootNode.getReference().child("users").child(uid);
+        reference = rootNode.getReference().child("users").child(uid).child(new DateStr().getDateStr());
         reference.push().setValue(new LocationStruct(latitude,longitude, true, category, new DateStr().getDateStr(),
                 timeInterval, featherCount));
 

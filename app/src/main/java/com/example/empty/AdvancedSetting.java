@@ -39,6 +39,8 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
     private FirebaseDatabase rootNode;
     private DatabaseReference reference;
 
+    private String dateStr;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,6 +50,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
         main = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         editor = sharedPreferences.edit();
+        dateStr = sharedPreferences.getString("currDateStr","");
         return binding.getRoot();
     }
 
@@ -56,7 +59,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
         super.onViewCreated(view, savedInstanceState);
         String uid = sharedPreferences.getString("uid", "");
         rootNode = FirebaseDatabase.getInstance();
-        reference = rootNode.getReference().child("planner").child(uid);
+        reference = rootNode.getReference().child("planner").child(uid).child(dateStr);
 
 //        spinner
         List<SpinnerItem> spinnerItems = new ArrayList<>();
@@ -150,8 +153,6 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 default:
                     break;
             }
-
-            String dateStr = sharedPreferences.getString("currDateStr","");
             durationTxt = durationTxt.substring(0, durationTxt.indexOf(" "));
             int duration = Integer.parseInt(durationTxt);
             reference.push().setValue(new PlannerItemFirebase(title, startTime, duration, workType, notification, dateStr));
