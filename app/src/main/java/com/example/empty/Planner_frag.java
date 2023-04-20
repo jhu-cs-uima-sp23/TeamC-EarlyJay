@@ -54,7 +54,7 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
     private String uid;
     private Boolean isEditRequest = false;
     private int editPosition = -1;
-    private Comparator<PlannerItemModel> comparator = (item1, item2) -> {
+    public Comparator<PlannerItemModel> comparator = (item1, item2) -> {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         Date time1;
         try {
@@ -320,6 +320,7 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
     @Override
     public void onPinClick(int position) {
         plannerItemModels.get(position).togglePin();
+        adapter.notifyItemChanged(position);
         refreshList();
     }
     @SuppressLint("NotifyDataSetChanged")
