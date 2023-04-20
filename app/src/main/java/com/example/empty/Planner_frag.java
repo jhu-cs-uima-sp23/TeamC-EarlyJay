@@ -201,7 +201,7 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
         uid = sharedPreferences.getString("uid", uid);
         rootNode = FirebaseDatabase.getInstance();
         reference = FirebaseDatabase.getInstance().getReference().
-                child("planner").child(uid);
+                child("planner").child(uid).child(currDateStr);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -209,38 +209,26 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
-                        String dataDateStr = childSnapshot.getKey();
-                        DateStr currDate = new DateStr(currDateStr);
-//                        PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
-                        if (dataDateStr == null) {
-                            // client is null, error out
-                            Log.e("DBREF:", "Data is unexpectedly null");
-                        } else {
-                            if (currDate.isDaily(dataDateStr)) {
-                                for (DataSnapshot grandchild: childSnapshot.getChildren()) {
-                                    PlannerItemFirebase plannerItemFirebase = grandchild.getValue(PlannerItemFirebase.class);
-                                    int workType = plannerItemFirebase.getWorkType();
-                                    String cardBackgroundColor = "#D04C25";
-                                    switch (workType){
-                                        case R.drawable.yellows:
-                                            cardBackgroundColor = "#F3A83B";
-                                            break;
-                                        case R.drawable.triangle_48:
-                                            cardBackgroundColor = "#ACCC8C";
-                                            break;
-                                        case R.drawable.star_2_xxl:
-                                            cardBackgroundColor = "#65BFF5";
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getStartTime(),
-                                            plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
-                                            plannerItemFirebase.getNotification(),
-                                            Color.parseColor(cardBackgroundColor));
-                                }
-                                }
-                            }
+                    PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                    int workType = plannerItemFirebase.getWorkType();
+                    String cardBackgroundColor = "#D04C25";
+                    switch (workType) {
+                        case R.drawable.yellows:
+                            cardBackgroundColor = "#F3A83B";
+                            break;
+                        case R.drawable.triangle_48:
+                            cardBackgroundColor = "#ACCC8C";
+                            break;
+                        case R.drawable.star_2_xxl:
+                            cardBackgroundColor = "#65BFF5";
+                            break;
+                        default:
+                            break;
+                    }
+                    addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getStartTime(),
+                            plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
+                            plannerItemFirebase.getNotification(),
+                            Color.parseColor(cardBackgroundColor));
 
                     } catch (Exception e) {
                         System.out.println(e.getClass().getSimpleName());
@@ -299,23 +287,12 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
-                        String dataDateStr = childSnapshot.getKey();
-                        DateStr currDate = new DateStr(currDateStr);
-                        if (dataDateStr == null) {
-                            Log.e("DBREF:", "Data is unexpectedly null");
-                        } else {
-                            if (currDate.isDaily(dataDateStr)) {
-                                for (DataSnapshot grandchild : childSnapshot.getChildren()) {
-                                    PlannerItemFirebase plannerItemFirebase = grandchild.getValue(PlannerItemFirebase.class);
-                                    String start = plannerItemFirebase.getStartTime();
-                                    if (start.equals(startTime)) {
-                                        DatabaseReference itemRef = grandchild.getRef();
-                                        itemRef.removeValue();
-                                    }
-                                }
-                            }
+                        PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                        String start = plannerItemFirebase.getStartTime();
+                        if (start.equals(startTime)) {
+                            DatabaseReference itemRef = childSnapshot.getRef();
+                            itemRef.removeValue();
                         }
-
                     } catch (Exception e) {
                         continue;
                     }
@@ -326,7 +303,6 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                     // Handle error
             }
         });
-
         adapter.notifyItemRemoved(position);
         plannerItemModels.remove(position);
     }
