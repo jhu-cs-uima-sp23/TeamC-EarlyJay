@@ -332,28 +332,15 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
-                        String dataDateStr = childSnapshot.getKey();
-                        DateStr currDate = new DateStr(currDateStr);
-//                        PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
-                        if (dataDateStr == null) {
-                            // client is null, error out
-                            Log.e("DBREF:", "Data is unexpectedly null");
-                        } else {
-                            if (currDate.isDaily(dataDateStr)) {
-                                for (DataSnapshot grandchild : childSnapshot.getChildren()) {
-                                    PlannerItemFirebase plannerItemFirebase = grandchild.getValue(PlannerItemFirebase.class);
-                                    String start = plannerItemFirebase.getStartTime();
-                                    System.out.println(start);
-                                    if (start.equals(start_time)) {
-                                        System.out.println("yeah");
-                                        DatabaseReference itemRef = grandchild.getRef();
-                                        itemRef.child("pinned").setValue(true);
-                                        plannerItemFirebase.togglePin();
-                                    }
-                                }
-                            }
+                        PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                        String start = plannerItemFirebase.getStartTime();
+                        System.out.println(start);
+                        if (start.equals(start_time)) {
+                            System.out.println("yeah");
+                            DatabaseReference itemRef = childSnapshot.getRef();
+                            itemRef.child("pinned").setValue(true);
+                            plannerItemFirebase.togglePin();
                         }
-
                     } catch (Exception e) {
                         continue;
                     }
