@@ -213,38 +213,40 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
-                        PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
-                        if (plannerItemFirebase == null) {
+                        String dataDateStr = childSnapshot.getKey();
+                        System.out.println(dataDateStr);
+                        DateStr now = new DateStr();
+//                        PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                        if (dataDateStr == null) {
                             // client is null, error out
                             Log.e("DBREF:", "Data is unexpectedly null");
                         } else {
-                            DateStr now = new DateStr();
-                            String dataDateStr = plannerItemFirebase.getDateStr();
-                            int workType = plannerItemFirebase.getWorkType();
-                            String cardBackgroundColor = "#D04C25";
-                            switch (workType){
-                                case R.drawable.yellows:
-                                    cardBackgroundColor = "#F3A83B";
-                                    break;
-                                case R.drawable.triangle_48:
-                                    cardBackgroundColor = "#ACCC8C";
-                                    break;
-                                case R.drawable.star_2_xxl:
-                                    cardBackgroundColor = "#65BFF5";
-                                    break;
-                                default:
-                                    break;
+                            if (now.isDaily(dataDateStr)) {
+                                for (DataSnapshot grandchild: childSnapshot.getChildren()) {
+                                    PlannerItemFirebase plannerItemFirebase = grandchild.getValue(PlannerItemFirebase.class);
+                                    int workType = plannerItemFirebase.getWorkType();
+                                    String cardBackgroundColor = "#D04C25";
+                                    switch (workType){
+                                        case R.drawable.yellows:
+                                            cardBackgroundColor = "#F3A83B";
+                                            break;
+                                        case R.drawable.triangle_48:
+                                            cardBackgroundColor = "#ACCC8C";
+                                            break;
+                                        case R.drawable.star_2_xxl:
+                                            cardBackgroundColor = "#65BFF5";
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getStartTime(),
+                                            plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
+                                            plannerItemFirebase.getNotification(),
+                                            Color.parseColor(cardBackgroundColor));
+                                }
+                                }
                             }
-                            DateStr curr = new DateStr(currDateStr);
-                            if (curr.isDaily(dataDateStr)) {
-                                System.out.println(dataDateStr);
-                                System.out.println(currDateStr);
-                                addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getStartTime(),
-                                        plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
-                                        plannerItemFirebase.getNotification(),
-                                        Color.parseColor(cardBackgroundColor));
-                            }
-                        }
+
                     } catch (Exception e) {
                         System.out.println(e.getClass().getSimpleName());
                         System.out.println(e.getMessage());
