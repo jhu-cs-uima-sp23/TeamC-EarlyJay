@@ -1,8 +1,4 @@
 package com.example.empty;
-import android.annotation.SuppressLint;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -159,8 +159,6 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                             continue;
                         }
                     }
-                    System.out.println("start time:"+ startTime);
-                    System.out.println("original time:" + originalStartTime);
                     if(editRequest && startTime.equals(originalStartTime)){
                         sameTime = false;
                     }
@@ -217,11 +215,8 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                     }
                     main.removeFragment(R.id.popUp, currFragment);
                 }
-
                 @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    // Handle error
-                }
+                public void onCancelled(@NonNull DatabaseError error) {}
             });
         });
     }

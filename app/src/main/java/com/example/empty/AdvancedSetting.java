@@ -192,15 +192,11 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                     }
                     main.removeFragment(R.id.popUp, currFragment);
                 }
-
                 @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    // Handle error
-                }
+                public void onCancelled(@NonNull DatabaseError error) {}
             });
 
         });
-
         binding.notification.setOnClickListener(e->{
             PopupMenu popup = new PopupMenu(context, binding.notification);
             popup.getMenuInflater().inflate(R.menu.notification_menu, popup.getMenu());
@@ -210,8 +206,6 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             });
             popup.show();
         });
-
-
 
     }
     public boolean checkEmpty(String source, String target){
