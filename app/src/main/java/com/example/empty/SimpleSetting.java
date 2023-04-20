@@ -1,5 +1,7 @@
 package com.example.empty;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -55,6 +57,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
     private String dateStr;
 
     private Fragment currFragment;
+    String originalStartTime;
 
     FirebaseDatabase rootNode;
     DatabaseReference reference;
@@ -68,7 +71,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         dateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
         editor = sharedPreferences.edit();
-        sameTime = false;
+        originalStartTime = sharedPreferences.getString("startTime", "");
         currFragment = this;
         return binding.getRoot();
     }
@@ -120,14 +123,6 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
             main.replaceFragment(R.id.popUp, new AdvancedSetting());
         });
         binding.close.setOnClickListener(e->{
-            editor.putBoolean("newPlan", false);
-            editor.putInt("lastSelected", 0);
-            editor.putInt("workType", -1);
-            editor.putString("title", "");
-            editor.putString("startTime", getString(R.string.select_start_time));
-            editor.putString("durationTxt", getResources().getString(R.string.select_duration));
-            editor.putString("notification", getString(R.string.select_alert));
-            editor.apply();
             main.removeFragment(R.id.popUp, this);
         });
         binding.startTime.setOnClickListener(e->{
@@ -145,15 +140,15 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
             reference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String originalStartTime = sharedPreferences.getString("startTime", "");
+                    Log.d(TAG, "onDataChange: onDataChange1");
                     String startTime = binding.startTime.getText().toString();
-                    Log.d("datacheck", "start time: " + startTime);
-
+                    boolean editRequest = sharedPreferences.getBoolean("editRequest", false);
+                    sameTime = false;
                     for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                         try {
-                            PlannerItemFirebase itemFirebase =
-                                    childSnapshot.getValue(PlannerItemFirebase.class);
+                            PlannerItemFirebase itemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
                             String itemStartTime = itemFirebase.getStartTime();
-                            Log.d("datacheck", "check time: " + itemStartTime);
                             if (itemStartTime.equals(startTime)) {
                                 sameTime = true;
                                 break;
@@ -164,49 +159,64 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                             continue;
                         }
                     }
-
+                    if(editRequest && startTime.equals(originalStartTime)){
+                        sameTime = false;
+                    }
                     if (sameTime) {
-                        Toast.makeText(context, "The start time conflicts with an existing task",
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "The start time conflicts with an existing task", Toast.LENGTH_LONG).show();
                         return;
                     }
-
                     SpinnerItem selected = (SpinnerItem) binding.workType.getSelectedItem();
+                    String title = selected.getText();
                     int workType = selected.getImageResId();
-                    Log.d("TAG", "onViewCreated: "+workType);
                     String durationTxt = binding.duration.getText().toString();
-                    if(checkEmpty(startTime, getString(R.string.select_start_time)) ||
-                            checkEmpty(durationTxt, getString(R.string.select_duration))) {
+                    Log.d("TAG", "onViewCreated: "+durationTxt);
+
+                    if(checkEmpty(startTime, getString(R.string.select_start_time))
+                            || checkEmpty(durationTxt, getString(R.string.select_duration))) {
                         return;
                     }
                     editor.putBoolean("newPlan", true);
-                    editor.putInt("workType",workType);
+                    editor.putString("title", title);
+                    editor.putInt("workType", workType);
                     editor.putString("startTime", startTime);
                     editor.putString("durationTxt", durationTxt);
+                    editor.putString("notification", getString(R.string.none));
                     editor.apply();
-                    String cardBackgroundColor = "#D04C25";
-                    switch (workType){
-                        case R.drawable.yellows:
-                            cardBackgroundColor = "#F3A83B";
-                            break;
-                        case R.drawable.triangle_48:
-                            cardBackgroundColor = "#ACCC8C";
-                            break;
-                        case R.drawable.star_2_xxl:
-                            cardBackgroundColor = "#65BFF5";
-                            break;
-                        default:
-                            break;
+                    if(editRequest){
+                        Log.d(TAG, "onDataChange: onDataChange2-----"+startTime);
+                        for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                            try {
+                                PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                                String start = plannerItemFirebase.getStartTime();
+                                System.out.println(start);
+                                if (start.equals(originalStartTime)) {
+                                    DatabaseReference itemRef = childSnapshot.getRef();
+                                    plannerItemFirebase.setTitle(title);
+                                    plannerItemFirebase.setDuration(durationTxt);
+                                    plannerItemFirebase.setStartTime(startTime);
+                                    plannerItemFirebase.setWorkType(workType);
+                                    itemRef.child("title").setValue(title);
+                                    itemRef.child("workType").setValue(workType);
+                                    itemRef.child("startTime").setValue(startTime);
+                                    itemRef.child("duration").setValue(durationTxt);
+                                    itemRef.child("notification").setValue(getString(R.string.none));
+                                    int durationNum = Integer.parseInt(durationTxt.substring(0, durationTxt.indexOf(" ")));
+                                    itemRef.child("endTime").setValue(plannerItemFirebase.getEndTime(startTime, durationNum));
+                                    Log.d(TAG, "onDataChange: called -------- "+startTime);
+                                }
+                            } catch (Exception e) {
+                                continue;
+                            }
+                        }
+                    }else{
+                        reference.push().setValue(new PlannerItemFirebase(title, startTime, durationTxt,
+                                workType, getString(R.string.none), dateStr));
                     }
-                    reference.push().setValue(new PlannerItemFirebase("", startTime, durationTxt,
-                            workType, getString(R.string.select_alert), dateStr));
                     main.removeFragment(R.id.popUp, currFragment);
                 }
-
                 @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    // Handle error
-                }
+                public void onCancelled(@NonNull DatabaseError error) {}
             });
         });
     }
