@@ -134,29 +134,46 @@ public class Stat_frag extends Fragment {
 
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
-                        LocationStruct locStruct = childSnapshot.getValue(LocationStruct.class);
-                        if (locStruct == null) {
+                        String dataDateStr = childSnapshot.getKey();
+                        if (dataDateStr == null) {
                             // client is null, error out
                             Log.e("DBREF:", "Data is unexpectedly null");
                         } else {
-                            String dataDateStr = locStruct.getDateStr();
                             if (now.isDaily(dataDateStr)) {
-                                UpdateTimeInfo(locStruct, todayDailyStats);
+                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                    LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    UpdateTimeInfo(locStruct, todayDailyStats);
+                                }
                             }
                             if (now.isWeekly(dataDateStr)) {
-                                UpdateTimeInfo(locStruct, todayWeeklyStats);
+                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                    LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    UpdateTimeInfo(locStruct, todayWeeklyStats);
+                                }
                             }
                             if (now.isMonthly(dataDateStr)) {
-                                UpdateTimeInfo(locStruct, todayMonthlyStats);
+                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                    LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    UpdateTimeInfo(locStruct, todayMonthlyStats);
+                                }
                             }
                             if (now.isPastDay(dataDateStr)) {
-                                UpdateTimeInfo(locStruct, dailyPastStats);
+                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                    LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    UpdateTimeInfo(locStruct, dailyPastStats);
+                                }
                             }
                             if (now.isPastWeek(dataDateStr)) {
-                                UpdateTimeInfo(locStruct, weeklyPastStats);
+                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                    LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    UpdateTimeInfo(locStruct, weeklyPastStats);
+                                }
                             }
                             if (now.isPastMonth(dataDateStr)) {
-                                UpdateTimeInfo(locStruct, monthlyPastStats);
+                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                    LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    UpdateTimeInfo(locStruct, monthlyPastStats);
+                                }
                             }
                         }
                     } catch (Exception e) {

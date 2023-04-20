@@ -96,21 +96,29 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
 
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
-                        LocationStruct locStruct = childSnapshot.getValue(LocationStruct.class);
-                        if (locStruct == null) {
+                        String dataDateStr = childSnapshot.getKey();
+                        DateStr now = new DateStr();
+                        if (dataDateStr == null) {
                             // client is null, error out
                             Log.e("DBREF:", "Data is unexpectedly null");
                         } else {
-                            DateStr now = new DateStr();
-                            String dataDateStr = locStruct.getDateStr();
                             if (now.isDaily(dataDateStr)) {
-                                locStructListByDay.add(locStruct);
+                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                    LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    locStructListByDay.add(locStruct);
+                                }
                             }
                             if (now.isWeekly(dataDateStr)) {
-                                locStructListByWeek.add(locStruct);
+                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                    LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    locStructListByWeek.add(locStruct);
+                                }
                             }
                             if (now.isMonthly(dataDateStr)) {
-                                locStructListByMonth.add(locStruct);
+                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                    LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    locStructListByMonth.add(locStruct);
+                                }
                             }
                         }
                     } catch (Exception e) {
