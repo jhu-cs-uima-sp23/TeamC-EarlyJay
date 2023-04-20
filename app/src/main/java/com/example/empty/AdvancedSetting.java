@@ -88,6 +88,9 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 minute = "0"+minute;
             }
             startTime = hour+":"+minute;
+            if(startTime.charAt(0)=='0'){
+                startTime = startTime.substring(1);
+            }
             binding.startTime.setText(startTime);
         };
 //        for switching from simple view
@@ -203,7 +206,6 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 }
             });
 
-            main.removeFragment(R.id.popUp, this);
         });
 
         binding.notification.setOnClickListener(e->{
