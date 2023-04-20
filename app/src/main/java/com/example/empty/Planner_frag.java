@@ -214,14 +214,13 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
                         String dataDateStr = childSnapshot.getKey();
-                        System.out.println(dataDateStr);
-                        DateStr now = new DateStr();
+                        DateStr currDate = new DateStr(currDateStr);
 //                        PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
                         if (dataDateStr == null) {
                             // client is null, error out
                             Log.e("DBREF:", "Data is unexpectedly null");
                         } else {
-                            if (now.isDaily(dataDateStr)) {
+                            if (currDate.isDaily(dataDateStr)) {
                                 for (DataSnapshot grandchild: childSnapshot.getChildren()) {
                                     PlannerItemFirebase plannerItemFirebase = grandchild.getValue(PlannerItemFirebase.class);
                                     int workType = plannerItemFirebase.getWorkType();
@@ -297,6 +296,40 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
     @Override
     public void onDeleteButtonClicked(int position) {
+        String startTime = plannerItemModels.get(position).getStartTime();
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    try {
+                        String dataDateStr = childSnapshot.getKey();
+                        DateStr currDate = new DateStr(currDateStr);
+                        if (dataDateStr == null) {
+                            Log.e("DBREF:", "Data is unexpectedly null");
+                        } else {
+                            if (currDate.isDaily(dataDateStr)) {
+                                for (DataSnapshot grandchild : childSnapshot.getChildren()) {
+                                    PlannerItemFirebase plannerItemFirebase = grandchild.getValue(PlannerItemFirebase.class);
+                                    String start = plannerItemFirebase.getStartTime();
+                                    if (start.equals(startTime)) {
+                                        DatabaseReference itemRef = grandchild.getRef();
+                                        itemRef.removeValue();
+                                    }
+                                }
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        continue;
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                    // Handle error
+            }
+        });
+
         adapter.notifyItemRemoved(position);
         plannerItemModels.remove(position);
     }
@@ -319,6 +352,47 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
     @Override
     public void onPinClick(int position) {
+        String start_time = plannerItemModels.get(position).getStartTime();
+        System.out.println(start_time);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    try {
+                        String dataDateStr = childSnapshot.getKey();
+                        DateStr currDate = new DateStr(currDateStr);
+//                        PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                        if (dataDateStr == null) {
+                            // client is null, error out
+                            Log.e("DBREF:", "Data is unexpectedly null");
+                        } else {
+                            if (currDate.isDaily(dataDateStr)) {
+                                for (DataSnapshot grandchild : childSnapshot.getChildren()) {
+                                    PlannerItemFirebase plannerItemFirebase = grandchild.getValue(PlannerItemFirebase.class);
+                                    String start = plannerItemFirebase.getStartTime();
+                                    System.out.println(start);
+                                    if (start.equals(start_time)) {
+                                        System.out.println("yeah");
+                                        DatabaseReference itemRef = grandchild.getRef();
+                                        itemRef.child("pinned").setValue(true);
+                                        plannerItemFirebase.togglePin();
+                                    }
+                                }
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        continue;
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
+            }
+        });
+
+
         plannerItemModels.get(position).togglePin();
         refreshList();
     }

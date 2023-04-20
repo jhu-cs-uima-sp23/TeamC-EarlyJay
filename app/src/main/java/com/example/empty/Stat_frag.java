@@ -271,6 +271,7 @@ public class Stat_frag extends Fragment {
     private void UpdateTimeInfo(LocationStruct locStruct, StatsCalculator calculator) {
         if (! locStruct.getComplete()) {
             calculator.addToFail(locStruct.getTimeInterval(), locStruct.getFeatherNum());
+            return;
         }
         String[] types = locStruct.getType().split(" ");
         String type = types[types.length - 1];
@@ -486,9 +487,9 @@ public class Stat_frag extends Fragment {
                         case 0:
                             return "Work";
                         case 1:
-                            return "Study";
-                        case 2:
                             return "Class";
+                        case 2:
+                            return "Team";
                         case 3:
                             return "Sports";
                         default:
