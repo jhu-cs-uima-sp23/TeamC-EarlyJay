@@ -38,11 +38,11 @@
         android:id="@+id/spinner_3"
         android:layout_width="128dp"
         android:layout_height="50dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
         android:background="@drawable/spinner_look"
         android:entries="@array/Planner_Display"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -56,23 +56,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0" >
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <ImageView
         android:id="@+id/new_plan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:contentDescription="@string/new_activity"
-        android:focusable="true"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
         android:src="@drawable/add"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:tint="@color/lavender"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:tint="@color/white"
-        app:backgroundTint="@color/lavender"
-        tools:ignore="ImageContrastCheck" />
+        app:layout_constraintTop_toTopOf="@+id/stuff_on_date" />
 
     <FrameLayout
         android:id="@+id/stuff_on_date"

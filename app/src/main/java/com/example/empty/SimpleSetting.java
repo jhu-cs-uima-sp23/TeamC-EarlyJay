@@ -120,6 +120,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
             main.replaceFragment(R.id.popUp, new AdvancedSetting());
         });
         binding.close.setOnClickListener(e->{
+            editor.putBoolean("newPlan", true);
             editor.putInt("lastSelected", 0);
             editor.putInt("workType", -1);
             editor.putString("title", "");
@@ -198,7 +199,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                         default:
                             break;
                     }
-                    reference.push().setValue(new PlannerItemFirebase("", startTime, duration,
+                    reference.push().setValue(new PlannerItemFirebase("", startTime, durationTxt,
                             workType, "", dateStr));
                     main.removeFragment(R.id.popUp, currFragment);
                 }
@@ -209,6 +210,37 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                 }
             });
 
+            SpinnerItem selected = (SpinnerItem) binding.workType.getSelectedItem();
+            int workType = selected.getImageResId();
+            Log.d("TAG", "onViewCreated: "+workType);
+            String startTime = binding.startTime.getText().toString();
+            String durationTxt = binding.duration.getText().toString();
+            if(checkEmpty(startTime, getString(R.string.select_start_time)) ||
+                    checkEmpty(durationTxt, getString(R.string.select_duration))) {
+                return;
+            }
+            editor.putBoolean("newPlan", true);
+            editor.putInt("workType",workType);
+            editor.putString("startTime", startTime);
+            editor.putString("durationTxt", durationTxt);
+            editor.apply();
+            String cardBackgroundColor = "#D04C25";
+            switch (workType){
+                case R.drawable.yellows:
+                    cardBackgroundColor = "#F3A83B";
+                    break;
+                case R.drawable.triangle_48:
+                    cardBackgroundColor = "#ACCC8C";
+                    break;
+                case R.drawable.star_2_xxl:
+                    cardBackgroundColor = "#65BFF5";
+                    break;
+                default:
+                    break;
+            }
+            reference.push().setValue(new PlannerItemFirebase("", startTime, durationTxt,
+                    workType, "", dateStr));
+            main.removeFragment(R.id.popUp, this);
         });
     }
     public boolean checkEmpty(String source, String target){

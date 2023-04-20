@@ -191,9 +191,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                         default:
                             break;
                     }
-                    durationTxt = durationTxt.substring(0, durationTxt.indexOf(" "));
-                    int duration = Integer.parseInt(durationTxt);
-                    reference.push().setValue(new PlannerItemFirebase(title, startTime, duration,
+                    reference.push().setValue(new PlannerItemFirebase(title, startTime, durationTxt,
                             workType, notification, dateStr));
 
                     main.removeFragment(R.id.popUp, currFragment);
@@ -205,6 +203,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 }
             });
 
+            main.removeFragment(R.id.popUp, this);
         });
 
         binding.notification.setOnClickListener(e->{

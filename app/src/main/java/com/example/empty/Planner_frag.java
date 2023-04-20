@@ -71,7 +71,7 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
         int result;
         if(item1.pinned && item2.pinned){
             if(time1.equals(time2)){
-                result = item1.getDuration() - item2.getDuration();
+                result = item1.duration - item2.duration;
             }else{
                 result = time1.compareTo(time2);
             }
@@ -81,7 +81,7 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
             result = 1;
         }else{
             if(time1.equals(time2)){
-                result = item1.getDuration() - item2.getDuration();
+                result = item1.duration - item2.duration;
             }else{
                 result = time1.compareTo(time2);
             }
@@ -122,15 +122,12 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
         binding.newPlan.setOnClickListener(e-> mainActivity.replaceFragment(R.id.popUp, new SimpleSetting()));
         binding.popUp.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             if(binding.popUp.getChildCount() == 0){
-                binding.newPlan.show();
                 binding.popupBackground.setVisibility(View.INVISIBLE);
                 if(sharedPreferences.getBoolean("newPlan", false)){
                     String title = sharedPreferences.getString("title", "");
                     String startTime = sharedPreferences.getString("startTime", "0");
                     String durationTxt = sharedPreferences.getString("durationTxt", "0");
                     String notificationTxt = sharedPreferences.getString("notification", "");
-                    durationTxt = durationTxt.substring(0, durationTxt.indexOf(" "));
-                    int duration = Integer.parseInt(durationTxt);
                     int workType = sharedPreferences.getInt("workType", -1);
                     String cardBackgroundColor = "#D04C25";
                     switch (workType){
@@ -150,12 +147,11 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                         isEditRequest = false;
                         return;
                     }else{
-                        addPlan(title,startTime,duration,workType, notificationTxt, Color.parseColor(cardBackgroundColor));
+                        addPlan(title,startTime,durationTxt,workType, notificationTxt, Color.parseColor(cardBackgroundColor));
                     }
                     reset();
                 }
             }else{
-                binding.newPlan.hide();
                 binding.popupBackground.setVisibility(View.VISIBLE);
             }
         });
@@ -270,9 +266,10 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
         adapter = new PlannerItemAdapter(this, mainActivity, plannerItemModels);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
     }
 
-    public void addPlan(String title, String startTime, int duration, int workType, String notification, int color){
+    public void addPlan(String title, String startTime, String duration, int workType, String notification, int color){
         plannerItemModels.add(new PlannerItemModel(title, startTime, duration, workType, notification, color));
         adapter.notifyItemInserted(plannerItemModels.size()-1);
         refreshList();
@@ -339,14 +336,14 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
         isEditRequest = true;
         editPosition = position;
         editedItem = plannerItemModels.get(position);
-        editor.putBoolean("newPlan", true);
         editor.putInt("lastSelected", 0);
         editor.putInt("workType", editedItem.workType);
         editor.putString("title", editedItem.title);
         editor.putString("startTime", editedItem.startTime);
-        editor.putString("durationTxt", ""+editedItem.duration);
+        editor.putString("durationTxt", ""+editedItem.durationTxt);
         editor.putString("notification", ""+editedItem.notification);
         editor.apply();
+        
         mainActivity.replaceFragment(R.id.popUp, new SimpleSetting());
     }
 
@@ -394,7 +391,6 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
 
         plannerItemModels.get(position).togglePin();
-        adapter.notifyItemChanged(position);
         refreshList();
     }
     @SuppressLint("NotifyDataSetChanged")

@@ -10,18 +10,20 @@ public class PlannerItemModel {
     String title;
     String category;
     String startTime;
+    String durationTxt;
     int duration;
     String endTime;
     int workType;
     String notification;
     Boolean pinned = false;
     int cardBackgroundColor;
-    public PlannerItemModel(String title, String startTime, int duration, int workType,
+    public PlannerItemModel(String title, String startTime, String durationTxt_, int workType,
                             String notification, int color){
         this.title = title;
         this.startTime = startTime;
         Log.d("check", startTime);
-        this.duration = duration;
+        this.durationTxt = durationTxt_;
+        duration = Integer.parseInt(durationTxt.substring(0, durationTxt.indexOf(" ")));
         this.workType = workType;
         this.notification = notification;
         this.endTime = getEndTime(startTime, duration);
@@ -52,7 +54,7 @@ public class PlannerItemModel {
 
     public String getStartTime() { return startTime; }
 
-    public int getDuration() { return duration; }
+    public String getDurationTxt() { return durationTxt; }
 
     public String getEndTime() { return endTime; }
 
@@ -75,8 +77,8 @@ public class PlannerItemModel {
     public void setStartTime(String startTime){
         this.startTime = startTime;
     }
-    public void setDuration(int duration){
-        this.duration = duration;
+    public void setDurationTxt(String durationTxt){
+        this.durationTxt = durationTxt;
     }
     public void setWorkType(int workType) {
         this.workType = workType;
