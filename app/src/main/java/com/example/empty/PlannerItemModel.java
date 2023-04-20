@@ -1,4 +1,5 @@
 package com.example.empty;
+import android.graphics.Color;
 import android.util.Log;
 
 import java.text.ParseException;
@@ -18,35 +19,35 @@ public class PlannerItemModel {
     Boolean pinned;
     int cardBackgroundColor;
     public PlannerItemModel(String title, String startTime, String durationTxt_, int workType,
-                            String notification, int color, boolean pin){
+                            String notification, boolean pin){
         this.title = title;
         this.startTime = startTime;
-        Log.d("check", startTime);
         this.durationTxt = durationTxt_;
-        Log.d("datacheck", "duration: " + duration);
         this.duration = Integer.parseInt(durationTxt.substring(0, durationTxt.indexOf(" ")));
         this.workType = workType;
         this.notification = notification;
         this.endTime = getEndTime(startTime, duration);
-        this.cardBackgroundColor = color;
+        this.category = "Work";
+        String colorString = "#D04C25";
         this.pinned = pin;
         switch (workType) {
-            case R.drawable.circle_dashed_6_xxl:
-                this.category = "Work";
-                break;
             case R.drawable.yellows:
                 this.category = "Class";
+                colorString = "#F3A83B";
                 break;
             case R.drawable.triangle_48:
                 this.category = "Team";
+                colorString = "#ACCC8C";
                 break;
             case R.drawable.star_2_xxl:
                 this.category = "Sport";
+                colorString = "#65BFF5";
                 break;
             default:
                 this.category = "";
                 break;
         }
+        this.cardBackgroundColor = Color.parseColor(colorString);
         if(title.equals("")) {
             this.title = category;
         }
@@ -58,9 +59,13 @@ public class PlannerItemModel {
 
     public String getDurationTxt() { return durationTxt; }
 
-    public String getEndTime() { return endTime; }
+    public String getEndTime() {
+        this.duration = Integer.parseInt(durationTxt.substring(0, durationTxt.indexOf(" ")));
+        endTime = getEndTime(startTime, duration);
+        return endTime;
+    }
 
-    public int getWorkTime() { return workType; }
+    public int getWorkType() { return workType; }
 
 //    public String getNotification() { return notification; }
 
@@ -84,6 +89,30 @@ public class PlannerItemModel {
     }
     public void setWorkType(int workType) {
         this.workType = workType;
+
+        this.category = "Work";
+        String colorString = "#D04C25";
+        switch (workType) {
+            case R.drawable.yellows:
+                this.category = "Class";
+                colorString = "#F3A83B";
+                break;
+            case R.drawable.triangle_48:
+                this.category = "Team";
+                colorString = "#ACCC8C";
+                break;
+            case R.drawable.star_2_xxl:
+                this.category = "Sport";
+                colorString = "#65BFF5";
+                break;
+            default:
+                this.category = "";
+                break;
+        }
+        this.cardBackgroundColor = Color.parseColor(colorString);
+        if(title.equals("")) {
+            this.title = category;
+        }
     }
     public void setNotification(String notification) {
         this.notification = notification;

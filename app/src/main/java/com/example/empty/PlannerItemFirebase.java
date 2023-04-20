@@ -18,7 +18,7 @@ public class PlannerItemFirebase {
     // int notification = -1;
     String notification;
     Boolean pinned = false;
-
+    int durationNum;
     int status = 0;
     // status = 0 - no record
     // status = 1 - done
@@ -32,12 +32,9 @@ public class PlannerItemFirebase {
                             String notification, String dateStr){
         this.title = title;
         this.startTime = startTime;
-        Log.d("check", startTime);
         this.duration = duration;
-        int durationNum = Integer.parseInt(this.duration.substring(0, this.duration.indexOf(" ")));
         this.workType = workType;
         this.notification = notification;
-        this.endTime = getEndTime(startTime, durationNum);
         if(title.equals("")) {
             switch (workType) {
                 case R.drawable.circle_dashed_6_xxl:
@@ -65,7 +62,11 @@ public class PlannerItemFirebase {
 
     public String getDuration() { return duration; }
 
-    public String getEndTime() { return endTime; }
+    public String getEndTime() {
+        durationNum = Integer.parseInt(this.duration.substring(0, this.duration.indexOf(" ")));
+        this.endTime = getEndTime(startTime, durationNum);
+        return endTime;
+    }
 
     public int getWorkType() { return workType; }
 
@@ -110,7 +111,6 @@ public class PlannerItemFirebase {
         if(formatDate.charAt(0)=='0'){
             formatDate = formatDate.substring(1);
         }
-        Log.d("check", formatDate);
         return formatDate;
     }
 }

@@ -52,7 +52,6 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
     private String currDatePage;
 
     private String uid;
-    private Boolean isEditRequest = false;
     private int editPosition = -1;
     public Comparator<PlannerItemModel> comparator = (item1, item2) -> {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
@@ -128,27 +127,18 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                     String durationTxt = sharedPreferences.getString("durationTxt", "0");
                     String notificationTxt = sharedPreferences.getString("notification", "");
                     int workType = sharedPreferences.getInt("workType", -1);
-                    String cardBackgroundColor = "#D04C25";
-                    switch (workType){
-                        case R.drawable.yellows:
-                            cardBackgroundColor = "#F3A83B";
-                            break;
-                        case R.drawable.triangle_48:
-                            cardBackgroundColor = "#ACCC8C";
-                            break;
-                        case R.drawable.star_2_xxl:
-                            cardBackgroundColor = "#65BFF5";
-                            break;
-                        default:
-                            break;
-                    }
-                    if(isEditRequest){
-                        isEditRequest = false;
+                    if(sharedPreferences.getBoolean("editRequest", false)){
+                        editedItem.setTitle(sharedPreferences.getString("title", editedItem.title));
+                        editedItem.setWorkType(sharedPreferences.getInt("workType", editedItem.workType));
+                        editedItem.setDurationTxt(sharedPreferences.getString("durationTxt", editedItem.durationTxt));
+                        editedItem.setNotification(sharedPreferences.getString("notification", editedItem.notification));
+                        editedItem.setStartTime(sharedPreferences.getString("startTime", editedItem.startTime));
+                        refreshList();
                     }else{
-                        addPlan(title,startTime,durationTxt,workType, notificationTxt, Color.parseColor(cardBackgroundColor), false);
+                        addPlan(title,startTime,durationTxt,workType, notificationTxt, false);
                     }
-                    reset();
                 }
+                reset();
             }else{
                 binding.popupBackground.setVisibility(View.VISIBLE);
             }
@@ -197,6 +187,7 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
         rootNode = FirebaseDatabase.getInstance();
         reference = FirebaseDatabase.getInstance().getReference().
                 child("planner").child(uid).child(currDateStr);
+//        grab things from data base to populate recycler view
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -206,24 +197,9 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                     try {
                     PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
                     int workType = plannerItemFirebase.getWorkType();
-                    String cardBackgroundColor = "#D04C25";
-                    switch (workType) {
-                        case R.drawable.yellows:
-                            cardBackgroundColor = "#F3A83B";
-                            break;
-                        case R.drawable.triangle_48:
-                            cardBackgroundColor = "#ACCC8C";
-                            break;
-                        case R.drawable.star_2_xxl:
-                            cardBackgroundColor = "#65BFF5";
-                            break;
-                        default:
-                            break;
-                    }
                     addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getStartTime(),
                             plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
-                            plannerItemFirebase.getNotification(),
-                            Color.parseColor(cardBackgroundColor), plannerItemFirebase.getPinned());
+                            plannerItemFirebase.getNotification(), plannerItemFirebase.getPinned());
 
                     } catch (Exception e) {
                         System.out.println(e.getClass().getSimpleName());
@@ -251,14 +227,15 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
     }
 
-    public void addPlan(String title, String startTime, String duration, int workType, String notification, int color, boolean pin){
-        plannerItemModels.add(new PlannerItemModel(title, startTime, duration, workType, notification, color, pin));
+    public void addPlan(String title, String startTime, String duration, int workType, String notification, boolean pin){
+        plannerItemModels.add(new PlannerItemModel(title, startTime, duration, workType, notification, pin));
         adapter.notifyItemInserted(plannerItemModels.size()-1);
         refreshList();
     }
 
     public void reset(){
         editor.putBoolean("newPlan", false);
+        editor.putBoolean("editRequest", false);
         editor.putInt("lastSelected", 0);
         editor.putInt("workType", -1);
         editor.putString("title", "");
@@ -297,16 +274,22 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                     // Handle error
             }
         });
-        adapter.notifyItemRemoved(position);
         plannerItemModels.remove(position);
+        adapter.notifyItemRemoved(position);
+        refreshList();
     }
 
     @Override
     public void onEditClick(int position) {
-        isEditRequest = true;
         editPosition = position;
         editedItem = plannerItemModels.get(position);
-        editor.putInt("lastSelected", 0);
+        editor.putBoolean("editRequest", true);
+        int lastSelected = 0;
+        if(editedItem.category.equals(getString(R.string.work))){lastSelected = 0;}
+        else if(editedItem.category.equals(getString(R.string.class_))){lastSelected = 1;}
+        else if(editedItem.category.equals(getString(R.string.team))){lastSelected = 2;}
+        else if(editedItem.category.equals(getString(R.string.sport))){lastSelected = 3;}
+        editor.putInt("lastSelected", lastSelected);
         editor.putInt("workType", editedItem.workType);
         editor.putString("title", editedItem.title);
         editor.putString("startTime", editedItem.startTime);

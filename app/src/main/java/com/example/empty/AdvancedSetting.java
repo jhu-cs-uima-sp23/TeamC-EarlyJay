@@ -1,28 +1,24 @@
 package com.example.empty;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
-import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.example.empty.databinding.FragmentAdvancedSettingBinding;
-import com.example.empty.databinding.FragmentPopupStartBinding;
-import com.example.empty.databinding.FragmentSimpleSettingBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,7 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDismissedListener{
     private FragmentAdvancedSettingBinding binding;
@@ -49,12 +44,10 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
 
     private Fragment currFragment;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
-        sameTime = false;
         binding = FragmentAdvancedSettingBinding.inflate(inflater, container, false);
         main = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -111,14 +104,6 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             main.replaceFragment(R.id.popUp, new SimpleSetting());
         });
         binding.close.setOnClickListener(e->{
-            editor.putBoolean("newPlan", false);
-            editor.putInt("lastSelected", 0);
-            editor.putInt("workType", -1);
-            editor.putString("title", "");
-            editor.putString("startTime", getString(R.string.select_start_time));
-            editor.putString("durationTxt", getResources().getString(R.string.select_duration));
-            editor.putString("notification", getString(R.string.select_alert));
-            editor.apply();
             main.removeFragment(R.id.popUp, this);
         });
         binding.startTime.setOnClickListener(e->{
@@ -131,38 +116,36 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             numberPicker.show(getChildFragmentManager(), "");
         });
         binding.done.setOnClickListener(e->{
-
             reference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String originalStartTime = sharedPreferences.getString("startTime", "");
                     String startTime = binding.startTime.getText().toString();
-                    Log.d("datacheck", "start time: " + startTime);
-
+                    boolean editRequest = sharedPreferences.getBoolean("editRequest", false);
+                    sameTime = false;
                     for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                         try {
-                            PlannerItemFirebase itemFirebase =
-                                                childSnapshot.getValue(PlannerItemFirebase.class);
-                                        String itemStartTime = itemFirebase.getStartTime();
-                                        Log.d("datacheck", "check time: " + itemStartTime);
-                                        if (itemStartTime.equals(startTime)) {
-                                            sameTime = true;
-                                            break;
-                                        }
+                            PlannerItemFirebase itemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                            String itemStartTime = itemFirebase.getStartTime();
+                            if (itemStartTime.equals(startTime)) {
+                                sameTime = true;
+                                break;
+                            }
                         } catch (Exception e) {
                             System.out.println(e.getClass().getSimpleName());
                             System.out.println(e.getMessage());
                             continue;
                         }
                     }
-
+                    if(editRequest && startTime.equals(originalStartTime)){
+                        sameTime = false;
+                    }
                     if (sameTime) {
-                        Toast.makeText(context, "The start time conflicts with an existing task",
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "The start time conflicts with an existing task", Toast.LENGTH_LONG).show();
                         return;
                     }
                     SpinnerItem selected = (SpinnerItem) binding.workType.getSelectedItem();
                     int workType = selected.getImageResId();
-                    Log.d("TAG", "onViewCreated: "+workType);
                     String title = binding.cusomeTitle.getEditableText().toString();
                     String durationTxt = binding.duration.getText().toString();
                     String notification = binding.notification.getText().toString();
@@ -179,24 +162,34 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                     editor.putString("durationTxt", durationTxt);
                     editor.putString("notification", notification);
                     editor.apply();
-
-                    String color = "#D04C25";
-                    switch (workType){
-                        case R.drawable.yellows:
-                            color = "#F3A83B";
-                            break;
-                        case R.drawable.triangle_48:
-                            color = "#ACCC8C";
-                            break;
-                        case R.drawable.star_2_xxl:
-                            color = "#65BFF5";
-                            break;
-                        default:
-                            break;
-                    }
-                    reference.push().setValue(new PlannerItemFirebase(title, startTime, durationTxt,
+                    if(editRequest){
+                        for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                            try {
+                                PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                                String start = plannerItemFirebase.getStartTime();
+                                System.out.println(start);
+                                if (start.equals(originalStartTime)) {
+                                    DatabaseReference itemRef = childSnapshot.getRef();
+                                    plannerItemFirebase.setTitle(title);
+                                    plannerItemFirebase.setDuration(durationTxt);
+                                    plannerItemFirebase.setStartTime(startTime);
+                                    plannerItemFirebase.setNotification(notification);
+                                    plannerItemFirebase.setWorkType(workType);
+                                    itemRef.child("title").setValue(title);
+                                    itemRef.child("workType").setValue(workType);
+                                    itemRef.child("startTime").setValue(startTime);
+                                    itemRef.child("duration").setValue(durationTxt);
+                                    int durationNum = Integer.parseInt(durationTxt.substring(0, durationTxt.indexOf(" ")));
+                                    itemRef.child("endTime").setValue(plannerItemFirebase.getEndTime(startTime, durationNum));
+                                }
+                            } catch (Exception e) {
+                                continue;
+                            }
+                        }
+                    }else{
+                        reference.push().setValue(new PlannerItemFirebase(title, startTime, durationTxt,
                             workType, notification, dateStr));
-
+                    }
                     main.removeFragment(R.id.popUp, currFragment);
                 }
 

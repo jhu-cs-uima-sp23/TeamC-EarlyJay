@@ -59,7 +59,7 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         PlannerItemModel item = plannerItemModels.get(position);
         holder.title.setText(item.title);
-        String timeRange = item.startTime + " - " + item.endTime;
+        String timeRange = item.startTime + " - " + item.getEndTime();
         holder.startTime.setText(timeRange);
         holder.cardView.setCardBackgroundColor(item.cardBackgroundColor);
         if(item.pinned){
