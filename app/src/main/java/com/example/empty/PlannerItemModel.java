@@ -10,22 +10,26 @@ public class PlannerItemModel {
     String title;
     String category;
     String startTime;
+    String durationTxt;
     int duration;
     String endTime;
     int workType;
     String notification;
-    Boolean pinned = false;
+    Boolean pinned;
     int cardBackgroundColor;
-    public PlannerItemModel(String title, String startTime, int duration, int workType,
-                            String notification, int color){
+    public PlannerItemModel(String title, String startTime, String durationTxt_, int workType,
+                            String notification, int color, boolean pin){
         this.title = title;
         this.startTime = startTime;
         Log.d("check", startTime);
-        this.duration = duration;
+        this.durationTxt = durationTxt_;
+        Log.d("datacheck", "duration: " + duration);
+        this.duration = Integer.parseInt(durationTxt.substring(0, durationTxt.indexOf(" ")));
         this.workType = workType;
         this.notification = notification;
         this.endTime = getEndTime(startTime, duration);
         this.cardBackgroundColor = color;
+        this.pinned = pin;
         switch (workType) {
             case R.drawable.circle_dashed_6_xxl:
                 this.category = "Work";
@@ -52,7 +56,7 @@ public class PlannerItemModel {
 
     public String getStartTime() { return startTime; }
 
-    public int getDuration() { return duration; }
+    public String getDurationTxt() { return durationTxt; }
 
     public String getEndTime() { return endTime; }
 
@@ -75,8 +79,8 @@ public class PlannerItemModel {
     public void setStartTime(String startTime){
         this.startTime = startTime;
     }
-    public void setDuration(int duration){
-        this.duration = duration;
+    public void setDurationTxt(String durationTxt){
+        this.durationTxt = durationTxt;
     }
     public void setWorkType(int workType) {
         this.workType = workType;

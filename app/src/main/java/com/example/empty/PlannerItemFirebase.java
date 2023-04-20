@@ -12,7 +12,7 @@ import java.util.Date;
 public class PlannerItemFirebase {
     String title;
     String startTime;
-    int duration;
+    String duration;
     String endTime;
     int workType;
     // int notification = -1;
@@ -28,15 +28,16 @@ public class PlannerItemFirebase {
 
     public PlannerItemFirebase(){}
 
-    public PlannerItemFirebase(String title, String startTime, int duration, int workType,
+    public PlannerItemFirebase(String title, String startTime, String duration, int workType,
                             String notification, String dateStr){
         this.title = title;
         this.startTime = startTime;
         Log.d("check", startTime);
         this.duration = duration;
+        int durationNum = Integer.parseInt(this.duration.substring(0, this.duration.indexOf(" ")));
         this.workType = workType;
         this.notification = notification;
-        this.endTime = getEndTime(startTime, duration);
+        this.endTime = getEndTime(startTime, durationNum);
         if(title.equals("")) {
             switch (workType) {
                 case R.drawable.circle_dashed_6_xxl:
@@ -62,7 +63,7 @@ public class PlannerItemFirebase {
 
     public String getStartTime() { return startTime; }
 
-    public int getDuration() { return duration; }
+    public String getDuration() { return duration; }
 
     public String getEndTime() { return endTime; }
 
@@ -84,7 +85,7 @@ public class PlannerItemFirebase {
     public void setStartTime(String startTime){
         this.startTime = startTime;
     }
-    public void setDuration(int duration){
+    public void setDuration(String duration){
         this.duration = duration;
     }
     public void setWorkType(int workType) {

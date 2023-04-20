@@ -78,9 +78,9 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
                 if(selectedTxt.equals(res.getString(R.string.start_task))){
                     editor.putString("category", item.category);
                     editor.putInt("workType", item.workType);
-                    editor.putInt("numSeconds", item.duration*60);
+                    editor.putInt("numSeconds", item.duration *60);
                     editor.putInt("totalTimeInterval", item.duration);
-                    editor.putInt("featherCount", item.duration/5);
+                    editor.putInt("featherCount", item.duration /5);
                     editor.putBoolean("startPlanTask", true);
                     editor.apply();
                     main.bottomNavigationView.setSelectedItemId(R.id.map);

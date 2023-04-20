@@ -120,6 +120,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
             main.replaceFragment(R.id.popUp, new AdvancedSetting());
         });
         binding.close.setOnClickListener(e->{
+            editor.putBoolean("newPlan", false);
             editor.putInt("lastSelected", 0);
             editor.putInt("workType", -1);
             editor.putString("title", "");
@@ -169,6 +170,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
+
                     SpinnerItem selected = (SpinnerItem) binding.workType.getSelectedItem();
                     int workType = selected.getImageResId();
                     Log.d("TAG", "onViewCreated: "+workType);
@@ -182,8 +184,6 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                     editor.putString("startTime", startTime);
                     editor.putString("durationTxt", durationTxt);
                     editor.apply();
-                    durationTxt = durationTxt.substring(0, durationTxt.indexOf(" "));
-                    int duration = Integer.parseInt(durationTxt);
                     String cardBackgroundColor = "#D04C25";
                     switch (workType){
                         case R.drawable.yellows:
@@ -198,8 +198,8 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                         default:
                             break;
                     }
-                    reference.push().setValue(new PlannerItemFirebase("", startTime, duration,
-                            workType, "", dateStr));
+                    reference.push().setValue(new PlannerItemFirebase("", startTime, durationTxt,
+                            workType, getString(R.string.select_alert), dateStr));
                     main.removeFragment(R.id.popUp, currFragment);
                 }
 
@@ -208,7 +208,6 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                     // Handle error
                 }
             });
-
         });
     }
     public boolean checkEmpty(String source, String target){

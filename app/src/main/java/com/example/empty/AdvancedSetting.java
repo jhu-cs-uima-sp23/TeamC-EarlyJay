@@ -88,6 +88,9 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 minute = "0"+minute;
             }
             startTime = hour+":"+minute;
+            if(startTime.charAt(0)=='0'){
+                startTime = startTime.substring(1);
+            }
             binding.startTime.setText(startTime);
         };
 //        for switching from simple view
@@ -191,9 +194,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                         default:
                             break;
                     }
-                    durationTxt = durationTxt.substring(0, durationTxt.indexOf(" "));
-                    int duration = Integer.parseInt(durationTxt);
-                    reference.push().setValue(new PlannerItemFirebase(title, startTime, duration,
+                    reference.push().setValue(new PlannerItemFirebase(title, startTime, durationTxt,
                             workType, notification, dateStr));
 
                     main.removeFragment(R.id.popUp, currFragment);
