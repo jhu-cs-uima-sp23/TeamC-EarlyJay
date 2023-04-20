@@ -23,11 +23,15 @@ import android.widget.Toast;
 import com.example.empty.databinding.FragmentAdvancedSettingBinding;
 import com.example.empty.databinding.FragmentPopupStartBinding;
 import com.example.empty.databinding.FragmentSimpleSettingBinding;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDismissedListener{
     private FragmentAdvancedSettingBinding binding;
@@ -41,16 +45,22 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
 
     private String dateStr;
 
+    private boolean sameTime;
+
+    private Fragment currFragment;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
+        sameTime = false;
         binding = FragmentAdvancedSettingBinding.inflate(inflater, container, false);
         main = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         editor = sharedPreferences.edit();
         dateStr = sharedPreferences.getString("currDateStr","");
+        currFragment = this;
         return binding.getRoot();
     }
 
@@ -118,47 +128,85 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             numberPicker.show(getChildFragmentManager(), "");
         });
         binding.done.setOnClickListener(e->{
-            SpinnerItem selected = (SpinnerItem) binding.workType.getSelectedItem();
-            int workType = selected.getImageResId();
-            Log.d("TAG", "onViewCreated: "+workType);
-            String title = binding.cusomeTitle.getEditableText().toString();
-            String startTime = binding.startTime.getText().toString();
-            String durationTxt = binding.duration.getText().toString();
-            String notification = binding.notification.getText().toString();
-            if(checkEmpty(title, "")
-                    || checkEmpty(startTime, getString(R.string.select_start_time))
-                    || checkEmpty(durationTxt, getString(R.string.select_duration))
-                    || checkEmpty(notification, getString(R.string.select_alert)) ) {
-                return;
-            }
-            editor.putBoolean("newPlan", true);
-            editor.putString("title", title);
-            editor.putInt("workType",workType);
-            editor.putString("startTime", startTime);
-            editor.putString("durationTxt", durationTxt);
-            editor.putString("notification", notification);
-            editor.apply();
 
-            String color = "#D04C25";
-            switch (workType){
-                case R.drawable.yellows:
-                    color = "#F3A83B";
-                    break;
-                case R.drawable.triangle_48:
-                    color = "#ACCC8C";
-                    break;
-                case R.drawable.star_2_xxl:
-                    color = "#65BFF5";
-                    break;
-                default:
-                    break;
-            }
-            durationTxt = durationTxt.substring(0, durationTxt.indexOf(" "));
-            int duration = Integer.parseInt(durationTxt);
-            reference.push().setValue(new PlannerItemFirebase(title, startTime, duration, workType, notification, dateStr));
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String startTime = binding.startTime.getText().toString();
+                    Log.d("datacheck", "start time: " + startTime);
 
-            main.removeFragment(R.id.popUp, this);
+                    for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                        try {
+                            PlannerItemFirebase itemFirebase =
+                                                childSnapshot.getValue(PlannerItemFirebase.class);
+                                        String itemStartTime = itemFirebase.getStartTime();
+                                        Log.d("datacheck", "check time: " + itemStartTime);
+                                        if (itemStartTime.equals(startTime)) {
+                                            sameTime = true;
+                                            break;
+                                        }
+                        } catch (Exception e) {
+                            System.out.println(e.getClass().getSimpleName());
+                            System.out.println(e.getMessage());
+                            continue;
+                        }
+                    }
+
+                    if (sameTime) {
+                        Toast.makeText(context, "The start time conflicts with an existing task",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    SpinnerItem selected = (SpinnerItem) binding.workType.getSelectedItem();
+                    int workType = selected.getImageResId();
+                    Log.d("TAG", "onViewCreated: "+workType);
+                    String title = binding.cusomeTitle.getEditableText().toString();
+                    String durationTxt = binding.duration.getText().toString();
+                    String notification = binding.notification.getText().toString();
+                    if(checkEmpty(title, "")
+                            || checkEmpty(startTime, getString(R.string.select_start_time))
+                            || checkEmpty(durationTxt, getString(R.string.select_duration))
+                            || checkEmpty(notification, getString(R.string.select_alert)) ) {
+                        return;
+                    }
+                    editor.putBoolean("newPlan", true);
+                    editor.putString("title", title);
+                    editor.putInt("workType",workType);
+                    editor.putString("startTime", startTime);
+                    editor.putString("durationTxt", durationTxt);
+                    editor.putString("notification", notification);
+                    editor.apply();
+
+                    String color = "#D04C25";
+                    switch (workType){
+                        case R.drawable.yellows:
+                            color = "#F3A83B";
+                            break;
+                        case R.drawable.triangle_48:
+                            color = "#ACCC8C";
+                            break;
+                        case R.drawable.star_2_xxl:
+                            color = "#65BFF5";
+                            break;
+                        default:
+                            break;
+                    }
+                    durationTxt = durationTxt.substring(0, durationTxt.indexOf(" "));
+                    int duration = Integer.parseInt(durationTxt);
+                    reference.push().setValue(new PlannerItemFirebase(title, startTime, duration,
+                            workType, notification, dateStr));
+
+                    main.removeFragment(R.id.popUp, currFragment);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    // Handle error
+                }
+            });
+
         });
+
         binding.notification.setOnClickListener(e->{
             PopupMenu popup = new PopupMenu(context, binding.notification);
             popup.getMenuInflater().inflate(R.menu.notification_menu, popup.getMenu());
