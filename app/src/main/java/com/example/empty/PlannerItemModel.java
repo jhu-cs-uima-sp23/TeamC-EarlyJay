@@ -23,7 +23,8 @@ public class PlannerItemModel {
         this.startTime = startTime;
         Log.d("check", startTime);
         this.durationTxt = durationTxt_;
-        duration = Integer.parseInt(durationTxt.substring(0, durationTxt.indexOf(" ")));
+        Log.d("datacheck", "duration: " + duration);
+        this.duration = Integer.parseInt(durationTxt.substring(0, durationTxt.indexOf(" ")));
         this.workType = workType;
         this.notification = notification;
         this.endTime = getEndTime(startTime, duration);

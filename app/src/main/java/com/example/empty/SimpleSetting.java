@@ -120,7 +120,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
             main.replaceFragment(R.id.popUp, new AdvancedSetting());
         });
         binding.close.setOnClickListener(e->{
-            editor.putBoolean("newPlan", true);
+            editor.putBoolean("newPlan", false);
             editor.putInt("lastSelected", 0);
             editor.putInt("workType", -1);
             editor.putString("title", "");

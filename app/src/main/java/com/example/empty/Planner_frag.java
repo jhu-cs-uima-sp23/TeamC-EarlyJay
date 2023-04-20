@@ -118,7 +118,6 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                 mainActivity.replaceFragment(R.id.stuff_on_date, new DailyStatsFragment());
                 break;
         }
-
         binding.newPlan.setOnClickListener(e-> mainActivity.replaceFragment(R.id.popUp, new SimpleSetting()));
         binding.popUp.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             if(binding.popUp.getChildCount() == 0){
@@ -167,13 +166,10 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
         });
         binding.rightRollButton2.setOnClickListener(view -> {
             String dateStr;
-            switch(currDatePage) {
-                case "Weekly":
-                    dateStr = now.getFutureDay(7);
-                    break;
-                default:
-                    dateStr = now.getFutureDay(1);
-                    break;
+            if ("Weekly".equals(currDatePage)) {
+                dateStr = now.getFutureDay(7);
+            } else {
+                dateStr = now.getFutureDay(1);
             }
             editor.putString("currDateStr", dateStr);
             editor.apply();
@@ -232,7 +228,6 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                     } catch (Exception e) {
                         System.out.println(e.getClass().getSimpleName());
                         System.out.println(e.getMessage());
-                        continue;
                     }
                 }
                 reset();
