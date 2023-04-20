@@ -145,9 +145,8 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                     }
                     if(isEditRequest){
                         isEditRequest = false;
-                        return;
                     }else{
-                        addPlan(title,startTime,durationTxt,workType, notificationTxt, Color.parseColor(cardBackgroundColor));
+                        addPlan(title,startTime,durationTxt,workType, notificationTxt, Color.parseColor(cardBackgroundColor), false);
                     }
                     reset();
                 }
@@ -228,7 +227,7 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                     addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getStartTime(),
                             plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
                             plannerItemFirebase.getNotification(),
-                            Color.parseColor(cardBackgroundColor));
+                            Color.parseColor(cardBackgroundColor), plannerItemFirebase.getPinned());
 
                     } catch (Exception e) {
                         System.out.println(e.getClass().getSimpleName());
@@ -257,8 +256,8 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
     }
 
-    public void addPlan(String title, String startTime, String duration, int workType, String notification, int color){
-        plannerItemModels.add(new PlannerItemModel(title, startTime, duration, workType, notification, color));
+    public void addPlan(String title, String startTime, String duration, int workType, String notification, int color, boolean pin){
+        plannerItemModels.add(new PlannerItemModel(title, startTime, duration, workType, notification, color, pin));
         adapter.notifyItemInserted(plannerItemModels.size()-1);
         refreshList();
     }
@@ -338,7 +337,7 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                         if (start.equals(start_time)) {
                             System.out.println("yeah");
                             DatabaseReference itemRef = childSnapshot.getRef();
-                            itemRef.child("pinned").setValue(true);
+                            itemRef.child("pinned").setValue(!plannerItemFirebase.getPinned());
                             plannerItemFirebase.togglePin();
                         }
                     } catch (Exception e) {

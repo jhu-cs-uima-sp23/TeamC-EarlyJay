@@ -15,10 +15,10 @@ public class PlannerItemModel {
     String endTime;
     int workType;
     String notification;
-    Boolean pinned = false;
+    Boolean pinned;
     int cardBackgroundColor;
     public PlannerItemModel(String title, String startTime, String durationTxt_, int workType,
-                            String notification, int color){
+                            String notification, int color, boolean pin){
         this.title = title;
         this.startTime = startTime;
         Log.d("check", startTime);
@@ -28,6 +28,7 @@ public class PlannerItemModel {
         this.notification = notification;
         this.endTime = getEndTime(startTime, duration);
         this.cardBackgroundColor = color;
+        this.pinned = pin;
         switch (workType) {
             case R.drawable.circle_dashed_6_xxl:
                 this.category = "Work";

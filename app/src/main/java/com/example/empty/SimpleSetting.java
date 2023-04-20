@@ -199,7 +199,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                             break;
                     }
                     reference.push().setValue(new PlannerItemFirebase("", startTime, durationTxt,
-                            workType, "", dateStr));
+                            workType, getString(R.string.select_alert), dateStr));
                     main.removeFragment(R.id.popUp, currFragment);
                 }
 
