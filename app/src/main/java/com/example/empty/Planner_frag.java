@@ -107,12 +107,12 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
         switch(currDatePage) {
             case "Weekly":
                 mainActivity.replaceFragment(R.id.stuff_on_date, new WeeklyStatsFragment());
-                break;
-            case "Monthly":
-                mainActivity.replaceFragment(R.id.stuff_on_date, new MonthlyStatsFragment());
+                mainActivity.replaceFragment(R.id.weekly_view, new PlannerWeeklyFragment());
+                binding.newPlan.setVisibility(View.INVISIBLE);
                 break;
             default:
                 mainActivity.replaceFragment(R.id.stuff_on_date, new DailyStatsFragment());
+                binding.newPlan.setVisibility(View.VISIBLE);
                 break;
         }
         binding.newPlan.setOnClickListener(e-> mainActivity.replaceFragment(R.id.popUp, new SimpleSetting()));
