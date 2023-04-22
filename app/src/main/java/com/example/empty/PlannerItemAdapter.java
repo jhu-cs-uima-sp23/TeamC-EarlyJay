@@ -79,6 +79,7 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
                 break;
             default:
                 holder.status.setText("");
+                holder.statusView.setBackgroundColor(context.getResources().getColor(R.color.white));
                 break;
         }
         if(item.pinned){
