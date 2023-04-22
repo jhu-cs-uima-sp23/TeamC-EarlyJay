@@ -143,6 +143,7 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                     }else{
                         addPlan(title,startTime,durationTxt,workType, notificationTxt, false, 0);
                     }
+                    refreshList();
                 }
                 reset();
             }else{
