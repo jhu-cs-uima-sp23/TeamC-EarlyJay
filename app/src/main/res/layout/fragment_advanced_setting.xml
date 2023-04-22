@@ -210,6 +210,7 @@
         android:layout_marginStart="6dp"
         android:layout_toEndOf="@+id/editImg"
         android:ems="10"
+        android:maxLength="24"
         android:hint="Enter Title"
         android:inputType="textPersonName" />
 

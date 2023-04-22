@@ -16,6 +16,7 @@
     <color name="miss_grey">#666666</color>
     <color name="fail_red">#D66D6D</color>
     <color name="complete_green">#6DC580</color>
+    <color name="transparent">#00000000</color>
 
 
 </resources>

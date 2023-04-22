@@ -122,11 +122,11 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
         });
         createNotificationChannel();
         binding.done.setOnClickListener(e->{
+            startTime = binding.startTime.getText().toString();
             reference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String originalStartTime = sharedPreferences.getString("startTime", "");
-                    String startTime = binding.startTime.getText().toString();
                     boolean editRequest = sharedPreferences.getBoolean("editRequest", false);
                     sameTime = false;
                     for (DataSnapshot childSnapshot : snapshot.getChildren()) {
@@ -204,6 +204,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 public void onCancelled(@NonNull DatabaseError error) {}
             });
 
+            System.out.println(startTime+"");
             String[] words = startTime.split(":");
             String hour_str = words[0];
             String min_str = words[1];

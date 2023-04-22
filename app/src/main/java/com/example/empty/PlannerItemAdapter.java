@@ -3,6 +3,7 @@ package com.example.empty;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,7 +81,7 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
                 break;
             default:
                 holder.status.setText("");
-                holder.statusView.setBackgroundColor(context.getResources().getColor(R.color.white));
+                holder.statusView.setBackgroundColor(context.getResources().getColor(R.color.transparent));
                 break;
         }
         if(item.pinned){
