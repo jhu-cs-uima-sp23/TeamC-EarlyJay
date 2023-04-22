@@ -1,11 +1,13 @@
 package com.example.empty;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import static android.content.ContentValues.TAG;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -14,14 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toast;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 
 import com.example.empty.databinding.FragmentAdvancedSettingBinding;
 import com.google.firebase.database.DataSnapshot;
@@ -31,8 +32,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Calendar;
+import java.util.List;
 
 public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDismissedListener{
     private FragmentAdvancedSettingBinding binding;
@@ -70,7 +71,6 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
         rootNode = FirebaseDatabase.getInstance();
         reference = rootNode.getReference().child("planner").child(uid).child(dateStr);
 
-
 //        spinner
         List<SpinnerItem> spinnerItems = new ArrayList<>();
         spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, "Work"));
@@ -92,7 +92,6 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 startTime = startTime.substring(1);
             }
             binding.startTime.setText(startTime);
-
         };
 //        for switching from simple view
         binding.workType.setSelection(sharedPreferences.getInt("lastSelected", 0));
@@ -171,8 +170,6 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                     editor.putString("durationTxt", durationTxt);
                     editor.putString("notification", notification);
                     editor.apply();
-
-
                     if(editRequest){
                         for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                             try {
@@ -205,8 +202,6 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {}
-
-
             });
 
             String[] words = startTime.split(":");
@@ -250,8 +245,6 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
             }
 
-
-
         });
         binding.notification.setOnClickListener(e->{
             PopupMenu popup = new PopupMenu(context, binding.notification);
@@ -285,7 +278,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             CharSequence name = "EarlyJayChannel";
             String description = "Channel for Early Jay";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel("EarlyJay", name, importance);
             channel.setDescription(description);
 
