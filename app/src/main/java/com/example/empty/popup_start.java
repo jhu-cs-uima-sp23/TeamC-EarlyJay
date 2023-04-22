@@ -8,11 +8,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,10 +30,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
     private FragmentPopupStartBinding binding;
 
-    private CircularSeekBar progressCircular;
-
-    private final int MAX = 120;
-
     private int factorProgress;
     private Context context;
     private MainActivity main;
@@ -45,18 +38,14 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
 
     private double latitude;
     private double longitude;
-    private Spinner mSpinner;
-    private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
-    private Map_child_viewModel shared_data;
     private int featherCount;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = getActivity().getApplicationContext();
+        context = requireActivity().getApplicationContext();
         binding = FragmentPopupStartBinding.inflate(inflater, container, false);
-        shared_data = new ViewModelProvider(requireActivity()).get(Map_child_viewModel.class);
         return binding.getRoot();
     }
 
@@ -65,10 +54,11 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         main = (MainActivity) getActivity();
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
 
-        progressCircular = binding.circularSeekBar;
+        CircularSeekBar progressCircular = binding.circularSeekBar;
+        int MAX = 120;
         progressCircular.setMax(MAX);
         factorProgress = 12;
         featherCount = 12;
@@ -81,7 +71,6 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
             if (factorProgress == 0) {
                 Toast.makeText(context,
                         "Time interval needs to be greater than 0!", Toast.LENGTH_LONG).show();
-                numSeconds = 1;
                return;
             }
             SpinnerItem selectedItem = (SpinnerItem) binding.spinner.getSelectedItem();
@@ -100,19 +89,12 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
             main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
         });
 
-        binding.button.setOnClickListener(v -> {
-            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
-        });
+        binding.button.setOnClickListener(v -> main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab()));
 
         progressCircular.setOnSeekBarChangeListener(this);
 
 
-        mSpinner = binding.spinner;
-//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
-//                R.array.type_array, android.R.layout.simple_spinner_item);
-//
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        mSpinner.setAdapter(adapter);
+        Spinner mSpinner = binding.spinner;
 
         List<SpinnerItem> spinnerItems = new ArrayList<>();
         spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, getString(R.string.work)));
@@ -150,10 +132,11 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
         } else {
             factorProgress = (int) (progress / 5);
         }
-        binding.countNum.setText(factorProgress * 5 + " min");
+        String formatted = getString(R.string.num_picker_time_str, factorProgress * 5);
+        binding.countNum.setText(formatted);
         featherCount = factorProgress;
-
-        binding.rewardLine.setText("Reward: " + featherCount);
+        formatted = getString(R.string.reward, featherCount);
+        binding.rewardLine.setText(formatted);
     }
     @Override
     public void onStopTrackingTouch(CircularSeekBar seekBar) {}

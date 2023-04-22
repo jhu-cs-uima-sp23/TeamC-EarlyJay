@@ -1,11 +1,10 @@
 package com.example.empty;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,7 +27,6 @@ import android.widget.Toast;
 
 import com.example.empty.databinding.FragmentStatBinding;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -37,9 +34,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,28 +42,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
-
-import me.tankery.lib.circularseekbar.CircularSeekBar;
-
 
 public class Stat_frag extends Fragment {
 
     private FragmentStatBinding binding;
 
-    private String uid;
-
     private String currDatePage;
-
-    private String currDateStr;
 
     private MainActivity main;
 
     private Context context;
 
-    private DatabaseReference reference;
-
-    private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
 
     private StatsCalculator todayDailyStats;
@@ -78,30 +62,25 @@ public class Stat_frag extends Fragment {
     private StatsCalculator todayMonthlyStats;
     private StatsCalculator monthlyPastStats;
     private BarChart barChart;
-    private ProgressBar progressBar;
-    private TextView txtper;
-    private TextView featherNumber;
     int featherAmount;
-    private XAxis xAxis;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         binding = FragmentStatBinding.inflate(inflater, container, false);
 
         main = (MainActivity) getActivity();
+        assert main != null;
         context = main.getApplicationContext();
 
 
-
-
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
 
-        uid = sharedPreferences.getString("uid", "");
-        currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
+        String uid = sharedPreferences.getString("uid", "");
+        String currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
         DateStr now = new DateStr(currDateStr);
         currDatePage = sharedPreferences.getString("currDatePage", "Daily");
         switch(currDatePage) {
@@ -116,7 +95,7 @@ public class Stat_frag extends Fragment {
                 break;
         }
 
-        reference = FirebaseDatabase.getInstance().getReference().
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
 
         todayDailyStats = new StatsCalculator();
@@ -141,42 +120,49 @@ public class Stat_frag extends Fragment {
                             if (now.isDaily(dataDateStr)) {
                                 for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
                                     LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    assert locStruct != null;
                                     UpdateTimeInfo(locStruct, todayDailyStats);
                                 }
                             }
                             if (now.isWeekly(dataDateStr)) {
                                 for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
                                     LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    assert locStruct != null;
                                     UpdateTimeInfo(locStruct, todayWeeklyStats);
                                 }
                             }
                             if (now.isMonthly(dataDateStr)) {
                                 for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
                                     LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    assert locStruct != null;
                                     UpdateTimeInfo(locStruct, todayMonthlyStats);
                                 }
                             }
                             if (now.isPastDay(dataDateStr)) {
                                 for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
                                     LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    assert locStruct != null;
                                     UpdateTimeInfo(locStruct, dailyPastStats);
                                 }
                             }
                             if (now.isPastWeek(dataDateStr)) {
                                 for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
                                     LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    assert locStruct != null;
                                     UpdateTimeInfo(locStruct, weeklyPastStats);
                                 }
                             }
                             if (now.isPastMonth(dataDateStr)) {
                                 for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
                                     LocationStruct locStruct = grandChildSnapshot.getValue(LocationStruct.class);
+                                    assert locStruct != null;
                                     UpdateTimeInfo(locStruct, monthlyPastStats);
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        continue;
+                        Log.d("datacheck", e.getClass().getSimpleName());
+                        Log.d("datacheck", e.getMessage());
                     }
                 }
                 adjustData();
@@ -218,51 +204,45 @@ public class Stat_frag extends Fragment {
         ImageButton leftButton = binding.leftRollButton;
         ImageButton rightButton = binding.rightRollButton;
 
-        leftButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String dateStr = "";
-                switch(currDatePage) {
-                    case "Weekly":
-                        dateStr = now.getPastDay(7);
-                        break;
-                    case "Monthly":
-                        dateStr = now.getPastDay(new DateStr(now.getPastDay(now.getDay())).getMonthDays());
-                        break;
-                    default:
-                        dateStr = now.getPastDay(1);
-                        break;
-                }
-                edit.putString("currDateStr", dateStr);
-                edit.apply();
-                main.replaceFragment(R.id.frame_layout, new Stat_frag());
+        leftButton.setOnClickListener(view -> {
+            String dateStr;
+            switch(currDatePage) {
+                case "Weekly":
+                    dateStr = now.getPastDay(7);
+                    break;
+                case "Monthly":
+                    dateStr = now.getPastDay(new DateStr(now.getPastDay(now.getDay())).getMonthDays());
+                    break;
+                default:
+                    dateStr = now.getPastDay(1);
+                    break;
             }
+            edit.putString("currDateStr", dateStr);
+            edit.apply();
+            main.replaceFragment(R.id.frame_layout, new Stat_frag());
         });
 
-        rightButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String dateStr = "";
-                switch(currDatePage) {
-                    case "Weekly":
-                        dateStr = now.getFutureDay(7);
-                        break;
-                    case "Monthly":
-                        dateStr = now.getFutureDay(now.getMonthDays());
-                        break;
-                    default:
-                        dateStr = now.getFutureDay(1);
-                        break;
-                }
-                if (new DateStr(dateStr).comp(new DateStr()) > 0) {
-                    Toast.makeText(context,
-                            "This is the most recent day!", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                edit.putString("currDateStr", dateStr);
-                edit.apply();
-                main.replaceFragment(R.id.frame_layout, new Stat_frag());
+        rightButton.setOnClickListener(view -> {
+            String dateStr;
+            switch(currDatePage) {
+                case "Weekly":
+                    dateStr = now.getFutureDay(7);
+                    break;
+                case "Monthly":
+                    dateStr = now.getFutureDay(now.getMonthDays());
+                    break;
+                default:
+                    dateStr = now.getFutureDay(1);
+                    break;
             }
+            if (new DateStr(dateStr).comp(new DateStr()) > 0) {
+                Toast.makeText(context,
+                        "This is the most recent day!", Toast.LENGTH_LONG).show();
+                return;
+            }
+            edit.putString("currDateStr", dateStr);
+            edit.apply();
+            main.replaceFragment(R.id.frame_layout, new Stat_frag());
         });
 
         return binding.getRoot();
@@ -368,8 +348,8 @@ public class Stat_frag extends Fragment {
     }
 
     private double calculateProductionRate(String currDatePage) {
-        double currRate= 0;
-        double pastRate = 0;
+        double currRate;
+        double pastRate;
         double productionRate;
         switch(currDatePage) {
             case "Weekly":
@@ -427,14 +407,14 @@ public class Stat_frag extends Fragment {
         int class_time;
         int team_time;
         int sports_time;
-        String dayinfo = "";
+        String dayinfo;
 
         switch(currDatePage) {
             case "Weekly":
                 work_time = todayWeeklyStats.getWorkTime();
                 class_time = todayWeeklyStats.getClassTime();
                 team_time = todayWeeklyStats.getTeamTime();
-                sports_time = todayWeeklyStats.getSportTime();;
+                sports_time = todayWeeklyStats.getSportTime();
                 dayinfo = "week";
                 break;
             case "Monthly":
@@ -462,6 +442,7 @@ public class Stat_frag extends Fragment {
         barDataSet.setColors(colors);
 
         barDataSet.setValueFormatter(new ValueFormatter() {
+            @SuppressLint("DefaultLocale")
             @Override
             public String getFormattedValue(float value) {
                 // Format the value as needed, e.g., convert to int or round to specific decimal places
@@ -475,7 +456,7 @@ public class Stat_frag extends Fragment {
         barChart.setData(barData);
         barData.setDrawValues(false);
         barData.setBarWidth(0.5f);
-        xAxis = barChart.getXAxis();
+        XAxis xAxis = barChart.getXAxis();
 
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
@@ -508,7 +489,7 @@ public class Stat_frag extends Fragment {
         double completion = calculateCompletion(currDatePage) * 100;
         String completion_formatted = getString(R.string.percentage_display, completion);
         Log.d("datacheck", "completion: " + completion);
-        progressBar = binding.progressBarDaily;
+        ProgressBar progressBar = binding.progressBarDaily;
 
         if ((int) completion == 0) {
             Log.d("datacheck", "completion is 0");
@@ -529,10 +510,11 @@ public class Stat_frag extends Fragment {
         TextView progressPercentage = binding.progressPercentage;
         progressPercentage.setText(completion_formatted);
 
-        featherNumber = binding.featherNumber;
+        TextView featherNumber = binding.featherNumber;
         featherAmount = getFeather(currDatePage);
         Log.d("datacheck", "featherAmount: " + featherAmount);
-        featherNumber.setText(Integer.toString(featherAmount));
+        String featherNumberStr = Integer.toString(featherAmount);
+        featherNumber.setText(featherNumberStr);
 
         double productionPercentCalculated = calculateProductionRate(currDatePage) * 100;
         Log.d("datacheck", "completionPercentCalculated: " + productionPercentCalculated);
@@ -543,12 +525,14 @@ public class Stat_frag extends Fragment {
             imageArrow.setColorFilter(getResources().getColor(R.color.red));
             binding.productivityPercentage.setText(progress_formatted);
             binding.productivityPercentage.setTextColor(getResources().getColor(R.color.red));
-            binding.productivityComment.setText("less productive than previous " + dayinfo +  "... Focus!");
+            String formatted = getString(R.string.less_productive_report, dayinfo);
+            binding.productivityComment.setText(formatted);
 
         } else {
             String progress_formatted = getString(R.string.percentage_display, productionPercentCalculated);
             binding.productivityPercentage.setText(progress_formatted);
-            binding.productivityComment.setText("more productive than previous " + dayinfo +  "!");
+            String formatted = getString(R.string.productive_report, dayinfo);
+            binding.productivityComment.setText(formatted);
         }
 
     }

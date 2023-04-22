@@ -4,28 +4,20 @@ import static android.content.ContentValues.TAG;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.empty.databinding.FragmentPopupStartBinding;
 import com.example.empty.databinding.FragmentSimpleSettingBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,14 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDismissedListener{
     private FragmentSimpleSettingBinding binding;
@@ -63,9 +49,9 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
     DatabaseReference reference;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = getActivity().getApplicationContext();
+        context = requireActivity().getApplicationContext();
         binding = FragmentSimpleSettingBinding.inflate(inflater, container, false);
         main = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -122,9 +108,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
             editor.apply();
             main.replaceFragment(R.id.popUp, new AdvancedSetting());
         });
-        binding.close.setOnClickListener(e->{
-            main.removeFragment(R.id.popUp, this);
-        });
+        binding.close.setOnClickListener(e->{ main.removeFragment(this);});
         binding.startTime.setOnClickListener(e->{
             TimePickerDialog timePickerDialog = new TimePickerDialog(main, onTimeSetListener, 0, 0, true);
             timePickerDialog.show();
@@ -148,15 +132,15 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                     for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                         try {
                             PlannerItemFirebase itemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                            assert itemFirebase != null;
                             String itemStartTime = itemFirebase.getStartTime();
                             if (itemStartTime.equals(startTime)) {
                                 sameTime = true;
                                 break;
                             }
                         } catch (Exception e) {
-                            System.out.println(e.getClass().getSimpleName());
-                            System.out.println(e.getMessage());
-                            continue;
+                            Log.d("datacheck", e.getClass().getSimpleName());
+                            Log.d("datacheck", e.getMessage());
                         }
                     }
                     if(editRequest && startTime.equals(originalStartTime)){
@@ -188,6 +172,7 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                         for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                             try {
                                 PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                                assert plannerItemFirebase != null;
                                 String start = plannerItemFirebase.getStartTime();
                                 System.out.println(start);
                                 if (start.equals(originalStartTime)) {
@@ -206,14 +191,15 @@ public class SimpleSetting extends Fragment implements NumberPicker.OnDialogDism
                                     Log.d(TAG, "onDataChange: called -------- "+startTime);
                                 }
                             } catch (Exception e) {
-                                continue;
+                                Log.d("datacheck", e.getClass().getSimpleName());
+                                Log.d("datacheck", e.getMessage());
                             }
                         }
                     }else{
                         reference.push().setValue(new PlannerItemFirebase(title, startTime, durationTxt,
                                 workType, getString(R.string.none), dateStr));
                     }
-                    main.removeFragment(R.id.popUp, currFragment);
+                    main.removeFragment(currFragment);
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {}

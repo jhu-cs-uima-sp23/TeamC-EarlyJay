@@ -1,14 +1,11 @@
 package com.example.empty;
 
-import static android.content.ContentValues.TAG;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.BoringLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.Fragment;
 import com.example.empty.databinding.FragmentMapBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -32,7 +28,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,20 +41,9 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
     private MapView mMapView;
     private GoogleMap mMap;
 
-    private double latitude;
-    private double longitude;
-
-    private LatLng search_location;
-
     private SharedPreferences sharedPreferences;
 
-    private Context context;
-    private String uid;
-    private FusedLocationProviderClient mLocationProviderClient;
-    private MainActivity main;
     private SharedPreferences.Editor editor;
-
-    private DatabaseReference reference;
 
     private ArrayList<LocationStruct> locStructListByDay;
     private ArrayList<LocationStruct> locStructListByWeek;
@@ -71,21 +55,19 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMapBinding.inflate(inflater, container, false);
-        main = (MainActivity) getActivity();
-        context = main.getApplicationContext();
+        MainActivity main = (MainActivity) getActivity();
+        assert main != null;
+        Context context = main.getApplicationContext();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         editor = sharedPreferences.edit();
 
-//      special case for switching from plan to map
-        BottomNavigationView bottomNavigationView = main.bottomNavigationView;
-        int viewId = bottomNavigationView.getSelectedItemId();
 
         locStructListByDay = new ArrayList<>();
         locStructListByWeek = new ArrayList<>();
         locStructListByMonth = new ArrayList<>();
 
-        uid = sharedPreferences.getString("uid", "");
-        reference = FirebaseDatabase.getInstance().getReference().
+        String uid = sharedPreferences.getString("uid", "");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().
                 child("users").child(uid);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -122,7 +104,8 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
                             }
                         }
                     } catch (Exception e) {
-                        continue;
+                        Log.d("datacheck", e.getClass().getSimpleName());
+                        Log.d("datacheck", e.getMessage());
                     }
                 }
             }
@@ -142,18 +125,9 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
         mMapView.getMapAsync(this);
 
         // Initialize the location provider client
-        mLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-
-        float latitude_tmp = sharedPreferences.getFloat("latitude", 0);
-        float longitude_tmp = sharedPreferences.getFloat("longitude", 0);
-
-        if (latitude_tmp!=0 && longitude_tmp!=0) {
-            latitude = latitude_tmp;
-            longitude = longitude_tmp;
-        }
 
         if(sharedPreferences.getBoolean("startPlanTask", false)){
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
                 fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
                     editor.putFloat("latitude", (float) location.getLatitude());
@@ -254,7 +228,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // Important: call onSaveInstanceState() on the MapView
         mMapView.onSaveInstanceState(outState);
@@ -268,13 +242,13 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
 
         mMap = googleMap;
         mMap.setLatLngBoundsForCameraTarget(JHU_BOUNDS);
 
 
-        if (ContextCompat.checkSelfPermission(getContext(),
+        if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             // Enable the "My Location" layer on the map
@@ -291,15 +265,13 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
                             // Add a marker at the user's current location
                             LatLng currentLocation = new LatLng(location.getLatitude(),
                                     location.getLongitude());
-//                            mMap.addMarker(new MarkerOptions().position(currentLocation)
-//                                    .title("You are here"));
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
 
                         }
 
                     });
             // Apply the custom map style
-            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.style_json));
+            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.style_json));
         } else {
             // Show an empty map if location permission is not granted
             Toast.makeText(getContext(), "Location permission not granted, showing empty map",
@@ -308,7 +280,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
 
         Bundle args = getArguments();
         if (args != null) {
-            search_location = args.getParcelable("location");
+            LatLng search_location = args.getParcelable("location");
             MarkerOptions markerOptions = new MarkerOptions().position(search_location);
             mMap.addMarker(markerOptions);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(search_location, 17));
@@ -367,7 +339,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
         mMap.addGroundOverlay(groundOverlayOptions);
     }
     public void markMap(int workType){
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
             fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
@@ -379,7 +351,7 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
     }
 
     public void markMapPast(int workType, double latitude_custom, double longitude_custom){
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
             fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
@@ -394,14 +366,15 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
         String[] types = type.split(" ");
         type = types[types.length - 1];
 
-        if (type.equals("Work")) {
-            return R.drawable.circle_dashed_6_xxl;
-        } else if (type.equals("Class")) {
-            return R.drawable.yellows;
-        } else if (type.equals("Team")) {
-            return R.drawable.triangle_48;
-        } else {
-            return R.drawable.star_2_xxl;
+        switch (type) {
+            case "Work":
+                return R.drawable.circle_dashed_6_xxl;
+            case "Class":
+                return R.drawable.yellows;
+            case "Team":
+                return R.drawable.triangle_48;
+            default:
+                return R.drawable.star_2_xxl;
         }
     }
 

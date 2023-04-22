@@ -1,14 +1,9 @@
 package com.example.empty;
 
-import android.content.Context;
-import android.widget.ArrayAdapter;
-
-import java.util.List;
-
 public class SpinnerItem {
 
-    private int imageResId;
-    private String text;
+    private final int imageResId;
+    private final String text;
 
     public SpinnerItem(int imageResId, String text) {
         this.imageResId = imageResId;
