@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,25 +13,19 @@ import android.preference.PreferenceManager;
 
 import com.example.empty.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
-
-    private Context context;
-
-    private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
     BottomNavigationView bottomNavigationView;
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        context = getApplicationContext();
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        com.example.empty.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        Context context = getApplicationContext();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
         setContentView(binding.getRoot());
         int frame = R.id.frame_layout;
@@ -65,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(frame, fragment);
         fragmentTransaction.commit();
     }
-    public void removeFragment(int frame, Fragment fragment){
+    public void removeFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.remove(fragment);

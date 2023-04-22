@@ -1,7 +1,6 @@
 package com.example.empty;
 
-import static android.content.ContentValues.TAG;
-
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
@@ -42,7 +41,6 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private String startTime;
-    private FirebaseDatabase rootNode;
     private DatabaseReference reference;
 
     private String dateStr;
@@ -52,9 +50,9 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
     private Fragment currFragment;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = getActivity().getApplicationContext();
+        context = requireActivity().getApplicationContext();
         binding = FragmentAdvancedSettingBinding.inflate(inflater, container, false);
         main = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -68,7 +66,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         String uid = sharedPreferences.getString("uid", "");
-        rootNode = FirebaseDatabase.getInstance();
+        FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
         reference = rootNode.getReference().child("planner").child(uid).child(dateStr);
 
 //        spinner
@@ -110,9 +108,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             editor.apply();
             main.replaceFragment(R.id.popUp, new SimpleSetting());
         });
-        binding.close.setOnClickListener(e->{
-            main.removeFragment(R.id.popUp, this);
-        });
+        binding.close.setOnClickListener(e-> main.removeFragment(this));
         binding.startTime.setOnClickListener(e->{
             TimePickerDialog timePickerDialog = new TimePickerDialog(main, onTimeSetListener, 0, 0, true);
             timePickerDialog.show();
@@ -134,15 +130,15 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                     for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                         try {
                             PlannerItemFirebase itemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                            assert itemFirebase != null;
                             String itemStartTime = itemFirebase.getStartTime();
                             if (itemStartTime.equals(startTime)) {
                                 sameTime = true;
                                 break;
                             }
                         } catch (Exception e) {
-                            System.out.println(e.getClass().getSimpleName());
-                            System.out.println(e.getMessage());
-                            continue;
+                            Log.d("datacheck", e.getClass().getSimpleName());
+                            Log.d("datacheck",e.getMessage());
                         }
                     }
                     if(editRequest && startTime.equals(originalStartTime)){
@@ -174,6 +170,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                         for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                             try {
                                 PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                                assert plannerItemFirebase != null;
                                 String start = plannerItemFirebase.getStartTime();
                                 System.out.println(start);
                                 if (start.equals(originalStartTime)) {
@@ -191,14 +188,15 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                                     itemRef.child("endTime").setValue(plannerItemFirebase.getEndTime(startTime, durationNum));
                                 }
                             } catch (Exception e) {
-                                continue;
+                                Log.d("datacheck", e.getClass().getSimpleName());
+                                Log.d("datacheck",e.getMessage());
                             }
                         }
                     }else{
                         reference.push().setValue(new PlannerItemFirebase(title, startTime, durationTxt,
                             workType, notification, dateStr));
                     }
-                    main.removeFragment(R.id.popUp, currFragment);
+                    main.removeFragment(currFragment);
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {}
@@ -212,7 +210,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
 
 
             Intent notificationIntent = new Intent(context, AlarmReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, 0);
+            @SuppressLint("UnspecifiedImmutableFlag") PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, 0);
 
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             Calendar cal = Calendar.getInstance();
@@ -223,20 +221,28 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
             String time_notification = binding.notification.getText().toString();
-            if (time_notification.equals("5 min before")) {
-                cal.add(Calendar.MINUTE, -5);
-            } else if (time_notification.equals("10 min before")){
-                cal.add(Calendar.MINUTE, -10);
-            } else if (time_notification.equals("15 min before")){
-                cal.add(Calendar.MINUTE, -15);
-            } else if (time_notification.equals("30 min before")){
-                cal.add(Calendar.MINUTE, -30);
-            } else if (time_notification.equals("1 hour before")){
-                cal.add(Calendar.MINUTE, -60);
-            } else if (time_notification.equals("2 hours before")){
-                cal.add(Calendar.MINUTE, -120);
-            } else {
-                alarmManager.cancel(pendingIntent);
+            switch (time_notification) {
+                case "5 min before":
+                    cal.add(Calendar.MINUTE, -5);
+                    break;
+                case "10 min before":
+                    cal.add(Calendar.MINUTE, -10);
+                    break;
+                case "15 min before":
+                    cal.add(Calendar.MINUTE, -15);
+                    break;
+                case "30 min before":
+                    cal.add(Calendar.MINUTE, -30);
+                    break;
+                case "1 hour before":
+                    cal.add(Calendar.MINUTE, -60);
+                    break;
+                case "2 hours before":
+                    cal.add(Calendar.MINUTE, -120);
+                    break;
+                default:
+                    alarmManager.cancel(pendingIntent);
+                    break;
             }
 
             long triggerTime = cal.getTimeInMillis();

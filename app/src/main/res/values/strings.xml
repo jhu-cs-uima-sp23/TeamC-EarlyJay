@@ -63,4 +63,10 @@
     <string name="fail">Failed</string>
     <string name="miss">Missed</string>
     <string name="complete">Complete</string>
+    <string name="completion_notification">You have received %d </string>
+    <string name="count_down_string">%s:%s:%s    Remains</string>
+    <string name="num_picker_time_str">%d min</string>
+    <string name="reward">Reward: %d</string>
+    <string name="productive_report">more productive than previous %s!</string>
+    <string name="less_productive_report">less productive than previous %s… Focus!</string>
 </resources>

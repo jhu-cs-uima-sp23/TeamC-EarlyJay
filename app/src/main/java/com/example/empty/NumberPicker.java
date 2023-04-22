@@ -1,6 +1,5 @@
 package com.example.empty;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -9,15 +8,11 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.empty.databinding.FragmentSeekBarBinding;
 
@@ -28,7 +23,6 @@ public class NumberPicker extends DialogFragment implements CircularSeekBar.OnCi
         void onDismissed();
     }
     private OnDialogDismissedListener listener;
-    private CircularSeekBar progressCircular;
     private int factorProgress = 60;
     FragmentSeekBarBinding binding;
     SharedPreferences.Editor editor;
@@ -40,7 +34,7 @@ public class NumberPicker extends DialogFragment implements CircularSeekBar.OnCi
         binding = FragmentSeekBarBinding.inflate(inflater, container, false);
         context = getContext();
         editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-        progressCircular = binding.circularSeekBar;
+        CircularSeekBar progressCircular = binding.circularSeekBar;
         progressCircular.setOnSeekBarChangeListener(this);
         binding.cancelButton.setOnClickListener(e->dismiss());
         binding.confirmButton.setOnClickListener(e->{
@@ -58,7 +52,7 @@ public class NumberPicker extends DialogFragment implements CircularSeekBar.OnCi
     public void setOnDialogDismissedListener(OnDialogDismissedListener listener) {
         this.listener = listener;
     }
-    public void onDismiss(DialogInterface dialog) {
+    public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         if (listener != null) {
             listener.onDismissed();
@@ -74,7 +68,8 @@ public class NumberPicker extends DialogFragment implements CircularSeekBar.OnCi
         } else {
             factorProgress = (int) (progress / 5);
         }
-        binding.countNum.setText(factorProgress * 5 + " min");
+        String formatted = getString(R.string.num_picker_time_str, factorProgress * 5);
+        binding.countNum.setText(formatted);
     }
     @Override
     public void onStopTrackingTouch(CircularSeekBar seekBar) {}

@@ -1,6 +1,6 @@
 package com.example.empty;
+import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,6 +21,7 @@ public class PlannerItemModel {
     // 0 default; 1 complete; 2 fail; 3 miss
     int status;
     int cardBackgroundColor;
+    @SuppressLint("NonConstantResourceId")
     public PlannerItemModel(String title, String startTime, String durationTxt_, int workType,
                             String notification, boolean pin, int status){
         this.title = title;
@@ -30,7 +31,6 @@ public class PlannerItemModel {
         this.workType = workType;
         this.notification = notification;
         this.endTime = getEndTime(startTime, duration);
-        this.category = "Work";
         this.status = status;
         String colorString = "#D04C25";
         this.pinned = pin;
@@ -97,10 +97,9 @@ public class PlannerItemModel {
 
     public void setStatus(int status) { this.status = status; }
 
+    @SuppressLint("NonConstantResourceId")
     public void setWorkType(int workType) {
         this.workType = workType;
-
-        this.category = "Work";
         String colorString = "#D04C25";
         switch (workType) {
             case R.drawable.yellows:
@@ -116,7 +115,7 @@ public class PlannerItemModel {
                 colorString = "#65BFF5";
                 break;
             default:
-                this.category = "";
+                this.category = "Work";
                 break;
         }
         this.cardBackgroundColor = Color.parseColor(colorString);
@@ -128,7 +127,8 @@ public class PlannerItemModel {
         this.notification = notification;
     }
     public String getEndTime(String startTime, int duration){
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter =
+                new SimpleDateFormat("HH:mm");
         Date startDate;
         try {
             startDate = formatter.parse(startTime);
@@ -136,6 +136,7 @@ public class PlannerItemModel {
             throw new RuntimeException(ex);
         }
         Calendar calendar = Calendar.getInstance();
+        assert startDate != null;
         calendar.setTime(startDate);
         calendar.add(Calendar.MINUTE, duration);
         Date endDate = calendar.getTime();

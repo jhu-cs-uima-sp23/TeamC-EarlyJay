@@ -48,8 +48,6 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
     DatabaseReference reference;
     DatabaseReference reference_prior;
 
-    private String currDateStr;
-
     private DateStr now;
     private String currDatePage;
 
@@ -57,9 +55,8 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
     private String uid;
 
-    private int editPosition = -1;
     public Comparator<PlannerItemModel> comparator = (item1, item2) -> {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         Date time1;
         try {
             time1 = format.parse(item1.getStartTime());
@@ -108,20 +105,19 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
         editor.apply();
         theRealNow = new DateStr();
 
-        currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
+        String currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
         now = new DateStr(currDateStr);
         currDatePage = sharedPreferences.getString("currDatePage", "Daily");
 
-        switch(currDatePage) {
-            case "Weekly":
-                mainActivity.replaceFragment(R.id.stuff_on_date, new WeeklyStatsFragment());
-                mainActivity.replaceFragment(R.id.weekly_view, new PlannerWeeklyFragment());
-                binding.newPlan.setVisibility(View.INVISIBLE);
-                break;
-            default:
-                mainActivity.replaceFragment(R.id.stuff_on_date, new DailyStatsFragment());
-                binding.newPlan.setVisibility(View.VISIBLE);
-                break;
+        if ("Weekly".equals(currDatePage)) {
+            mainActivity.replaceFragment(R.id.stuff_on_date, new WeeklyStatsFragment());
+            mainActivity.replaceFragment(R.id.weekly_view, new PlannerWeeklyFragment());
+            binding.newPlan.setVisibility(View.INVISIBLE);
+            binding.plannerRecyclerView.setVisibility(View.INVISIBLE);
+        } else {
+            mainActivity.replaceFragment(R.id.stuff_on_date, new DailyStatsFragment());
+            binding.newPlan.setVisibility(View.VISIBLE);
+            binding.plannerRecyclerView.setVisibility(View.VISIBLE);
         }
         binding.newPlan.setOnClickListener(e-> mainActivity.replaceFragment(R.id.popUp, new SimpleSetting()));
         binding.popUp.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
@@ -204,31 +200,29 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
                         String dataDateStr = childSnapshot.getKey();
+                        assert dataDateStr != null;
                         DateStr dataDateStrObj = new DateStr(dataDateStr);
-                        if (dataDateStr == null) {
-                            // client is null, error out
-                            Log.e("DBREF:", "Data is unexpectedly null");
-                        } else {
-                            if (theRealNow.comp(dataDateStrObj) > 0) {
-                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
-                                    PlannerItemFirebase plannerItemFirebase = grandChildSnapshot.getValue(PlannerItemFirebase.class);
-                                    if (plannerItemFirebase.getStatus() == 0) {
-                                        DatabaseReference itemRef = grandChildSnapshot.getRef();
-                                        itemRef.child("status").setValue(3);
-                                    }
-                                }
-                                }
-                            if (now.isDaily(dataDateStr)) {
-                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
-                                    PlannerItemFirebase plannerItemFirebase = grandChildSnapshot.getValue(PlannerItemFirebase.class);
-                                    addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getStartTime(),
-                                            plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
-                                            plannerItemFirebase.getNotification(), plannerItemFirebase.getPinned(),
-                                            plannerItemFirebase.getStatus());
+                        if (theRealNow.comp(dataDateStrObj) > 0) {
+                            for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                PlannerItemFirebase plannerItemFirebase = grandChildSnapshot.getValue(PlannerItemFirebase.class);
+                                assert plannerItemFirebase != null;
+                                if (plannerItemFirebase.getStatus() == 0) {
+                                    DatabaseReference itemRef = grandChildSnapshot.getRef();
+                                    itemRef.child("status").setValue(3);
                                 }
                             }
+                            }
+                        if (now.isDaily(dataDateStr)) {
+                            for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                PlannerItemFirebase plannerItemFirebase = grandChildSnapshot.getValue(PlannerItemFirebase.class);
+                                assert plannerItemFirebase != null;
+                                addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getStartTime(),
+                                        plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
+                                        plannerItemFirebase.getNotification(), plannerItemFirebase.getPinned(),
+                                        plannerItemFirebase.getStatus());
+                            }
                         }
-                        } catch (Exception e) {
+                    } catch (Exception e) {
                             System.out.println(e.getClass().getSimpleName());
                             System.out.println(e.getMessage());
                         }
@@ -286,13 +280,15 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
                         PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                        assert plannerItemFirebase != null;
                         String start = plannerItemFirebase.getStartTime();
                         if (start.equals(startTime)) {
                             DatabaseReference itemRef = childSnapshot.getRef();
                             itemRef.removeValue();
                         }
                     } catch (Exception e) {
-                        continue;
+                        Log.d("datacheck", e.getClass().getSimpleName());
+                        Log.d("datacheck", e.getMessage());
                     }
                 }
             }
@@ -308,14 +304,12 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
     @Override
     public void onEditClick(int position) {
-        editPosition = position;
         editedItem = plannerItemModels.get(position);
         editor.putBoolean("editRequest", true);
         int lastSelected = 0;
-        if(editedItem.category.equals(getString(R.string.work))){lastSelected = 0;}
-        else if(editedItem.category.equals(getString(R.string.class_))){lastSelected = 1;}
-        else if(editedItem.category.equals(getString(R.string.team))){lastSelected = 2;}
-        else if(editedItem.category.equals(getString(R.string.sport))){lastSelected = 3;}
+        if(getString(R.string.class_).equals(editedItem.category)){lastSelected = 1;}
+        else if(getString(R.string.team).equals(editedItem.category)){lastSelected = 2;}
+        else if(getString(R.string.sport).equals(editedItem.category)){lastSelected = 3;}
         editor.putInt("lastSelected", lastSelected);
         editor.putInt("workType", editedItem.workType);
         editor.putString("title", editedItem.title);
@@ -337,6 +331,7 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
                         PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                        assert plannerItemFirebase != null;
                         String start = plannerItemFirebase.getStartTime();
                         System.out.println(start);
                         if (start.equals(start_time)) {
@@ -346,7 +341,8 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                             plannerItemFirebase.togglePin();
                         }
                     } catch (Exception e) {
-                        continue;
+                        Log.d("datacheck", e.getClass().getSimpleName());
+                        Log.d("datacheck", e.getMessage());
                     }
                 }
             }

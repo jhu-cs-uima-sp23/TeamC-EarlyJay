@@ -13,12 +13,9 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.example.empty.databinding.FragmentCountDownBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.example.empty.databinding.FragmentDwmSearchFabBinding;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  */
@@ -27,7 +24,6 @@ public class CountDownFragment extends Fragment {
     private FragmentCountDownBinding binding;
     Context context;
     private MainActivity mainActivity;
-    private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
 
     CountDownTimer cTimer = null;
@@ -43,9 +39,9 @@ public class CountDownFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = getActivity().getApplicationContext();
+        context = requireActivity().getApplicationContext();
         binding = FragmentCountDownBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -55,7 +51,7 @@ public class CountDownFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mainActivity = (MainActivity) getActivity();
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
 
         String category = sharedPreferences.getString("category", "");
@@ -112,7 +108,8 @@ public class CountDownFragment extends Fragment {
         String hourStr = "0" + hour;
         String minStr = (min < 10) ? "0" + min : String.valueOf(min);
         String secStr = (sec < 10) ? "0" + sec : String.valueOf(sec);
-        binding.remaining.setText(hourStr + ":" + minStr + ":" + secStr + "    Remains");
+        String formatted = getString(R.string.count_down_string, hourStr, minStr, secStr);
+        binding.remaining.setText(formatted);
     }
 
 
@@ -124,14 +121,8 @@ public class CountDownFragment extends Fragment {
 
 
     private void hideBottomNavigationView() {
-        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setVisibility(View.GONE);
-    }
-
-    private void showBottomNavigationView() {
-        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setVisibility(View.VISIBLE);
-        bottomNavigationView.animate().translationY(0).setDuration(300);
     }
 
 }

@@ -1,14 +1,6 @@
 package com.example.empty;
 
-import android.os.Build;
-
 import androidx.annotation.NonNull;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.Locale;
-
 public class LocationStruct {
 
     private float latitude;

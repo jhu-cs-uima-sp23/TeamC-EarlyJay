@@ -1,6 +1,6 @@
 package com.example.empty;
 
-import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -14,11 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.example.empty.databinding.FragmentPlannerBinding;
 import com.example.empty.databinding.FragmentPlannerWeeklyBinding;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
@@ -42,90 +39,73 @@ import java.util.Arrays;
  */
 public class PlannerWeeklyFragment extends Fragment {
 
-    private Context context;
-
     private FragmentPlannerWeeklyBinding binding;
-
-    private SharedPreferences sharedPreferences;
-
-    private SharedPreferences.Editor editor;
-    private MainActivity mainActivity;
-
-    private String currDateStr;
 
     private DateStr currDateStrObj;
 
     private BarChart barChart;
-    private String uid;
-
-    private DatabaseReference reference;
 
     private int[][] weeklyData;
-    private XAxis xAxis;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         weeklyData = new int[7][4];
         binding = FragmentPlannerWeeklyBinding.inflate(inflater, container, false);
-        mainActivity = (MainActivity) getActivity();
-        context = getContext();
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        editor = sharedPreferences.edit();
-        context = getContext();
+        Context context = getContext();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-        currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
+        String currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
         currDateStrObj = new DateStr(currDateStr);
-        uid = sharedPreferences.getString("uid", "");
+        String uid = sharedPreferences.getString("uid", "");
 
-        reference = FirebaseDatabase.getInstance().getReference().
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().
                 child("planner").child(uid);
 
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
                         String dataDateStr = childSnapshot.getKey();
+                        assert dataDateStr != null;
                         DateStr dataDateStrObj = new DateStr(dataDateStr);
-                        if (dataDateStr == null) {
-                            // client is null, error out
-                            Log.e("DBREF:", "Data is unexpectedly null");
-                        } else {
-                            if (currDateStrObj.isWeekly(dataDateStr)) {
-                                int dayOfTheWeek = currDateStrObj.comp(dataDateStrObj);
-                                int index = currDateStrObj.getDayOfTheWeek() - 1 - dayOfTheWeek;
-                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
-                                    PlannerItemFirebase itemFirebase = grandChildSnapshot.getValue(PlannerItemFirebase.class);
-                                    String durationTxt = itemFirebase.getDuration();
-                                    int duration = Integer.parseInt(durationTxt.substring(0, durationTxt.indexOf(" ")));
-                                    int workType = itemFirebase.getWorkType();
-                                    switch (workType) {
-                                        case R.drawable.yellows:
-                                            // this.category = "Class"
-                                            weeklyData[index][1] += duration;
-                                            break;
-                                        case R.drawable.triangle_48:
-                                            // this.category = "Team";
-                                            weeklyData[index][2] += duration;
-                                            break;
-                                        case R.drawable.star_2_xxl:
-                                            // this.category = "Sport";
-                                            weeklyData[index][3] += duration;
-                                            break;
-                                        default:
-                                            // this.category = "Work";
-                                            weeklyData[index][0] += duration;
-                                            break;
-                                    }
+                        if (currDateStrObj.isWeekly(dataDateStr)) {
+                            int dayOfTheWeek = currDateStrObj.comp(dataDateStrObj);
+                            int index = currDateStrObj.getDayOfTheWeek() - 1 - dayOfTheWeek;
+                            for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                PlannerItemFirebase itemFirebase = grandChildSnapshot.getValue(PlannerItemFirebase.class);
+                                assert itemFirebase != null;
+                                String durationTxt = itemFirebase.getDuration();
+                                int duration = Integer.parseInt(durationTxt.substring(0, durationTxt.indexOf(" ")));
+                                int workType = itemFirebase.getWorkType();
+                                switch (workType) {
+                                    case R.drawable.yellows:
+                                        // this.category = "Class"
+                                        weeklyData[index][1] += duration;
+                                        break;
+                                    case R.drawable.triangle_48:
+                                        // this.category = "Team";
+                                        weeklyData[index][2] += duration;
+                                        break;
+                                    case R.drawable.star_2_xxl:
+                                        // this.category = "Sport";
+                                        weeklyData[index][3] += duration;
+                                        break;
+                                    default:
+                                        // this.category = "Work";
+                                        weeklyData[index][0] += duration;
+                                        break;
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        continue;
+                        Log.d("datacheck", e.getClass().getSimpleName());
+                        Log.d("datacheck", e.getMessage());
                     }
                 }
                 adjustData();
@@ -215,6 +195,7 @@ public class PlannerWeeklyFragment extends Fragment {
         barDataSet.setColors(colors);
 
         barDataSet.setValueFormatter(new ValueFormatter() {
+            @SuppressLint("DefaultLocale")
             @Override
             public String getFormattedValue(float value) {
                 // Format the value as needed, e.g., convert to int or round to specific decimal places
@@ -229,7 +210,7 @@ public class PlannerWeeklyFragment extends Fragment {
         barChart.setData(barData);
         barData.setDrawValues(false);
         barData.setBarWidth(0.75f);
-        xAxis = barChart.getXAxis();
+        XAxis xAxis = barChart.getXAxis();
 
 
 
