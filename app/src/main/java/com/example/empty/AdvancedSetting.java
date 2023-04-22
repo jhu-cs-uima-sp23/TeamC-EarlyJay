@@ -2,8 +2,11 @@ package com.example.empty;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -13,6 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toast;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDismissedListener{
@@ -115,6 +122,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             numberPicker.setOnDialogDismissedListener(this);
             numberPicker.show(getChildFragmentManager(), "");
         });
+        createNotificationChannel();
         binding.done.setOnClickListener(e->{
             reference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -196,6 +204,47 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 public void onCancelled(@NonNull DatabaseError error) {}
             });
 
+            String[] words = startTime.split(":");
+            String hour_str = words[0];
+            String min_str = words[1];
+            int hour_prior = Integer.parseInt(hour_str);
+            int min_prior = Integer.parseInt(min_str);
+
+
+            Intent notificationIntent = new Intent(context, AlarmReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, 0);
+
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(System.currentTimeMillis());
+            cal.set(Calendar.HOUR_OF_DAY, hour_prior);
+            Log.d("check_time", String.valueOf(hour_prior));
+            cal.set(Calendar.MINUTE, min_prior);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            String time_notification = binding.notification.getText().toString();
+            if (time_notification.equals("5 min before")) {
+                cal.add(Calendar.MINUTE, -5);
+            } else if (time_notification.equals("10 min before")){
+                cal.add(Calendar.MINUTE, -10);
+            } else if (time_notification.equals("15 min before")){
+                cal.add(Calendar.MINUTE, -15);
+            } else if (time_notification.equals("30 min before")){
+                cal.add(Calendar.MINUTE, -30);
+            } else if (time_notification.equals("1 hour before")){
+                cal.add(Calendar.MINUTE, -60);
+            } else if (time_notification.equals("2 hours before")){
+                cal.add(Calendar.MINUTE, -120);
+            } else {
+                alarmManager.cancel(pendingIntent);
+            }
+
+            long triggerTime = cal.getTimeInMillis();
+
+            if (!time_notification.equals("None")) {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+            }
+
         });
         binding.notification.setOnClickListener(e->{
             PopupMenu popup = new PopupMenu(context, binding.notification);
@@ -222,5 +271,19 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
     public void onDismissed() {
         String duration = sharedPreferences.getString("durationTxt", getString(R.string.select_duration));
         binding.duration.setText(duration);
+    }
+
+    private void createNotificationChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CharSequence name = "EarlyJayChannel";
+            String description = "Channel for Early Jay";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("EarlyJay", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }

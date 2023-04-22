@@ -325,6 +325,7 @@ public class Stat_frag extends Fragment {
 
         YAxis rightAxis = barChart.getAxisRight();
         rightAxis.setDrawAxisLine(false);
+        rightAxis.setEnabled(false);
         YAxis yAxis = barChart.getAxisLeft();
         yAxis.setAxisMinimum(0f);
 
