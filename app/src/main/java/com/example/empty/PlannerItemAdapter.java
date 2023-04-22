@@ -64,18 +64,22 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
         holder.startTime.setText(timeRange);
         holder.cardView.setCardBackgroundColor(item.cardBackgroundColor);
         int status = item.getStatus();
-        Log.d("status check", "" + status);
         switch(status) {
             case 1:
-                holder.status.setText(R.string.complete);
+                holder.status.setText(R.string.done);
+                holder.statusView.setBackgroundColor(context.getResources().getColor(R.color.complete_green));
                 break;
             case 2:
                 holder.status.setText(R.string.fail);
+                holder.statusView.setBackgroundColor(context.getResources().getColor(R.color.fail_red));
                 break;
             case 3:
                 holder.status.setText(R.string.miss);
+                holder.statusView.setBackgroundColor(context.getResources().getColor(R.color.miss_grey));
+                break;
             default:
                 holder.status.setText("");
+                break;
         }
         if(item.pinned){
             holder.pin.setVisibility(View.VISIBLE);
@@ -97,6 +101,8 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
                     editor.putInt("totalTimeInterval", item.duration);
                     editor.putInt("featherCount", item.duration /5);
                     editor.putBoolean("startPlanTask", true);
+                    editor.putBoolean("PlannerTask", true);
+                    editor.putString("PlanTaskStartTime", item.startTime);
                     editor.apply();
                     main.bottomNavigationView.setSelectedItemId(R.id.map);
                 }else if(selectedTxt.equals(res.getString(R.string.edit))){
@@ -133,6 +139,8 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
         ImageButton menu;
         ImageView pin;
         TextView status;
+
+        View statusView;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.itemTitle);
@@ -141,6 +149,7 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
             menu = itemView.findViewById(R.id.optionMenu);
             pin = itemView.findViewById(R.id.pinned);
             status = itemView.findViewById(R.id.status);
+            statusView = itemView.findViewById(R.id.view_status);
         }
     }
 }

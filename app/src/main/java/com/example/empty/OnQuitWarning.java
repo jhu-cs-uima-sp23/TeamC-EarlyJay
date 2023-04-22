@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,11 @@ import android.view.ViewGroup;
 import com.example.empty.databinding.FragmentOnQuitWarningBinding;
 import com.example.empty.databinding.FragmentPopupStartBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,6 +35,8 @@ public class OnQuitWarning extends Fragment {
 
     private FirebaseDatabase rootNode;
     private DatabaseReference reference;
+
+    private DatabaseReference reference_planner;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -60,11 +66,45 @@ public class OnQuitWarning extends Fragment {
             float latitude = sharedPreferences.getFloat("latitude", 0);
             String uid = sharedPreferences.getString("uid", "");
             String category = sharedPreferences.getString("category", "");
+            String plannerDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
+            boolean planner = sharedPreferences.getBoolean("PlannerTask", false);
+            String startTime = sharedPreferences.getString("PlanTaskStartTime", "0:00");
             int numSeconds = sharedPreferences.getInt("numSeconds", 0);
             int timeInterval = sharedPreferences.getInt("totalTimeInterval", 0);
             int featherCount = -1 * numSeconds / 300;
             rootNode = FirebaseDatabase.getInstance();
             reference = rootNode.getReference().child("users").child(uid).child(new DateStr().getDateStr());
+            System.out.println("DateStr: " + plannerDateStr);
+            System.out.println("planner: " + planner);
+            System.out.println("startTime: " + startTime);
+            Log.d("datacheck", "DateStr: " + plannerDateStr);
+            Log.d("datacheck", "planner: " + planner);
+            Log.d("datacheck", "startTime: " + startTime);
+            if (planner) {
+                reference_planner = rootNode.getReference().child("planner").child(uid).child(plannerDateStr);
+                reference_planner.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                            try {
+                                PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                                String start = plannerItemFirebase.getStartTime();
+                                if (start.equals(startTime)) {
+                                    DatabaseReference itemRef = childSnapshot.getRef();
+                                    itemRef.child("status").setValue(2);
+                                }
+                            } catch (Exception e) {
+                                continue;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        // Handle error
+                    }
+                });
+            }
             reference.push().setValue(new LocationStruct(latitude,longitude, false, category,
                     new DateStr().getDateStr(), timeInterval, featherCount));
             editor.putInt("complete_success", 2);

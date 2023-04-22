@@ -13,6 +13,9 @@
     <color name="yellow">#F2C38F</color>
     <color name="lightGray">#748B97</color>
     <color name="dark_blue">#5059FE</color>
+    <color name="miss_grey">#666666</color>
+    <color name="fail_red">#D66D6D</color>
+    <color name="complete_green">#6DC580</color>
 
 
 </resources>

@@ -85,17 +85,31 @@
                 android:src="@drawable/meatball_menu"
                 tools:ignore="TouchTargetSizeCheck" />
 
+            <View
+                android:id="@+id/view_status"
+                android:layout_width="55dp"
+                android:layout_height="25dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="19dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="17dp"
+                android:layout_toStartOf="@+id/pinned" />
+
             <TextView
                 android:id="@+id/status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/view_status"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true"
                 android:layout_marginTop="20dp"
-                android:layout_marginEnd="52dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="20dp"
-                android:layout_toStartOf="@+id/pinned"
-                android:text="textview" />
+                android:text="textview"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
