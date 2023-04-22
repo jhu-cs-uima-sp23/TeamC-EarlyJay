@@ -60,4 +60,7 @@
     <string name="unpin">Unpin</string>
     <string name="delete">Delete</string>
     <string name="none">None</string>
+    <string name="fail">Failed</string>
+    <string name="miss">Missed</string>
+    <string name="complete">Complete</string>
 </resources>

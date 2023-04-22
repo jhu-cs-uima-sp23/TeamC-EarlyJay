@@ -17,9 +17,12 @@ public class PlannerItemModel {
     int workType;
     String notification;
     Boolean pinned;
+
+    // 0 default; 1 complete; 2 fail; 3 miss
+    int status;
     int cardBackgroundColor;
     public PlannerItemModel(String title, String startTime, String durationTxt_, int workType,
-                            String notification, boolean pin){
+                            String notification, boolean pin, int status){
         this.title = title;
         this.startTime = startTime;
         this.durationTxt = durationTxt_;
@@ -28,6 +31,7 @@ public class PlannerItemModel {
         this.notification = notification;
         this.endTime = getEndTime(startTime, duration);
         this.category = "Work";
+        this.status = status;
         String colorString = "#D04C25";
         this.pinned = pin;
         switch (workType) {
@@ -53,6 +57,7 @@ public class PlannerItemModel {
         }
     }
 
+
     public String getTitle() { return title; }
 
     public String getStartTime() { return startTime; }
@@ -75,6 +80,8 @@ public class PlannerItemModel {
     }
 
     public Boolean getPinned() { return pinned; }
+
+    public int getStatus() { return status; }
     public void togglePin(){
         pinned = !pinned;
     }
@@ -87,6 +94,9 @@ public class PlannerItemModel {
     public void setDurationTxt(String durationTxt){
         this.durationTxt = durationTxt;
     }
+
+    public void setStatus(int status) { this.status = status; }
+
     public void setWorkType(int workType) {
         this.workType = workType;
 

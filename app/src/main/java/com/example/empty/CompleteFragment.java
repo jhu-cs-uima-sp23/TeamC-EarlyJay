@@ -25,9 +25,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -44,6 +47,7 @@ public class CompleteFragment extends Fragment {
 
     private FirebaseDatabase rootNode;
     private DatabaseReference reference;
+    private DatabaseReference reference_planner;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -83,7 +87,35 @@ public class CompleteFragment extends Fragment {
             mainActivity.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
         });
 
+        String plannerDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
+        boolean planner = sharedPreferences.getBoolean("PlannerTask", false);
+        String startTime = sharedPreferences.getString("PlanTaskStartTime", "0:00");
+        if (planner) {
+            reference_planner = rootNode.getReference().child("planner").child(uid).child(plannerDateStr);
+            reference_planner.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                        try {
+                            PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                            String start = plannerItemFirebase.getStartTime();
+                            if (start.equals(startTime)) {
+                                DatabaseReference itemRef = childSnapshot.getRef();
+                                itemRef.child("status").setValue(1);
+                            }
+                        } catch (Exception e) {
+                            continue;
+                        }
+                    }
+                }
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    // Handle error
+                }
+            });
+
+        }
     }
 
     public void onResume() {
