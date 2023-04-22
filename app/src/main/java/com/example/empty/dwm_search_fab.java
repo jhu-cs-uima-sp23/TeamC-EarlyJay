@@ -1,5 +1,6 @@
 package com.example.empty;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Address;
@@ -10,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
@@ -35,13 +35,14 @@ public class dwm_search_fab extends Fragment {
     private EditText searchEditText;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = getActivity().getApplicationContext();
+        context = requireActivity().getApplicationContext();
         binding = FragmentDwmSearchFabBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -95,9 +96,7 @@ public class dwm_search_fab extends Fragment {
             popup.show();
         });
 
-        binding.floatingActionButton.setOnClickListener(view1 -> {
-            mainActivity.replaceFragment(R.id.stuff_on_map, new popup_start());
-        });
+        binding.floatingActionButton.setOnClickListener(view1 -> mainActivity.replaceFragment(R.id.stuff_on_map, new popup_start()));
 
         // Search Bar
         searchEditText = view.findViewById(R.id.loc_input);
@@ -144,9 +143,7 @@ public class dwm_search_fab extends Fragment {
         });
 
         // Clear search mark
-        binding.clearButton.setOnClickListener(v -> {
-            mainActivity.replaceFragment(R.id.frame_layout,  new Map_frag());
-        });
+        binding.clearButton.setOnClickListener(v -> mainActivity.replaceFragment(R.id.frame_layout,  new Map_frag()));
 
     }
 }

@@ -1,7 +1,6 @@
 package com.example.empty;
 
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -93,9 +92,9 @@ public class DateStr {
 
 
     public String getPastDay(int dayNum) {
-        int startYear = 0;
-        int startMonth = 0;
-        int startDay = 0;
+        int startYear;
+        int startMonth;
+        int startDay;
         int startDayOfTheWeek = (dayOfTheWeek - 1 - dayNum + 7 * dayNum) % 7 + 1;
         if (day > dayNum) {
             startDay = day - dayNum;

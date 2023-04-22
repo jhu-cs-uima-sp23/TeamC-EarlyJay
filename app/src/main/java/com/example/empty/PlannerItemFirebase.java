@@ -1,5 +1,7 @@
 package com.example.empty;
 
+import android.annotation.SuppressLint;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -25,8 +27,9 @@ public class PlannerItemFirebase {
 
     public PlannerItemFirebase(){}
 
+    @SuppressLint("NonConstantResourceId")
     public PlannerItemFirebase(String title, String startTime, String duration, int workType,
-                            String notification, String dateStr){
+                               String notification, String dateStr){
         this.title = title;
         this.startTime = startTime;
         this.duration = duration;

@@ -25,9 +25,9 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
     MainActivity main;
     Resources res;
     SharedPreferences.Editor editor;
-    private OnDeleteButtonClickListener deleteListener;
-    private OnEditClickListener editListener;
-    private OnPinListener pinListener;
+    private final OnDeleteButtonClickListener deleteListener;
+    private final OnEditClickListener editListener;
+    private final OnPinListener pinListener;
     Planner_frag planner_frag;
     public interface OnDeleteButtonClickListener {
         void onDeleteButtonClicked(int position);

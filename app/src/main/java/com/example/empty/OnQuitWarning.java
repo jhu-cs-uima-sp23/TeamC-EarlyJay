@@ -15,18 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.empty.databinding.FragmentOnQuitWarningBinding;
-import com.example.empty.databinding.FragmentPopupStartBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 public class OnQuitWarning extends Fragment {
     private FragmentOnQuitWarningBinding binding;
@@ -41,9 +35,9 @@ public class OnQuitWarning extends Fragment {
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = getActivity().getApplicationContext();
+        context = requireActivity().getApplicationContext();
         binding = FragmentOnQuitWarningBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -55,9 +49,7 @@ public class OnQuitWarning extends Fragment {
         int reward_amount = sharedPreferences.getInt("featherCount", 0);
         String formatted = getString(R.string.warning_txt, reward_amount);
         binding.warningTxt.setText(formatted);
-        binding.yes.setOnClickListener(v -> {
-            main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
-        });
+        binding.yes.setOnClickListener(v -> main.replaceFragment(R.id.stuff_on_map, new CountDownFragment()));
 
         binding.no.setOnClickListener(v -> {
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -88,13 +80,15 @@ public class OnQuitWarning extends Fragment {
                         for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                             try {
                                 PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
+                                assert plannerItemFirebase != null;
                                 String start = plannerItemFirebase.getStartTime();
                                 if (start.equals(startTime)) {
                                     DatabaseReference itemRef = childSnapshot.getRef();
                                     itemRef.child("status").setValue(2);
                                 }
                             } catch (Exception e) {
-                                continue;
+                                Log.d("datacheck", e.getClass().getSimpleName());
+                                Log.d("datacheck", e.getMessage());
                             }
                         }
                     }
@@ -126,12 +120,12 @@ public class OnQuitWarning extends Fragment {
     }
 
     private void hideBottomNavigationView() {
-        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setVisibility(View.GONE);
     }
 
     private void showBottomNavigationView() {
-        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
+        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setVisibility(View.VISIBLE);
         bottomNavigationView.animate().translationY(0).setDuration(300);
     }

@@ -1,17 +1,14 @@
 package com.example.empty;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
@@ -22,7 +19,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         Intent notificationIntent = new Intent(context, AlarmReceiver.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+        @SuppressLint("UnspecifiedImmutableFlag") PendingIntent pendingIntent =
+                PendingIntent.getActivity(context, 0, notificationIntent, 0);
 
         // Permission is granted, show the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "EarlyJay")
