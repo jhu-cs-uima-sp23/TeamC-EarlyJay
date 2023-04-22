@@ -35,6 +35,7 @@ public class Login extends AppCompatActivity {
     SharedPreferences.Editor edit;
 
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
+    private static final int MY_PERMISSIONS_REQUEST_NOTIFICATION = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +79,8 @@ public class Login extends AppCompatActivity {
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
+
+
         });
 
     }

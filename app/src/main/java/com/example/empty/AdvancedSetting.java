@@ -1,10 +1,11 @@
 package com.example.empty;
 
-import static android.content.ContentValues.TAG;
-
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -18,6 +19,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+
 import com.example.empty.databinding.FragmentAdvancedSettingBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Calendar;
 
 public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDismissedListener{
     private FragmentAdvancedSettingBinding binding;
@@ -64,6 +70,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
         rootNode = FirebaseDatabase.getInstance();
         reference = rootNode.getReference().child("planner").child(uid).child(dateStr);
 
+
 //        spinner
         List<SpinnerItem> spinnerItems = new ArrayList<>();
         spinnerItems.add(new SpinnerItem(R.drawable.circle_dashed_6_xxl, "Work"));
@@ -85,6 +92,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 startTime = startTime.substring(1);
             }
             binding.startTime.setText(startTime);
+
         };
 //        for switching from simple view
         binding.workType.setSelection(sharedPreferences.getInt("lastSelected", 0));
@@ -115,6 +123,7 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
             numberPicker.setOnDialogDismissedListener(this);
             numberPicker.show(getChildFragmentManager(), "");
         });
+        createNotificationChannel();
         binding.done.setOnClickListener(e->{
             reference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -162,6 +171,8 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                     editor.putString("durationTxt", durationTxt);
                     editor.putString("notification", notification);
                     editor.apply();
+
+
                     if(editRequest){
                         for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                             try {
@@ -194,7 +205,52 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {}
+
+
             });
+
+            String[] words = startTime.split(":");
+            String hour_str = words[0];
+            String min_str = words[1];
+            int hour_prior = Integer.parseInt(hour_str);
+            int min_prior = Integer.parseInt(min_str);
+
+
+            Intent notificationIntent = new Intent(context, AlarmReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, 0);
+
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(System.currentTimeMillis());
+            cal.set(Calendar.HOUR_OF_DAY, hour_prior);
+            Log.d("check_time", String.valueOf(hour_prior));
+            cal.set(Calendar.MINUTE, min_prior);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            String time_notification = binding.notification.getText().toString();
+            if (time_notification.equals("5 min before")) {
+                cal.add(Calendar.MINUTE, -5);
+            } else if (time_notification.equals("10 min before")){
+                cal.add(Calendar.MINUTE, -10);
+            } else if (time_notification.equals("15 min before")){
+                cal.add(Calendar.MINUTE, -15);
+            } else if (time_notification.equals("30 min before")){
+                cal.add(Calendar.MINUTE, -30);
+            } else if (time_notification.equals("1 hour before")){
+                cal.add(Calendar.MINUTE, -60);
+            } else if (time_notification.equals("2 hours before")){
+                cal.add(Calendar.MINUTE, -120);
+            } else {
+                alarmManager.cancel(pendingIntent);
+            }
+
+            long triggerTime = cal.getTimeInMillis();
+
+            if (!time_notification.equals("None")) {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+            }
+
+
 
         });
         binding.notification.setOnClickListener(e->{
@@ -222,5 +278,19 @@ public class AdvancedSetting extends Fragment implements NumberPicker.OnDialogDi
     public void onDismissed() {
         String duration = sharedPreferences.getString("durationTxt", getString(R.string.select_duration));
         binding.duration.setText(duration);
+    }
+
+    private void createNotificationChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CharSequence name = "EarlyJayChannel";
+            String description = "Channel for Early Jay";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("EarlyJay", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
