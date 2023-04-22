@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,11 +46,17 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
     FirebaseDatabase rootNode;
     DatabaseReference reference;
+    DatabaseReference reference_prior;
 
     private String currDateStr;
+
+    private DateStr now;
     private String currDatePage;
 
+    private DateStr theRealNow;
+
     private String uid;
+
     private int editPosition = -1;
     public Comparator<PlannerItemModel> comparator = (item1, item2) -> {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
@@ -99,20 +106,21 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
         editor = sharedPreferences.edit();
         editor.putBoolean("newPlan", false);
         editor.apply();
+        theRealNow = new DateStr();
 
         currDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
-        DateStr now = new DateStr(currDateStr);
+        now = new DateStr(currDateStr);
         currDatePage = sharedPreferences.getString("currDatePage", "Daily");
 
         switch(currDatePage) {
             case "Weekly":
                 mainActivity.replaceFragment(R.id.stuff_on_date, new WeeklyStatsFragment());
-                break;
-            case "Monthly":
-                mainActivity.replaceFragment(R.id.stuff_on_date, new MonthlyStatsFragment());
+                mainActivity.replaceFragment(R.id.weekly_view, new PlannerWeeklyFragment());
+                binding.newPlan.setVisibility(View.INVISIBLE);
                 break;
             default:
                 mainActivity.replaceFragment(R.id.stuff_on_date, new DailyStatsFragment());
+                binding.newPlan.setVisibility(View.VISIBLE);
                 break;
         }
         binding.newPlan.setOnClickListener(e-> mainActivity.replaceFragment(R.id.popUp, new SimpleSetting()));
@@ -133,7 +141,7 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
                         editedItem.setStartTime(sharedPreferences.getString("startTime", editedItem.startTime));
                         refreshList();
                     }else{
-                        addPlan(title,startTime,durationTxt,workType, notificationTxt, false);
+                        addPlan(title,startTime,durationTxt,workType, notificationTxt, false, 0);
                     }
                 }
                 reset();
@@ -183,29 +191,49 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
         uid = sharedPreferences.getString("uid", uid);
         rootNode = FirebaseDatabase.getInstance();
-        reference = FirebaseDatabase.getInstance().getReference().
-                child("planner").child(uid).child(currDateStr);
+        reference_prior = FirebaseDatabase.getInstance().getReference().
+                child("planner").child(uid);
+        reference = reference_prior.child(currDateStr);
 //        grab things from data base to populate recycler view
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+        reference_prior.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 locStructListByDay = new ArrayList<>();
 
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     try {
-                    PlannerItemFirebase plannerItemFirebase = childSnapshot.getValue(PlannerItemFirebase.class);
-                    int workType = plannerItemFirebase.getWorkType();
-                    addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getStartTime(),
-                            plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
-                            plannerItemFirebase.getNotification(), plannerItemFirebase.getPinned());
-
-                    } catch (Exception e) {
-                        System.out.println(e.getClass().getSimpleName());
-                        System.out.println(e.getMessage());
+                        String dataDateStr = childSnapshot.getKey();
+                        DateStr dataDateStrObj = new DateStr(dataDateStr);
+                        if (dataDateStr == null) {
+                            // client is null, error out
+                            Log.e("DBREF:", "Data is unexpectedly null");
+                        } else {
+                            if (theRealNow.comp(dataDateStrObj) > 0) {
+                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                    PlannerItemFirebase plannerItemFirebase = grandChildSnapshot.getValue(PlannerItemFirebase.class);
+                                    if (plannerItemFirebase.getStatus() == 0) {
+                                        DatabaseReference itemRef = grandChildSnapshot.getRef();
+                                        itemRef.child("status").setValue(3);
+                                    }
+                                }
+                                }
+                            if (now.isDaily(dataDateStr)) {
+                                for (DataSnapshot grandChildSnapshot : childSnapshot.getChildren()) {
+                                    PlannerItemFirebase plannerItemFirebase = grandChildSnapshot.getValue(PlannerItemFirebase.class);
+                                    addPlan(plannerItemFirebase.getTitle(), plannerItemFirebase.getStartTime(),
+                                            plannerItemFirebase.getDuration(), plannerItemFirebase.getWorkType(),
+                                            plannerItemFirebase.getNotification(), plannerItemFirebase.getPinned(),
+                                            plannerItemFirebase.getStatus());
+                                }
+                            }
+                        }
+                        } catch (Exception e) {
+                            System.out.println(e.getClass().getSimpleName());
+                            System.out.println(e.getMessage());
+                        }
                     }
+                    reset();
                 }
-                reset();
-            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -225,8 +253,8 @@ public class Planner_frag extends Fragment implements PlannerItemAdapter.OnDelet
 
     }
 
-    public void addPlan(String title, String startTime, String duration, int workType, String notification, boolean pin){
-        plannerItemModels.add(new PlannerItemModel(title, startTime, duration, workType, notification, pin));
+    public void addPlan(String title, String startTime, String duration, int workType, String notification, boolean pin, int status){
+        plannerItemModels.add(new PlannerItemModel(title, startTime, duration, workType, notification, pin, status));
         adapter.notifyItemInserted(plannerItemModels.size()-1);
         refreshList();
     }
