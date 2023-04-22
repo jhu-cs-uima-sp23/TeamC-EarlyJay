@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -96,6 +97,10 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
             popup.setOnMenuItemClickListener(menuItem -> {
                 String selectedTxt = menuItem.toString();
                 if(selectedTxt.equals(res.getString(R.string.start_task))){
+                    if(item.status == 1){
+                        Toast.makeText(context, "You have already done this", Toast.LENGTH_LONG).show();
+                        return true;
+                    }
                     editor.putString("category", item.category);
                     editor.putInt("workType", item.workType);
                     editor.putInt("numSeconds", item.duration *60);
