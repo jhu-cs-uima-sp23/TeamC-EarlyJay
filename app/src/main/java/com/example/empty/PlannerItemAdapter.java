@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,20 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
         String timeRange = item.startTime + " - " + item.getEndTime();
         holder.startTime.setText(timeRange);
         holder.cardView.setCardBackgroundColor(item.cardBackgroundColor);
+        int status = item.getStatus();
+        Log.d("status check", "" + status);
+        switch(status) {
+            case 1:
+                holder.status.setText(R.string.complete);
+                break;
+            case 2:
+                holder.status.setText(R.string.fail);
+                break;
+            case 3:
+                holder.status.setText(R.string.miss);
+            default:
+                holder.status.setText("");
+        }
         if(item.pinned){
             holder.pin.setVisibility(View.VISIBLE);
         }else{
@@ -117,6 +132,7 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
         CardView cardView;
         ImageButton menu;
         ImageView pin;
+        TextView status;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.itemTitle);
@@ -124,6 +140,7 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
             cardView = itemView.findViewById(R.id.planner_card_view);
             menu = itemView.findViewById(R.id.optionMenu);
             pin = itemView.findViewById(R.id.pinned);
+            status = itemView.findViewById(R.id.status);
         }
     }
 }

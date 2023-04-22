@@ -19,6 +19,7 @@ public class PlannerItemFirebase {
     // status = 0 - no record
     // status = 1 - done
     // status = 2 - fail
+    // status = 3 - miss
 
     String dateStr;
 
