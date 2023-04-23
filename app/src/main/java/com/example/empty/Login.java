@@ -42,6 +42,8 @@ public class Login extends AppCompatActivity {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
+        edit.putString("uid", "80452D1AA54E419DB945437220D4ACA3");
+        edit.apply();
 
         rootNode = FirebaseDatabase.getInstance();
         reference = rootNode.getReference("users");
