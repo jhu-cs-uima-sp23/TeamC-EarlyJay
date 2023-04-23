@@ -1,32 +1,32 @@
 package com.example.empty;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.TextView;
 
-import com.example.empty.databinding.FragmentCountDownBinding;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.empty.databinding.ActivityMainBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-/**
- */
-public class CountDownFragment extends Fragment {
 
-    private FragmentCountDownBinding binding;
+public class CountDownActivity extends AppCompatActivity {
+
     Context context;
-    private MainActivity mainActivity;
+    private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor edit;
+    FloatingActionButton cancelButton;
 
     CountDownTimer cTimer = null;
+
+    com.example.empty.databinding.ActivityMainBinding binding;
 
 
     int numSeconds;
@@ -37,25 +37,19 @@ public class CountDownFragment extends Fragment {
 
     int milisec;
 
-
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        context = requireActivity().getApplicationContext();
-        binding = FragmentCountDownBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-    }
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        context = getApplicationContext();
+        setContentView(R.layout.activity_count_down);
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        mainActivity = (MainActivity) getActivity();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        cancelButton = findViewById(R.id.cancel_button);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         edit = sharedPreferences.edit();
 
         String category = sharedPreferences.getString("category", "");
-        binding.taskCat.setText(category);
+        TextView taskCat = findViewById(R.id.task_cat);
+        taskCat.setText(category);
         numSeconds = sharedPreferences.getInt("numSeconds", 0);
         hour = numSeconds / 3600;
         min = (numSeconds %  3600) / 60;
@@ -84,32 +78,34 @@ public class CountDownFragment extends Fragment {
             }
 
             public void onFinish() {
-                mainActivity.replaceFragment(R.id.stuff_on_map, new CompleteFragment());
+                cancelButton.setVisibility(View.INVISIBLE);
+                replaceFragment(R.id.stuff_on_count_down, new CompleteFragment());
             }
 
         };
 
-        hideBottomNavigationView();
 
-        binding.cancelButton.setOnClickListener(v -> {
+
+        cancelButton.setOnClickListener(v -> {
             cancelTimer();
             edit.putInt("numSeconds", hour * 3600 + min * 60 + sec);
             edit.apply();
-            mainActivity.replaceFragment(R.id.stuff_on_map, new OnQuitWarning());
+            cancelButton.setVisibility(View.INVISIBLE);
+            replaceFragment(R.id.stuff_on_count_down, new OnQuitWarning());
         });
 
         cTimer.start();
 
-
-
     }
+
 
     private void setRemainTime(int hour, int min, int sec) {
         String hourStr = "0" + hour;
         String minStr = (min < 10) ? "0" + min : String.valueOf(min);
         String secStr = (sec < 10) ? "0" + sec : String.valueOf(sec);
         String formatted = getString(R.string.count_down_string, hourStr, minStr, secStr);
-        binding.remaining.setText(formatted);
+        TextView remaining = findViewById(R.id.remaining);
+        remaining.setText(formatted);
     }
 
 
@@ -119,10 +115,17 @@ public class CountDownFragment extends Fragment {
             cTimer.cancel();
     }
 
-
-    private void hideBottomNavigationView() {
-        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setVisibility(View.GONE);
+    public void replaceFragment(int frame, Fragment fragment){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(frame, fragment);
+        fragmentTransaction.commit();
+    }
+    public void removeFragment(Fragment fragment){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.remove(fragment);
+        fragmentTransaction.commit();
     }
 
 }

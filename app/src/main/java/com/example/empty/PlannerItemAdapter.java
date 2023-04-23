@@ -1,6 +1,7 @@
 package com.example.empty;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -111,7 +112,7 @@ public class PlannerItemAdapter extends RecyclerView.Adapter<PlannerItemAdapter.
                     editor.putBoolean("PlannerTask", true);
                     editor.putString("PlanTaskStartTime", item.startTime);
                     editor.apply();
-                    main.bottomNavigationView.setSelectedItemId(R.id.map);
+                    main.startActivity(new Intent(main, CountDownActivity.class));
                 }else if(selectedTxt.equals(res.getString(R.string.edit))){
                     editListener.onEditClick(position);
                 }else if(selectedTxt.equals(res.getString(R.string.unpin))){

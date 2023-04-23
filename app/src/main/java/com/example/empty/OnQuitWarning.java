@@ -1,6 +1,7 @@
 package com.example.empty;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.example.empty.databinding.FragmentOnQuitWarningBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,7 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class OnQuitWarning extends Fragment {
     private FragmentOnQuitWarningBinding binding;
-    private MainActivity main;
+    private CountDownActivity countDown;
     private Context context;
 
     private FirebaseDatabase rootNode;
@@ -43,13 +45,17 @@ public class OnQuitWarning extends Fragment {
     }
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        main = (MainActivity) getActivity();
+        countDown = (CountDownActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         editor = sharedPreferences.edit();
         int reward_amount = sharedPreferences.getInt("featherCount", 0);
         String formatted = getString(R.string.warning_txt, reward_amount);
         binding.warningTxt.setText(formatted);
-        binding.yes.setOnClickListener(v -> main.replaceFragment(R.id.stuff_on_map, new CountDownFragment()));
+        binding.yes.setOnClickListener(v -> {
+            FloatingActionButton cancelButton = countDown.findViewById(R.id.cancel_button);
+            cancelButton.setVisibility(View.VISIBLE);
+            countDown.removeFragment(this);
+        });
 
         binding.no.setOnClickListener(v -> {
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -103,30 +109,18 @@ public class OnQuitWarning extends Fragment {
                     new DateStr().getDateStr(), timeInterval, featherCount));
             editor.putInt("complete_success", 2);
             editor.apply();
-            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+            startActivity(new Intent(countDown, MainActivity.class));
         });
 
     }
 
     public void onResume() {
         super.onResume();
-        hideBottomNavigationView();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        showBottomNavigationView();
     }
 
-    private void hideBottomNavigationView() {
-        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setVisibility(View.GONE);
-    }
-
-    private void showBottomNavigationView() {
-        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setVisibility(View.VISIBLE);
-        bottomNavigationView.animate().translationY(0).setDuration(300);
-    }
 }

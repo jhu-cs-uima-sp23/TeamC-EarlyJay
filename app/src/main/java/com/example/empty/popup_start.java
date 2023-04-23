@@ -1,6 +1,7 @@
 package com.example.empty;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -86,7 +87,7 @@ public class popup_start extends Fragment implements CircularSeekBar.OnCircularS
             edit.putFloat("longitude", (float) longitude);
             edit.putBoolean("PlannerTask", false);
             edit.apply();
-            main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
+            startActivity(new Intent(main, CountDownActivity.class));
         });
 
         binding.button.setOnClickListener(v -> main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab()));

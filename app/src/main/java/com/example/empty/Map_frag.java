@@ -125,7 +125,9 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
         mMapView.getMapAsync(this);
 
         // Initialize the location provider client
+        main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
 
+        /*
         if(sharedPreferences.getBoolean("startPlanTask", false)){
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
@@ -139,17 +141,29 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
             editor.apply();
             main.replaceFragment(R.id.stuff_on_map, new CountDownFragment());
         }else {
-            main.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+
         }
-        binding.stuffOnMap.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+         binding.stuffOnMap.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             View content = binding.stuffOnMap.getChildAt(0);
             int contentId = content.getId();
 //                0 - no action; 1 - success; 2 - failed
             int task_completed = sharedPreferences.getInt("complete_success", 0);
             String viewName = getResources().getResourceName(contentId);
             String dwm_view_name = getResources().getResourceName(R.id.dwm_view);
+                    if (task_completed == 1 && viewName.equals(dwm_view_name)){
+            markMap(sharedPreferences.getInt("workType", R.drawable.triangle_48));
+            editor.putInt("complete_success", 0);
+            editor.apply();
+        }else if(task_completed == 2 && viewName.equals(dwm_view_name)){
+            markMap(R.drawable.skull);
+            editor.putInt("complete_success", 0);
+            editor.apply();
+            });
+        }
+         */
+        binding.stuffOnMap.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             int selected = sharedPreferences.getInt("last_selected", 0);
-            switch(selected) {
+            switch (selected) {
                 case 1:
                     for (LocationStruct locStr : locStructListByWeek) {
                         int drawable = getResID(locStr.getType());
@@ -157,9 +171,9 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
                         float longitude = locStr.getLongitude();
                         boolean complete = locStr.getComplete();
                         if (complete) {
-                            markMapPast(drawable,latitude,longitude);
+                            markMapPast(drawable, latitude, longitude);
                         } else {
-                            markMapPast(R.drawable.skull,latitude,longitude);
+                            markMapPast(R.drawable.skull, latitude, longitude);
                         }
                     }
                     break;
@@ -170,9 +184,9 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
                         float longitude = locStr.getLongitude();
                         boolean complete = locStr.getComplete();
                         if (complete) {
-                            markMapPast(drawable,latitude,longitude);
+                            markMapPast(drawable, latitude, longitude);
                         } else {
-                            markMapPast(R.drawable.skull,latitude,longitude);
+                            markMapPast(R.drawable.skull, latitude, longitude);
                         }
 
                     }
@@ -184,24 +198,13 @@ public class Map_frag extends Fragment implements OnMapReadyCallback, ActivityCo
                         float longitude = locStr.getLongitude();
                         boolean complete = locStr.getComplete();
                         if (complete) {
-                            markMapPast(drawable,latitude,longitude);
+                            markMapPast(drawable, latitude, longitude);
                         } else {
-                            markMapPast(R.drawable.skull,latitude,longitude);
+                            markMapPast(R.drawable.skull, latitude, longitude);
                         }
                     }
                     break;
             }
-
-            if (task_completed == 1 && viewName.equals(dwm_view_name)){
-                markMap(sharedPreferences.getInt("workType", R.drawable.triangle_48));
-                editor.putInt("complete_success", 0);
-                editor.apply();
-            }else if(task_completed == 2 && viewName.equals(dwm_view_name)){
-                markMap(R.drawable.skull);
-                editor.putInt("complete_success", 0);
-                editor.apply();
-            }
-
         });
 
         return binding.getRoot();

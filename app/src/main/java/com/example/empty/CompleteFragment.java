@@ -1,6 +1,7 @@
 package com.example.empty;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -26,7 +27,7 @@ public class CompleteFragment extends Fragment {
 
     private FragmentCompleteBinding binding;
     Context context;
-    private MainActivity mainActivity;
+    private CountDownActivity countDown;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,7 +40,7 @@ public class CompleteFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mainActivity = (MainActivity) getActivity();
+        countDown = (CountDownActivity) getActivity();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor edit = sharedPreferences.edit();
         int featherCount = sharedPreferences.getInt("featherCount", 0);
@@ -56,15 +57,14 @@ public class CompleteFragment extends Fragment {
         reference.push().setValue(new LocationStruct(latitude,longitude, true, category, new DateStr().getDateStr(),
                 timeInterval, featherCount));
 
-        String formatted = getString(R.string.warning_txt, featherCount);
+        String formatted = getString(R.string.completion_notification, featherCount);
         binding.rewardCount.setText(formatted);
         edit.putInt("complete_success", 1);
         edit.putInt("featherCount", 0);
         edit.apply();
 
         binding.okButton.setOnClickListener(v -> {
-            showBottomNavigationView();
-            mainActivity.replaceFragment(R.id.stuff_on_map, new dwm_search_fab());
+            startActivity(new Intent(countDown, MainActivity.class));
         });
 
         String plannerDateStr = sharedPreferences.getString("currDateStr", new DateStr().getDateStr());
@@ -102,24 +102,11 @@ public class CompleteFragment extends Fragment {
 
     public void onResume() {
         super.onResume();
-        hideBottomNavigationView();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        showBottomNavigationView();
-    }
-
-    private void hideBottomNavigationView() {
-        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setVisibility(View.GONE);
-    }
-
-    private void showBottomNavigationView() {
-        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setVisibility(View.VISIBLE);
-        bottomNavigationView.animate().translationY(0).setDuration(300);
     }
 
 
